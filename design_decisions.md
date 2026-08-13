@@ -2,6 +2,24 @@
 
 This document records product and technical design decisions in chronological order. Times use the `America/Toronto` timezone. Entries marked **Proposed** or **Under evaluation** are not authorization to implement them.
 
+## Contents
+
+- [Decision status guide](#decision-status-guide)
+- [001 - Initial KDE-native application direction](#001---initial-kde-native-application-direction)
+  - [Proposed KDE specification](#proposed-kde-specification)
+  - [Decision outcome](#decision-outcome)
+- [002 - Electron alternative and framework comparison](#002---electron-alternative-and-framework-comparison)
+  - [Electron benefits and trade-offs](#electron-benefits-and-trade-offs)
+  - [Visual-library comparison](#visual-library-comparison)
+  - [Evaluation outcome](#evaluation-outcome)
+- [Pending framework decision](#pending-decision)
+- [003 - Logo concept evolution and approved Tracked Trail direction](#003---logo-concept-evolution-and-approved-tracked-trail-direction)
+  - [First proposal: Escaping Trail](#first-proposal---escaping-trail)
+  - [Revised proposal: Tracked Trail](#revised-proposal---tracked-trail)
+  - [Approved visual treatment](#approved-visual-treatment)
+  - [Current assets](#current-assets)
+- [004 - Repository writing style](#004---repository-writing-style)
+
 ## Decision status guide
 
 | Status | Meaning |

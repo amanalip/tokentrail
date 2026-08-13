@@ -4,6 +4,20 @@ This document records the important outcome of each project commit in reverse ch
 
 All displayed times use the `America/Toronto` timezone. Lessons are recorded only when supported by the project history or conversation; unknown lessons are marked as not recorded rather than invented.
 
+## Contents
+
+- [What each entry tracks](#what-each-entry-tracks)
+- [Tracking rules](#tracking-rules)
+- [Current uncommitted work](#current-uncommitted-work)
+- [Commit 008 - Tracked Trail logo direction documented](#commit-008---tracked-trail-logo-direction-documented)
+- [Commit 007 - Tracker filename normalized](#commit-007---tracker-filename-normalized)
+- [Commit 006 - Tracker expanded and reordered](#commit-006---tracker-expanded-and-reordered)
+- [Commit 005 - Commit tracker introduced](#commit-005---commit-tracker-introduced)
+- [Commit 004 - README aligned with TokenTrail](#commit-004---readme-aligned-with-tokentrail)
+- [Commit 003 - KDE and Electron directions compared](#commit-003---kde-and-electron-directions-compared)
+- [Commit 002 - Product specification created](#commit-002---product-specification-created)
+- [Commit 001 - Repository initialization](#commit-001---repository-initialization)
+
 ## What each entry tracks
 
 | Field | Purpose |
@@ -36,61 +50,119 @@ Commit-message quality, related decision-log entries, and whether a change affec
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 5:10:19 PM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 13, 2026 at 5:12:13 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 13, 2026 at 5:15:07 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 5:15:07 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Establish the approved TokenTrail logo direction, create convenient light- and dark-mode image files, and document how the brand metaphor evolved during ideation.
+Make every Markdown document easier to navigate with a useful table of contents.
 
 ### Important changes
 
-- Added the approved side-by-side Tracked Trail concept board at `assets/branding/tokentrail-logo-concept-v1.png`.
-- Added exact 887 × 887 crops for light mode and dark mode at `assets/branding/tokentrail-logo-light.png` and `assets/branding/tokentrail-logo-dark.png`.
-- Added Design Decision 003, recording the initial Escaping Trail proposal, the concern it raised, the Tracked Trail revision, the approved palette, and future production constraints.
-- Recorded the user's approval of the Tracked Trail visual direction without misrepresenting the current raster concept as a finished vector asset set.
-- Updated this tracker to include commits `dbd3c03` and `feb8faf`, which were created after the earlier tracker update.
-- Added Design Decision 004, which establishes a natural repository writing style and bans em dashes.
-- Removed every em dash found in the current Markdown files.
+- Added a short contents section to `README.md` and gave its existing text clear section headings.
+- Added decision-level navigation to `design_decisions.md`, with selected links to important subsections.
+- Added a detailed section map to `docs/PRODUCT_SPEC.md`, including its numbered subsections.
+- Added tracker navigation to this file, with current work first and commits listed newest to oldest.
+- Added Commit 008 using metadata read from Git.
 
 ### Verification
 
-- The source concept board is 1774 × 887 pixels.
-- Each split image is exactly 887 × 887 pixels and was visually inspected after cropping.
-- The split images preserve their corresponding complete panel without regenerating or changing logo geometry.
-- Light and dark files both contain the standalone preview, main mark, and correctly spelled `TokenTrail` wordmark.
-- Git metadata for the two newly documented tracker commits was read directly from the repository.
-- Markdown formatting and whitespace were checked after the documentation changes.
-- A repository-wide Markdown search returned no remaining em dash or en dash characters.
+- All four Markdown files in the repository contain a `Contents` section.
+- The table entries follow the visible heading structure of each document.
+- The commit tracker remains in reverse chronological order.
+- Git metadata for Commit 008 was read directly from the repository.
+- Markdown whitespace and the no-em-dash rule were checked after editing.
 
 ### Why this work matters
 
-The logo is the first durable expression of TokenTrail's product personality. Recording the rejected metaphor alongside the approved one helps future readers understand that the final mark is not merely a rising line: it deliberately represents observed progress contained within TokenTrail, rather than usage escaping or leaking away.
+The planning documents are already detailed and will continue to grow. A table of contents lets readers jump directly to the product area, decision, or commit they need without scanning the full file.
 
 ### User lessons so far
 
-- A logo metaphor should match what the product helps the user understand, not merely look dynamic.
-- Keeping the path inside the token communicates tracked progress more clearly than a path leaving the boundary.
-- Early concepts are worth documenting because the reason for rejecting one can clarify the principles behind the final identity.
-- Light and dark modes need coordinated variants with consistent geometry, not unrelated marks.
-- Separate theme files make review and later application integration easier than repeatedly cropping a presentation board.
-- Approving a visual direction is different from declaring every production format complete.
-- A project history is more useful when it sounds like the people who made the decisions instead of a generic template.
+- Navigation matters even before implementation because planning documents can become long quickly.
+- A README benefits from a small contents section, while a product specification needs deeper subsection links.
+- Tables of contents should match the purpose and size of each document instead of using one identical template everywhere.
+- The commit tracker contents should mirror its newest-first reading order.
 
 ### Agent lessons so far
 
-- Naming a visual metaphor is a useful test: the word “escaping” exposed a product-message mismatch that shape alone might have concealed.
-- Ideation changes should be documented neutrally; an early rejected direction is evidence of refinement, not an error to hide.
-- Once a user approves generated concept art, deterministic crops preserve the approved geometry better than regenerating separate variants.
-- Generated raster concepts should not be mislabeled as precise vector masters.
-- Theme variants need contrast and small-size testing before production use, even when a large concept board looks good.
-- The tracker must be refreshed from Git whenever the user may have committed work between assistant turns.
-- Writing preferences such as punctuation and tone should be recorded as project rules, then checked rather than left to memory.
+- Hand-written contents lists are preferable here because the files are small enough to review and the links remain visible in GitHub source.
+- GitHub heading anchors remove punctuation and lowercase text, so numbered and hyphenated headings need careful links.
+- Duplicate subsection names should not be linked ambiguously when a unique higher-level link is sufficient.
+- Every repository Markdown file must be discovered with a file search rather than assumed from memory.
+- Tracker updates still require a fresh Git read because the user may commit between turns.
 
 ### Follow-up
 
-After this work is committed, replace this pending entry with the real commit metadata. Later brand work should create a precise vector master, transparent icon-only assets, monochrome variants, and verified application icon sizes.
+After this work is committed, replace this pending entry with the real commit metadata and keep each contents list synchronized when headings change.
+
+---
+
+## Commit 008 - Tracked Trail logo direction documented
+
+**Commit:** `c4e586c` - `Document approved Tracked Trail logo direction`
+**Timestamp:** August 13, 2026 at 5:13:29 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Save the approved logo concept, provide separate light and dark files, document the concept's evolution, and bring the project records up to date.
+
+### Important changes
+
+- Added the combined Tracked Trail concept board.
+- Added separate 887 × 887 light-mode and dark-mode logo panels.
+- Recorded the original Escaping Trail proposal and the reasoning that led to Tracked Trail.
+- Recorded the approved theme palette and future production-asset requirements.
+- Added a repository writing-style decision and removed em dashes from Markdown files.
+- Added detailed entries for the tracker expansion and rename commits.
+
+### Decisions and assumptions
+
+- Tracked Trail is the approved logo direction.
+- The full path remains inside the token to represent observed progress rather than usage escaping.
+- Light and dark variants share identical geometry.
+- The current PNG files are approved concept assets, not substitutes for a future vector master.
+- Repository prose should be natural, direct, specific to TokenTrail, and free of em dashes.
+
+### Verification
+
+- Git records three new PNG files and changes to three Markdown files.
+- The commit contains 271 inserted lines and 57 removed lines across the text files.
+- The combined board and both split images were inspected before the commit.
+- Both split images are 887 × 887 pixels.
+- Markdown whitespace and banned punctuation were checked before handoff.
+
+### Why this commit matters
+
+This commit gives TokenTrail its first approved visual identity and preserves the reasoning behind it. It also turns several documentation preferences into written project conventions, reducing the chance that future work loses the context established during ideation.
+
+### User lessons
+
+- Testing a logo's metaphor can reveal whether the shape communicates the intended product purpose.
+- Rejected ideas can remain valuable when their reasoning explains the approved direction.
+- Theme variants should feel like one identity rather than separate logos.
+- Concept approval and production-asset completion are separate milestones.
+- Documentation tone and punctuation can be treated as project design decisions.
+
+### Agent lessons
+
+- The user's correction from escaping to tracked progress materially improved the product metaphor and needed to remain visible in the decision history.
+- Exact crops are safer than regeneration when the user has approved the geometry of a combined concept board.
+- Generated concept images must be described honestly as raster candidates until precise vectors and icon exports exist.
+- Style rules should be applied across existing documents when the user says they apply to every file.
+- Current-work entries must be converted into committed history after the user creates a commit.
+
+### Risks or limitations
+
+- The current assets include presentation backgrounds and wordmarks; icon-only transparent production files do not exist yet.
+- Small-size legibility, monochrome rendering, accessibility contrast, and vector geometry still need formal checks.
+- Hand-maintained documentation can drift unless future changes update all related files.
+
+### Follow-up
+
+Create and verify production logo assets when the user approves that work. Keep the decision log and tracker aligned with any later visual refinements.
 
 ---
 
