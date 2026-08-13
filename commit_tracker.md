@@ -37,7 +37,7 @@ Commit-message quality, related decision-log entries, and whether a change affec
 ## Current uncommitted work
 
 **First recorded:** August 13, 2026 at 4:32:19 PM EDT (`America/Toronto`, UTC−04:00)
-**Last updated:** August 13, 2026 at 4:34:10 PM EDT (`America/Toronto`, UTC−04:00)
+**Last updated:** August 13, 2026 at 4:36:35 PM EDT (`America/Toronto`, UTC−04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
@@ -52,6 +52,7 @@ Make the tracker a detailed, reverse-chronological project memory rather than a 
 - Kept current uncommitted work separate and positioned it before committed history.
 - Added the now-existing tracker creation commit, `0648a2b`, to committed history.
 - Updated tracking rules so future entries use the same reverse-chronological structure.
+- Renamed the active document from `commit tracker.md` to `commit_tracker.md` for a shell- and link-friendly filename.
 
 ### Verification
 
@@ -60,6 +61,7 @@ Make the tracker a detailed, reverse-chronological project memory rather than a 
 - Toronto timestamps retain the applicable EDT abbreviation and UTC−04:00 offset.
 - All five committed hashes remain represented exactly once.
 - Markdown whitespace and section ordering are checked before handoff.
+- Repository search found no external document references requiring a filename update; mentions of the old name inside Commit 005 are retained as accurate historical facts.
 
 ### Why this work matters
 
@@ -73,6 +75,7 @@ Git precisely stores content changes, but a short commit message rarely preserve
 - Commit-level lessons can accumulate over time and need not be forced into one artificial takeaway.
 - The latest uncommitted work still needs a visible place, but it must not be confused with stable history.
 - More detail is valuable when it remains structured, factual, and easy to scan.
+- Underscores avoid the quoting and URL-encoding friction caused by spaces in filenames.
 
 ### Agent lessons so far
 
@@ -82,6 +85,7 @@ Git precisely stores content changes, but a short commit message rarely preserve
 - Expansion should add insight and evidence, not repeat the same lesson using different words.
 - A detailed tracker still must not fabricate the user's internal thoughts.
 - Future entries should grow or shrink according to the importance of the commit instead of obeying an arbitrary fixed length.
+- Historical entries should preserve the filename that existed in their commit, while current links and instructions use the new filename.
 
 ### Follow-up
 
