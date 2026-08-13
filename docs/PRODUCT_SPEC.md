@@ -1,8 +1,8 @@
 # TokenTrail Product Specification
 
-Status: Draft for review  
-Target: First public-ready release (v1)  
-Tagline: Understand your Codex usage.  
+Status: Draft for review
+Target: First public-ready release (v1)
+Tagline: Understand your Codex usage.
 Last updated: 2026-08-13
 
 ## 1. Product summary

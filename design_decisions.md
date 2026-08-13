@@ -13,10 +13,10 @@ This document records product and technical design decisions in chronological or
 
 ---
 
-## 001 — Initial KDE-native application direction
+## 001 - Initial KDE-native application direction
 
-**Recorded:** August 13, 2026 at 4:13 PM EDT (`America/Toronto`, UTC−04:00)  
-**Historical note:** This direction was inherited from the earlier TokenTrail project handoff. Its original decision time was not recorded, so the timestamp above is when it was added to this log.  
+**Recorded:** August 13, 2026 at 4:13 PM EDT (`America/Toronto`, UTC-04:00)
+**Historical note:** This direction was inherited from the earlier TokenTrail project handoff. Its original decision time was not recorded, so the timestamp above is when it was added to this log.
 **Status:** Proposed; not yet approved for implementation
 
 ### Context
@@ -77,9 +77,9 @@ The KDE-native direction remains a strong candidate, but it is not final. No KDE
 
 ---
 
-## 002 — Electron alternative and framework comparison
+## 002 - Electron alternative and framework comparison
 
-**Recorded:** August 13, 2026 at 4:15 PM EDT (`America/Toronto`, UTC−04:00)  
+**Recorded:** August 13, 2026 at 4:15 PM EDT (`America/Toronto`, UTC-04:00)
 **Status:** Under evaluation; not approved for implementation
 
 ### Context
@@ -163,7 +163,7 @@ Electron's own documentation notes that context isolation is recommended and tha
 
 Electron has the clear advantage in the **number and variety of libraries for polished visuals, charts, heatmaps, animation, and dashboard components**. KDE/Kirigami has the advantage in **native Plasma integration, smaller-runtime potential, Linux desktop conventions, and a simpler privilege model without a web renderer bridge**.
 
-For TokenTrail's currently stated identity—a privacy-first KDE dashboard for Linux—the recommended default remains **KDE/Kirigami**. If the product goal changes to prioritize a highly branded analytics interface, rapid visual experimentation, and eventual Windows/macOS distribution, **Electron becomes the stronger choice**.
+For TokenTrail's currently stated identity - a privacy-first KDE dashboard for Linux - the recommended default remains **KDE/Kirigami**. If the product goal changes to prioritize a highly branded analytics interface, rapid visual experimentation, and eventual Windows/macOS distribution, **Electron becomes the stronger choice**.
 
 This is a recommendation, not a final decision. A small visual prototype of the Overview screen in each toolkit would provide better evidence before committing to a full implementation.
 
@@ -178,3 +178,97 @@ Choose the primary application framework:
 3. **Prototype first:** build disposable, non-functional Overview mockups in both stacks and compare appearance, accessibility, packaged size, idle memory, startup time, theming, and development complexity before approving implementation.
 
 Until the user explicitly selects and approves one of these directions, TokenTrail remains in planning only.
+
+---
+
+## 003 - Logo concept evolution and approved Tracked Trail direction
+
+**Recorded:** August 13, 2026 at 5:10 PM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved visual direction; production vector assets still pending
+
+### Context
+
+TokenTrail needed a distinctive identity that would remain recognizable as a small desktop icon and work coherently in both light and dark application themes. The mark also needed to communicate understanding and observation of Codex usage without looking like cryptocurrency, money, a speedometer, or a generic analytics chart.
+
+### First proposal - Escaping Trail
+
+The first ASCII concept placed a connected checkpoint path inside a rounded token shape and allowed the path to exit the boundary. It was described as **The Escaping Trail**: the token represented the product, checkpoints represented measurable usage over time, and the outward path suggested a trail continuing forward.
+
+That proposal was useful exploration, but its metaphor did not match the product precisely. A path escaping the token could suggest that usage was leaking away, being depleted, or leaving the user's control. TokenTrail's purpose is to help the user **see and understand progress**, not to celebrate consumption or depict something escaping.
+
+The concept was therefore rejected before production artwork. This was a normal ideation correction, not a design failure: naming the metaphor exposed the mismatch early enough to improve it cheaply.
+
+### Revised proposal - Tracked Trail
+
+The mark was revised so the complete path remains inside the rounded token boundary:
+
+- A hollow lower-left waypoint represents the starting point.
+- Two solid intermediate checkpoints represent recorded usage or observations.
+- A larger concentric upper-right waypoint represents the current position.
+- The rising connected path shows progression over time.
+- The enclosing rounded token communicates that TokenTrail observes and explains the journey as a coherent whole.
+
+The working concept name became **Tracked Trail**. This wording is intentionally neutral: TokenTrail tracks where usage stands without implying that more usage is inherently better.
+
+### Approved visual treatment
+
+| Role | Light mode | Dark mode |
+| --- | --- | --- |
+| Background | Cloud `#F7F9FC` | Midnight `#0B1020` |
+| Token outline | Indigo `#4F46C8` | Soft violet `#9B8CFF` |
+| Trail and checkpoints | Deep teal `#087F6A` | Luminous mint `#4DE1B8` |
+| Wordmark | Ink `#111827` | Mist `#F4F7FB` |
+
+The approved concept presentation uses the same geometry in both themes. The combination of indigo/violet and teal/mint preserves one identity while maintaining contrast against light and dark surfaces.
+
+### Design constraints carried forward
+
+- The trail must remain entirely inside the token.
+- The current-position target must remain visually distinct from historical checkpoints.
+- The mark must remain understandable without the `TokenTrail` wordmark at small app-icon sizes.
+- The identity must avoid arrows escaping the boundary, cryptocurrency symbols, currency marks, footprints, gauges, and generic chart imagery.
+- Light and dark variants must use the same geometry rather than becoming different logos.
+- Future production assets should include a precise vector master, transparent-background exports, icon-only variants, monochrome variants, and tested small sizes.
+
+### Current assets
+
+- `assets/branding/tokentrail-logo-concept-v1.png` - approved side-by-side concept board.
+- `assets/branding/tokentrail-logo-light.png` - light-mode panel extracted from the approved board.
+- `assets/branding/tokentrail-logo-dark.png` - dark-mode panel extracted from the approved board.
+
+The split files are exact crops of the approved concept board, not regenerated interpretations. They retain the small icon preview and wordmark shown in the approved presentation.
+
+### Decision outcome
+
+The user approved the **Tracked Trail** visual direction. The earlier **Escaping Trail** proposal is retained here to explain how the metaphor improved during ideation. Approval applies to the identity concept and current visual direction; a precise production vector master and final export set still require creation and verification.
+
+---
+
+## 004 - Repository writing style
+
+**Recorded:** August 13, 2026 at 5:12 PM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved
+
+### Decision
+
+Project documents should read like they were written by people working through real decisions together. They should be clear, direct, and specific to TokenTrail.
+
+The following rules apply to new writing and future edits:
+
+- Do not use em dashes.
+- Avoid canned introductions, exaggerated claims, filler conclusions, and repetitive summaries.
+- Do not describe ordinary choices as revolutionary, seamless, effortless, robust, or comprehensive unless evidence supports the word.
+- Prefer concrete statements about what changed, why it changed, and what remains uncertain.
+- Keep the user's voice and questions visible when they explain why a decision changed.
+- Use headings and tables when they help readers find information, not simply to make a document look formal.
+- Vary sentence length naturally and remove repeated wording during review.
+- Preserve technical precision without making the prose sound legalistic or machine-generated.
+- Historical commit subjects and quoted source text may be preserved exactly when accuracy requires it, but surrounding prose should still follow this style.
+
+### Reasoning
+
+These documents are meant to help future contributors understand how TokenTrail developed. Natural writing makes that history easier to trust and easier to read. It also prevents useful project records from turning into generic template language.
+
+### Verification
+
+The current Markdown files were searched for em dashes when this rule was added, and all matches were replaced with more natural punctuation. The same check should be repeated as part of future documentation reviews.

@@ -1,6 +1,6 @@
 # TokenTrail Commit Tracker
 
-This document records the important outcome of each project commit in chronological order. It complements Git history: Git remains the authoritative source for exact file changes, while this tracker explains why a change mattered and what was learned.
+This document records the important outcome of each project commit in reverse chronological order. It complements Git history: Git remains the authoritative source for exact file changes, while this tracker explains why a change mattered and what was learned.
 
 All displayed times use the `America/Toronto` timezone. Lessons are recorded only when supported by the project history or conversation; unknown lessons are marked as not recorded rather than invented.
 
@@ -36,67 +36,187 @@ Commit-message quality, related decision-log entries, and whether a change affec
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 4:32:19 PM EDT (`America/Toronto`, UTC−04:00)
-**Last updated:** August 13, 2026 at 4:36:35 PM EDT (`America/Toronto`, UTC−04:00)
+**First recorded:** August 13, 2026 at 5:10:19 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 5:12:13 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Make the tracker a detailed, reverse-chronological project memory rather than a compact list with one lesson per commit.
+Establish the approved TokenTrail logo direction, create convenient light- and dark-mode image files, and document how the brand metaphor evolved during ideation.
 
 ### Important changes
 
-- Expanded every tracked commit with several user lessons and several agent lessons.
-- Added a “Why this commit matters” explanation to each historical entry.
-- Changed committed history from oldest-first to newest-first.
-- Kept current uncommitted work separate and positioned it before committed history.
-- Added the now-existing tracker creation commit, `0648a2b`, to committed history.
-- Updated tracking rules so future entries use the same reverse-chronological structure.
-- Renamed the active document from `commit tracker.md` to `commit_tracker.md` for a shell- and link-friendly filename.
+- Added the approved side-by-side Tracked Trail concept board at `assets/branding/tokentrail-logo-concept-v1.png`.
+- Added exact 887 × 887 crops for light mode and dark mode at `assets/branding/tokentrail-logo-light.png` and `assets/branding/tokentrail-logo-dark.png`.
+- Added Design Decision 003, recording the initial Escaping Trail proposal, the concern it raised, the Tracked Trail revision, the approved palette, and future production constraints.
+- Recorded the user's approval of the Tracked Trail visual direction without misrepresenting the current raster concept as a finished vector asset set.
+- Updated this tracker to include commits `dbd3c03` and `feb8faf`, which were created after the earlier tracker update.
+- Added Design Decision 004, which establishes a natural repository writing style and bans em dashes.
+- Removed every em dash found in the current Markdown files.
 
 ### Verification
 
-- The newest tracked commit is listed before earlier commits.
-- Commit `0648a2b` and its metadata were read directly from Git.
-- Toronto timestamps retain the applicable EDT abbreviation and UTC−04:00 offset.
-- All five committed hashes remain represented exactly once.
-- Markdown whitespace and section ordering are checked before handoff.
-- Repository search found no external document references requiring a filename update; mentions of the old name inside Commit 005 are retained as accurate historical facts.
+- The source concept board is 1774 × 887 pixels.
+- Each split image is exactly 887 × 887 pixels and was visually inspected after cropping.
+- The split images preserve their corresponding complete panel without regenerating or changing logo geometry.
+- Light and dark files both contain the standalone preview, main mark, and correctly spelled `TokenTrail` wordmark.
+- Git metadata for the two newly documented tracker commits was read directly from the repository.
+- Markdown formatting and whitespace were checked after the documentation changes.
+- A repository-wide Markdown search returned no remaining em dash or en dash characters.
 
 ### Why this work matters
 
-Git precisely stores content changes, but a short commit message rarely preserves the complete product reasoning, uncertainty, learning, and safe next step. This tracker is intended to become durable project memory for both the owner and future agents or contributors.
+The logo is the first durable expression of TokenTrail's product personality. Recording the rejected metaphor alongside the approved one helps future readers understand that the final mark is not merely a rising line: it deliberately represents observed progress contained within TokenTrail, rather than usage escaping or leaking away.
 
 ### User lessons so far
 
-- Lessons do not need to be limited to one sentence or one item; a meaningful commit can establish several kinds of understanding.
-- Reverse chronology makes the most recent project state easier to find as the history grows.
-- The tracker can be detailed without becoming an unstructured diary; consistent subsections keep it usable.
-- Commit-level lessons can accumulate over time and need not be forced into one artificial takeaway.
-- The latest uncommitted work still needs a visible place, but it must not be confused with stable history.
-- More detail is valuable when it remains structured, factual, and easy to scan.
-- Underscores avoid the quoting and URL-encoding friction caused by spaces in filenames.
+- A logo metaphor should match what the product helps the user understand, not merely look dynamic.
+- Keeping the path inside the token communicates tracked progress more clearly than a path leaving the boundary.
+- Early concepts are worth documenting because the reason for rejecting one can clarify the principles behind the final identity.
+- Light and dark modes need coordinated variants with consistent geometry, not unrelated marks.
+- Separate theme files make review and later application integration easier than repeatedly cropping a presentation board.
+- Approving a visual direction is different from declaring every production format complete.
+- A project history is more useful when it sounds like the people who made the decisions instead of a generic template.
 
 ### Agent lessons so far
 
-- User preferences about documentation depth and ordering are project requirements and should become explicit tracker rules.
-- When a pending file becomes committed between updates, the tracker must re-read Git and replace the obsolete pending account with real metadata.
-- Reverse chronological ordering must be preserved on every future insertion, not repaired occasionally.
-- Expansion should add insight and evidence, not repeat the same lesson using different words.
-- A detailed tracker still must not fabricate the user's internal thoughts.
-- Future entries should grow or shrink according to the importance of the commit instead of obeying an arbitrary fixed length.
-- Historical entries should preserve the filename that existed in their commit, while current links and instructions use the new filename.
+- Naming a visual metaphor is a useful test: the word “escaping” exposed a product-message mismatch that shape alone might have concealed.
+- Ideation changes should be documented neutrally; an early rejected direction is evidence of refinement, not an error to hide.
+- Once a user approves generated concept art, deterministic crops preserve the approved geometry better than regenerating separate variants.
+- Generated raster concepts should not be mislabeled as precise vector masters.
+- Theme variants need contrast and small-size testing before production use, even when a large concept board looks good.
+- The tracker must be refreshed from Git whenever the user may have committed work between assistant turns.
+- Writing preferences such as punctuation and tone should be recorded as project rules, then checked rather than left to memory.
 
 ### Follow-up
 
-After these expansions are committed, a later tracker update should replace this pending section with the actual commit hash, timestamp, message, statistics, and final verification result.
+After this work is committed, replace this pending entry with the real commit metadata. Later brand work should create a precise vector master, transparent icon-only assets, monochrome variants, and verified application icon sizes.
 
 ---
 
-## Commit 005 — Commit tracker introduced
+## Commit 007 - Tracker filename normalized
 
-**Commit:** `0648a2b` — `Create commit tracker.md`
-**Timestamp:** August 13, 2026 at 4:30:58 PM EDT (`America/Toronto`, UTC−04:00)
+**Commit:** `feb8faf` - `Remove outdated commit tracker`
+**Timestamp:** August 13, 2026 at 4:37:14 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Replace the space-containing tracker filename with the requested underscore-based `commit_tracker.md` name.
+
+### Important changes
+
+- Renamed `commit tracker.md` to `commit_tracker.md`.
+- Preserved the tracker content while updating its current-work notes to explain the filename choice.
+- Retained historical mentions of the original filename where they describe what earlier commits actually contained.
+
+### Decisions and assumptions
+
+- The active filename uses an underscore for easier shell commands, Markdown links, and URLs.
+- Historical entries preserve old names when changing them would make the record inaccurate.
+- The commit subject emphasizes removal, while Git detects the actual content change as a 97%-similar rename.
+
+### Verification
+
+- Git records a rename from `commit tracker.md` to `commit_tracker.md` with 97% similarity.
+- Five lines were added and one was removed as part of the rename commit.
+- No application build or runtime checks applied.
+
+### Why this commit matters
+
+Filename conventions are small architectural hygiene decisions. Normalizing the tracker name reduces quoting and encoding friction in the commands and links that will be used throughout the project's lifetime.
+
+### User lessons
+
+- A clear, tool-friendly filename makes frequently referenced project documentation easier to use.
+- Renaming a file does not require erasing its earlier name from historical records.
+- Git can preserve rename history even when a commit message describes the change more simply.
+
+### Agent lessons
+
+- Repository searches should accompany documentation renames so active references do not break.
+- Historical accuracy takes precedence over mechanically replacing every occurrence of an old filename.
+- Git's rename detection and the user-facing intent can both be recorded when they illuminate different aspects of a change.
+- Commit summaries should describe the effective outcome even when the original subject is less precise.
+
+### Risks or limitations
+
+- External links created before the rename could still point to the old path, although no repository-internal external references were found at the time.
+- Future documentation must consistently use `commit_tracker.md`.
+
+### Follow-up
+
+Use the underscore-based filename in all new repository links and instructions.
+
+---
+
+## Commit 006 - Tracker expanded and reordered
+
+**Commit:** `dbd3c03` - `Expand commit tracker with structured project lessons`
+**Timestamp:** August 13, 2026 at 4:35:32 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Turn the initial tracker into a detailed project-memory document with multiple lessons per commit and reverse-chronological committed history.
+
+### Important changes
+
+- Expanded the original four commit entries with detailed user and agent lessons.
+- Added “Why this commit matters” context.
+- Reordered committed entries so the latest commit appears first.
+- Added a committed-history entry for the tracker creation commit itself.
+- Clarified the role and handling of current uncommitted work.
+
+### Decisions and assumptions
+
+- Tracker detail should scale with the importance of a commit rather than obey a fixed length.
+- Multiple supported lessons are preferable to forcing each commit into one takeaway.
+- Current work appears above committed entries but remains clearly labeled as uncommitted.
+- Reverse chronology is a permanent tracker rule.
+
+### Verification
+
+- Git records 251 insertions and 78 deletions in the tracker.
+- The committed history was arranged newest-first at the end of the change.
+- Markdown whitespace and headings were checked.
+- The change affected documentation only.
+
+### Why this commit matters
+
+This commit establishes the tracker as a substantive record of product understanding rather than a decorative changelog. It makes recent context easy to find while preserving deeper lessons for future contributors and agents.
+
+### User lessons
+
+- Important commits can teach several lessons and deserve enough space to preserve them.
+- Reverse chronological order is more practical for a living project document because readers usually need the newest state first.
+- Structured detail is easier to navigate than either a terse list or an unorganized diary.
+- Documentation preferences can become durable project conventions.
+
+### Agent lessons
+
+- User feedback about documentation is part of the artifact requirements, not merely presentation preference.
+- Expansion should add distinct insight rather than paraphrasing one lesson repeatedly.
+- A tracker must distinguish knowledge supported by conversation from imagined personal reactions.
+- Newest-first insertion needs to be maintained consistently with every later update.
+- Self-referential tracker entries must be finalized after their containing commits exist.
+
+### Risks or limitations
+
+- Manual tracker maintenance can drift from Git unless metadata is re-read on each update.
+- Detail can reduce scanability if headings and ordering conventions are not followed.
+- This commit still preceded the later filename normalization.
+
+### Follow-up
+
+Maintain the detailed reverse-chronological format and reconcile pending entries after each commit.
+
+---
+
+## Commit 005 - Commit tracker introduced
+
+**Commit:** `0648a2b` - `Create commit tracker.md`
+**Timestamp:** August 13, 2026 at 4:30:58 PM EDT (`America/Toronto`, UTC-04:00)
 **Author:** Aman Ali
 
 ### Intent
@@ -164,10 +284,10 @@ Expand lessons where the history supports them, keep newest commits first, and f
 
 ---
 
-## Commit 004 — README aligned with TokenTrail
+## Commit 004 - README aligned with TokenTrail
 
-**Commit:** `319d60b` — `Document TokenTrail project vision and planning status`
-**Timestamp:** August 13, 2026 at 4:24:14 PM EDT (`America/Toronto`, UTC−04:00)
+**Commit:** `319d60b` - `Document TokenTrail project vision and planning status`
+**Timestamp:** August 13, 2026 at 4:24:14 PM EDT (`America/Toronto`, UTC-04:00)
 **Author:** Aman Ali
 
 ### Intent
@@ -225,10 +345,10 @@ Keep the README synchronized with major approved decisions without allowing it t
 
 ---
 
-## Commit 003 — KDE and Electron directions compared
+## Commit 003 - KDE and Electron directions compared
 
-**Commit:** `2eaa34c` — `Create design_decisions.md`
-**Timestamp:** August 13, 2026 at 4:17:54 PM EDT (`America/Toronto`, UTC−04:00)
+**Commit:** `2eaa34c` - `Create design_decisions.md`
+**Timestamp:** August 13, 2026 at 4:17:54 PM EDT (`America/Toronto`, UTC-04:00)
 **Author:** Aman Ali
 
 ### Intent
@@ -296,10 +416,10 @@ The user should choose KDE/Kirigami, choose Electron, or explicitly approve a di
 
 ---
 
-## Commit 002 — Product specification created
+## Commit 002 - Product specification created
 
-**Commit:** `3067331` — `Create PRODUCT_SPEC.md`
-**Timestamp:** August 13, 2026 at 4:10:49 PM EDT (`America/Toronto`, UTC−04:00)
+**Commit:** `3067331` - `Create PRODUCT_SPEC.md`
+**Timestamp:** August 13, 2026 at 4:10:49 PM EDT (`America/Toronto`, UTC-04:00)
 **Author:** Aman Ali
 
 ### Intent
@@ -365,10 +485,10 @@ Review and approve or revise the major scope decisions before application code i
 
 ---
 
-## Commit 001 — Repository initialization
+## Commit 001 - Repository initialization
 
-**Commit:** `346798b` — `Initial commit`
-**Timestamp:** August 13, 2026 at 1:53:44 AM EDT (`America/Toronto`, UTC−04:00)
+**Commit:** `346798b` - `Initial commit`
+**Timestamp:** August 13, 2026 at 1:53:44 AM EDT (`America/Toronto`, UTC-04:00)
 **Author:** Aman Ali
 
 ### Intent
