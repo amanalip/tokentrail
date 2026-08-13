@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 010 - Linked references and verification reports added](#commit-010---linked-references-and-verification-reports-added)
 - [Commit 009 - Markdown contents navigation added](#commit-009---markdown-contents-navigation-added)
 - [Commit 008 - Tracked Trail logo direction documented](#commit-008---tracked-trail-logo-direction-documented)
 - [Commit 007 - Tracker filename normalized](#commit-007---tracker-filename-normalized)
@@ -79,74 +80,177 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 5:20:28 PM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 13, 2026 at 5:26:12 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 13, 2026 at 5:44:25 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 5:54:27 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Make the design-decision log easier to research by placing direct links beside the technologies and claims they support. Establish fact-check and sanity-check reports as permanent tracker requirements.
+Record Electron as the approved framework and create a complete Electron product specification covering product behavior, interface design, Linux compatibility, implementation choices, security architecture, testing, packaging, and release requirements.
 
 ### Important changes
 
-- Linked KDE, Qt, packaging, Electron, security, UI, and charting technologies directly inside the relevant tables.
-- Embedded official documentation links naturally in explanatory paragraphs.
-- Renamed both `Sources reviewed` sections to `Reference links` and added a short explanation of what each source covers.
-- Turned the three local logo asset paths into clickable file links.
-- Corrected the Recharts documentation URL after the first link check found a 404 response.
-- Added fact-check and sanity-check fields, standards, and tracking rules to this file.
-- Added Commit 009 from the latest Git history.
+- Created `product_spec_electron.md` as a separate Electron specification instead of overwriting the inherited KDE specification.
+- Defined the complete product vision, v1 requirements, optional features, later opt-in ideas, and rejected privacy-expanding scope.
+- Added 18 ASCII interface and state sketches covering the application shell, onboarding, errors, every primary screen, settings, diagnostics, dialogs, and optional tray behavior.
+- Selected Electron, TypeScript, React, Vite, React Aria Components, Apache ECharts, Zod, TanStack Query, electron-builder, Vitest, React Testing Library, Playwright, and axe-core with reasons and alternatives.
+- Specified main, preload, renderer, Codex adapter, IPC, trust, and data boundaries.
+- Added a detailed threat model, BrowserWindow policy, Content Security Policy, custom protocol, IPC controls, Codex read allowlist, fuse posture, supply-chain rules, release integrity, and security gates.
+- Defined Linux support honestly as a tested mainstream 64-bit matrix rather than every possible Linux system.
+- Added AppImage, deb, rpm, and Pacman as initial package candidates while deferring Flatpak and Snap until host Codex access is designed safely.
+- Updated the chronological decision log with approved Decision 005 and marked the KDE implementation direction as superseded.
+- Added the new Electron specification to the README planning links.
+- Finalized the preceding verification work as Commit 010 in this tracker.
+
+### Decisions and assumptions
+
+- Electron is approved as the application framework, but implementation remains separately gated.
+- The Renderer is treated as untrusted and receives no Node, Electron, filesystem, shell, environment, credential, or raw protocol access.
+- The first release is read-only and stores no usage history.
+- The installed Codex app-server bindings are experimental evidence, not a permanent compatibility contract.
+- Rich visuals never replace text, tables, provenance, keyboard behavior, or screen-reader access.
+- “All possible features” is documented as a catalog with release labels so later ideas do not silently expand v1 data access.
+- Exact dependency versions and final visual tokens will be decided during authorized implementation and verified through prototypes.
 
 ### Verification
 
-- External URLs were extracted from `design_decisions.md` and checked directly.
-- Local logo paths and Markdown anchors were checked against files and headings in the repository.
-- Git metadata for Commit 009 was read directly from Git.
-- Markdown whitespace, table structure, and the no-em-dash rule were checked after editing.
+- Primary or project-maintained documentation was researched for Electron security, process isolation, fuses, ASAR integrity, releases, Wayland, theming, tray, notifications, packaging, charting, accessible controls, runtime validation, and testing.
+- The installed `codex-cli 0.146.1` generated experimental TypeScript bindings into a temporary directory. The observed read and denied method families were checked directly without adding generated files to the repository.
+- All 61 unique external URLs across the repository Markdown files returned HTTP 200 during the final link check.
+- All local Markdown file targets and heading anchors passed an automated check across the five Markdown documents.
+- Markdown whitespace, prohibited dash characters, stale pending-framework language, and Git diff formatting passed their final checks.
+- The latest Git history and working tree were reconciled again at the end of the work. Commit `f16d999` remained the latest commit and the four intended documentation files were the only changes.
 
 ### Fact-check report
 
-- The initial link check tested 36 unique external destinations. Thirty-five returned HTTP 200 and the old Recharts URL returned HTTP 404.
-- The Recharts link was changed to its current project-maintained getting-started page. A second full check confirmed that all 36 unique external destinations now return HTTP 200.
-- KDE's documentation confirms that Kirigami is built on QML and Qt Quick Controls and supports C++ integration.
-- KDE's API index identifies KQuickCharts as a Qt Quick chart module.
-- Qt's documentation confirms that Qt Graphs supports area, bar, donut, line, pie, scatter, and spline graphs in 2D.
-- Electron's documentation confirms its main and renderer process model, context isolation guidance, sandbox support, security checklist, IPC model, and separate packaging tooling.
-- Electron's security page contains the linked Content Security Policy section and recommends context isolation, process sandboxing, sender validation, and narrowly exposed APIs.
-- Comparative statements about development speed, resource use, and visual ecosystem fit remain evaluation judgments. The document continues to call for TokenTrail-specific prototypes and measurements before treating those points as proven.
+- Electron's official security checklist supports local secure content, context isolation, process sandboxing, restrictive CSP, blocked navigation and windows, current framework versions, IPC sender validation, custom protocols, fuses, and narrowly exposed APIs.
+- Electron's official ASAR integrity guide pairs embedded ASAR validation with the only-load-from-ASAR fuse.
+- Electron's official release policy supports only the latest three stable major lines. The specification therefore avoids pinning a future version and requires current security updates at release time.
+- Electron's official Wayland article states that Wayland works out of the box in version 38.2 and newer.
+- Electron's Tray documentation says Linux uses StatusNotifierItem when available, with a GtkStatusIcon fallback. Its notification guide says `libnotify` works with KDE and other conforming desktops.
+- electron-builder documents AppImage, deb, rpm, Pacman, Flatpak, and Snap targets plus Linux update support. The specification chooses only the formats whose access model fits the current design.
+- Electron Forge's own documentation marks its Vite plugin experimental. This supports choosing separate Vite builds and electron-builder rather than depending on that plugin.
+- ECharts documentation confirms SVG and Canvas renderers, selective imports, ARIA descriptions, and decal patterns. It does not prove TokenTrail's accessibility without manual testing, which the specification requires.
+- React Aria documents unstyled accessibility-focused components and internationalization behavior. It is selected for interaction behavior, not as proof that every assembled screen is accessible.
+- Playwright documents Electron support as experimental and notes limitations around native dialogs and fuse settings. Packaged smoke and direct integration tests remain required.
+- The locally generated Codex bindings include `account/read`, `account/rateLimits/read`, `account/usage/read`, rate-limit updates, quota windows, credits, and aggregate daily and summary usage types. They also include many mutation and content operations that TokenTrail explicitly denies.
+- The installed CLI labels app-server tooling and generated bindings experimental. Official public OpenAI documentation did not provide a stable schema guarantee in the research results, so the specification states that uncertainty instead of claiming support.
+- Memory, startup, and interaction values are labeled initial budgets that require measurement. Comparative framework statements remain reasoned judgments rather than benchmark results.
+- The final external-link pass checked 61 unique destinations and received HTTP 200 from each one. A successful response confirms availability, while the claim review above records whether a page supports the statement made from it.
 
 ### Sanity-check report
 
-- Links appear at the point of use, so a reader can open documentation without searching a separate source list.
-- Reference sections remain because they provide a compact reading list and explain why each source matters.
-- Repeated links are intentional where tables may be read independently.
-- The framework decision remains pending; adding references does not change either option's approval status.
-- No application implementation, dependency installation, packaging, publication, or framework selection was implied by this documentation work.
-- Local logo links use paths relative to `design_decisions.md`, which is stored at the repository root.
-- An automated local-link and heading-anchor check found no missing target in any repository Markdown file.
+- The original KDE specification remains intact for historical comparison, while the new root-level Electron specification is clearly identified as the approved direction.
+- The decision log preserves the earlier uncertainty and records approval in a new chronological entry rather than rewriting history.
+- Framework approval is not described as implementation, dependency installation, publishing, signing, or update authorization.
+- The privacy boundary remains narrower than the available Codex protocol: no credentials, content, tasks, projects, files, Git data, mutations, telemetry, or usage history enter v1.
+- Optional tray, notifications, startup behavior, updates, local history, Windows, macOS, Flatpak, and Snap are separated from required v1 behavior.
+- The interface includes loading, signed-out, unsupported, partial, stale, and error states instead of specifying only successful screens.
+- Accessibility is built into library selection, chart alternatives, interface behavior, test layers, and acceptance criteria rather than relying on a final scanner.
+- Security requirements cover development, runtime, process launch, IPC, storage, diagnostics, dependencies, packaging, updates, and release artifacts.
+- The support statement does not promise flawless behavior on every Linux distribution. It defines a testable matrix and requires documentation of unsupported systems.
+- README navigation, both product specifications, the decision log, and the tracker remain mutually discoverable.
+- The new Electron specification contains a contents section whose targets, along with every other internal Markdown target in the repository, passed the final anchor check.
+- No em dash or en dash appears in the repository Markdown files, and `git diff --check` reports no whitespace error.
 
 ### Why this work matters
 
-Design decisions are easier to evaluate when the supporting material is one click away. Recording both factual checks and project-level sanity checks also makes it clear which statements are verified, which are judgments, and which still need testing.
+This work turns a framework preference into a testable product and security plan. It gives future implementation a clear answer for what may be read, which process owns each privilege, how every major screen behaves, which libraries are justified, and what must pass before a public release.
 
 ### User lessons so far
 
-- Links are most useful when they appear beside the exact tool, library, or claim they explain.
-- A separate reference list can still be helpful when it acts as a guided reading list rather than repeating bare URLs.
-- Fact checking and sanity checking serve different purposes: one tests evidence, while the other tests whether the work makes sense for the product.
-- A failed link is useful feedback when it is recorded and corrected rather than hidden.
+- Electron can behave well on KDE without being a KDE-native Kirigami application.
+- Cross-Linux quality comes from a defined distribution, desktop, display-server, architecture, and scaling matrix, not from claiming one package is universal.
+- A hardened Electron renderer should be designed like an untrusted webpage with almost no bridge surface.
+- Electron's larger capability set is manageable only when privileges are concentrated in small main-process services and denied everywhere else.
+- Feature ideas can be documented fully without committing all of them to v1 or broadening privacy access.
+- Generated protocol types are useful evidence, but an experimental label changes the compatibility strategy from hard version promises to detection and graceful fallback.
+- Accessible charting requires tables, text, patterns, keyboard behavior, and manual tests in addition to a library's ARIA option.
 
 ### Agent lessons so far
 
-- Links should point to specific primary or project-maintained documentation instead of search pages or vague homepages when a better target exists.
-- URL status checks and claim verification are separate tasks; a page can load without supporting the statement beside it.
-- Comparative recommendations need measured evidence or clear judgment labels.
-- Fact-check reports should include failures and remaining uncertainty, not only successful checks.
-- Sanity checks should confirm that documentation work has not silently changed product scope or approval status.
+- A chronological decision log should add the approval as a new decision while preserving the earlier evaluation language in context.
+- Product, trust, protocol, and release boundaries must be designed together because a UI feature can change data access and attack surface.
+- The most useful tool comparison explains both why a choice fits and what evidence could cause it to be revisited.
+- Renderer, preload, main, adapter, and app-server responsibilities need separate statements to keep Electron security reviewable.
+- A specification should distinguish observed local Codex bindings from public support guarantees.
+- Packaging tool selection affects security, signing, update, and Linux format strategy, so it is an architectural decision rather than a late build detail.
+- Performance targets must be framed as budgets until a packaged prototype provides measurements.
 
 ### Follow-up
 
-After this work is committed, replace the pending entry with real commit metadata and keep the fact-check and sanity-check reports in future tracker updates.
+Review the specification and resolve the open questions. If the user later authorizes implementation, begin with the security and compatibility prototypes in Phase 0. After this documentation is committed, replace this pending entry with its real Git metadata.
+
+---
+
+## Commit 010 - Linked references and verification reports added
+
+**Commit:** `f16d999` - `Add linked references and verification reports`
+**Timestamp:** August 13, 2026 at 5:27:42 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Make technical decisions easier to verify by putting direct documentation links beside the claims they support, and establish separate fact-check and sanity-check reports for meaningful project work.
+
+### Important changes
+
+- Added direct official and project-maintained links throughout the KDE and Electron comparison.
+- Corrected a failed Recharts documentation link.
+- Added guided reference sections and clickable local branding assets.
+- Added verification fields, standards, and rules to the commit tracker.
+- Documented the prior contents-navigation commit as Commit 009.
+
+### Decisions and assumptions
+
+- Technical claims should be linked at the point of use.
+- A successful URL response and evidence that supports a claim are separate checks.
+- Meaningful work includes both a factual evidence review and a product-level coherence review.
+- Comparative claims remain judgments until a TokenTrail prototype measures them.
+
+### Verification
+
+- Git records 197 insertions and 73 deletions across `commit_tracker.md` and `design_decisions.md`.
+- Git metadata, file statistics, and commit subject were read directly from Commit `f16d999`.
+- The commit's own tracker entry could not be finalized inside itself without rewriting history, so it is recorded here.
+
+### Fact-check report
+
+- The prior pending report records that 36 external destinations were checked, one initial Recharts URL returned HTTP 404, and the corrected second pass returned HTTP 200 for all 36 destinations.
+- The report distinguishes link availability from claim verification and labels development-speed, resource-use, and ecosystem-fit comparisons as judgments.
+- The commit author, timestamp, subject, changed files, and statistics match Git.
+
+### Sanity-check report
+
+- The change improved research navigation without selecting a framework or authorizing implementation.
+- Reference lists remained as guided reading instead of becoming disconnected URL dumps.
+- Internal links and branding paths stayed relative to the repository structure.
+- Adding verification requirements to the tracker made future uncertainty more visible rather than presenting every statement as settled fact.
+
+### Why this commit matters
+
+The project moved from merely listing technologies to showing readers where to verify them and how verification should be recorded. This created the evidence standard used for the later Electron decision and detailed product specification.
+
+### User lessons
+
+- Inline links reduce friction when reviewing a technical comparison.
+- Fact checking asks whether a claim is supported; sanity checking asks whether the result fits TokenTrail.
+- Recording a failed check and its correction gives future readers more confidence than hiding the failure.
+
+### Agent lessons
+
+- Project-maintained documentation should be preferred over vague landing pages when a specific technical claim is made.
+- Link status automation must be followed by reading the relevant source.
+- The current-work entry must be reconciled with Git after the user creates a commit.
+
+### Risks or limitations
+
+- External documentation can move or change after the check date.
+- Comparative framework conclusions still required an explicit user decision and future measurements.
+
+### Follow-up
+
+Apply the verification standard to the next meaningful change and keep committed history in reverse chronological order.
 
 ---
 

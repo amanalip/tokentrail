@@ -14,13 +14,21 @@ This document records product and technical design decisions in chronological or
   - [Visual-library comparison](#visual-library-comparison)
   - [Electron reference links](#reference-links-1)
   - [Evaluation outcome](#evaluation-outcome)
-- [Pending framework decision](#pending-decision)
+- [Resolved framework evaluation](#resolved-framework-evaluation)
 - [003 - Logo concept evolution and approved Tracked Trail direction](#003---logo-concept-evolution-and-approved-tracked-trail-direction)
   - [First proposal: Escaping Trail](#first-proposal---escaping-trail)
   - [Revised proposal: Tracked Trail](#revised-proposal---tracked-trail)
   - [Approved visual treatment](#approved-visual-treatment)
   - [Current assets](#current-assets)
 - [004 - Repository writing style](#004---repository-writing-style)
+- [005 - Electron selected with a hardened read-only architecture](#005---electron-selected-with-a-hardened-read-only-architecture)
+  - [Approved product direction](#approved-product-direction)
+  - [Approved technical stack](#approved-technical-stack)
+  - [Security architecture](#security-architecture)
+  - [Linux compatibility position](#linux-compatibility-position)
+  - [Alternatives and trade-offs](#alternatives-and-trade-offs)
+  - [Decision outcome](#decision-outcome-1)
+  - [Reference links](#reference-links-2)
 
 ## Decision status guide
 
@@ -37,7 +45,7 @@ This document records product and technical design decisions in chronological or
 
 **Recorded:** August 13, 2026 at 4:13 PM EDT (`America/Toronto`, UTC-04:00)
 **Historical note:** This direction was inherited from the earlier TokenTrail project handoff. Its original decision time was not recorded, so the timestamp above is when it was added to this log.
-**Status:** Proposed; not yet approved for implementation
+**Status:** Superseded by Decision 005; retained as the original proposal
 
 ### Context
 
@@ -93,14 +101,14 @@ The KDE/Qt stack has enough capability to build TokenTrail well: [Kirigami](http
 
 ### Decision outcome
 
-The KDE-native direction remains a strong candidate, but it is not final. No KDE application implementation is authorized by this entry.
+The KDE-native direction remained a strong candidate during the initial evaluation. On August 13, 2026, the user selected Electron in Decision 005 because TokenTrail's priorities had become a visually rich interface and broad Linux desktop coverage. This entry remains as the record of the original proposal. No KDE application implementation was authorized.
 
 ---
 
 ## 002 - Electron alternative and framework comparison
 
 **Recorded:** August 13, 2026 at 4:15 PM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Under evaluation; not approved for implementation
+**Status:** Historical evaluation; resolved by Decision 005
 
 ### Context
 
@@ -184,21 +192,21 @@ If Electron is selected, the following become non-negotiable design decisions:
 
 For TokenTrail's current visual needs, this review found more ready-made chart, heatmap, animation, and dashboard options in the Electron/web ecosystem. KDE/Kirigami remains stronger for native Plasma integration, Linux desktop conventions, and avoiding a web renderer privilege bridge. Runtime differences still need to be measured with TokenTrail-specific prototypes.
 
-For TokenTrail's currently stated identity - a privacy-first KDE dashboard for Linux - the recommended default remains **KDE/Kirigami**. If the product goal changes to prioritize a highly branded analytics interface, rapid visual experimentation, and eventual Windows/macOS distribution, **Electron becomes the stronger choice**.
+At the time of this comparison, TokenTrail still described itself as a privacy-first KDE dashboard for Linux, so KDE/Kirigami remained the recommended default. The comparison also found that Electron would become the stronger choice if the product prioritized a highly branded analytics interface, rapid visual experimentation, and broader desktop reach.
 
-This is a recommendation, not a final decision. A small visual prototype of the Overview screen in each toolkit would provide better evidence before committing to a full implementation.
+The user later confirmed those priorities and approved Electron in Decision 005. The recommendation in this historical evaluation is therefore superseded. TokenTrail-specific performance, accessibility, and packaging measurements are still required during implementation.
 
 ---
 
-## Pending decision
+## Resolved framework evaluation
 
-Choose the primary application framework:
+The framework evaluation considered three paths:
 
 1. **KDE/Kirigami:** prioritize native Linux/KDE experience, lower runtime overhead, and desktop integration.
 2. **Electron:** prioritize the largest visual ecosystem, faster web-style UI iteration, and future cross-platform reach.
 3. **Prototype first:** build disposable, non-functional Overview mockups in both stacks and compare appearance, accessibility, packaged size, idle memory, startup time, theming, and development complexity before approving implementation.
 
-Until the user explicitly selects and approves one of these directions, TokenTrail remains in planning only.
+The user selected Electron on August 13, 2026. The framework question is resolved in Decision 005. TokenTrail remains in planning only until the user separately authorizes implementation.
 
 ---
 
@@ -293,3 +301,102 @@ These documents are meant to help future contributors understand how TokenTrail 
 ### Verification
 
 The current Markdown files were searched for em dashes when this rule was added, and all matches were replaced with more natural punctuation. The same check should be repeated as part of future documentation reviews.
+
+---
+
+## 005 - Electron selected with a hardened read-only architecture
+
+**Recorded:** August 13, 2026 at 5:44 PM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved technical and product direction; implementation not yet authorized
+
+### Context
+
+The user confirmed that TokenTrail should use Electron. The deciding priorities were a visually rich, distinct dashboard and reliable behavior across major Linux desktop environments, including KDE Plasma. Security was established as a primary requirement rather than a secondary hardening task.
+
+Electron applications can work well on KDE even though their controls are not Kirigami-native. Current Electron releases support native Wayland, system theme detection, StatusNotifierItem-based Linux tray behavior, and desktop notifications on environments that follow the freedesktop notification specification. TokenTrail will still test these behaviors on KDE, GNOME, Wayland, and X11 instead of assuming that one runtime removes Linux variation.
+
+The complete approved planning specification is [product_spec_electron.md](product_spec_electron.md). The earlier KDE document remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as historical context rather than being overwritten.
+
+### Approved product direction
+
+- TokenTrail is a privacy-first, read-only Codex usage dashboard.
+- Linux is the first release platform, with x64 and arm64 as the intended 64-bit architectures.
+- The visual identity is branded and consistent across desktops rather than tied to one desktop toolkit.
+- Light, dark, and system themes use the approved Tracked Trail identity.
+- The renderer shows account, quota, aggregate usage, credit, explanation, preference, and redacted diagnostic interfaces described in the Electron specification.
+- Task content, project data, credentials, mutations, developer telemetry, and local usage history remain outside v1.
+
+### Approved technical stack
+
+| Area | Approved choice | Reason |
+| --- | --- | --- |
+| Desktop runtime | [Electron](https://www.electronjs.org/docs/latest/) | One Chromium rendering engine across supported desktops, mature desktop APIs, and broad web visualization choices |
+| Language | [TypeScript](https://www.typescriptlang.org/docs/) in strict mode | Shared contracts across main, preload, and renderer with stronger refactoring and boundary checks |
+| UI | [React](https://react.dev/learn) | Mature component ecosystem and a strong fit for a composable analytics interface |
+| Build | [Vite](https://vite.dev/guide/) with separate builds | Fast iteration without depending on Electron Forge's experimental Vite plugin |
+| Accessible controls | [React Aria Components](https://react-aria.adobe.com/) and native HTML | Accessibility-focused behavior without imposing another product's visual system |
+| Charts | [Apache ECharts](https://echarts.apache.org/handbook/en/get-started/) | Broad chart support, SVG and Canvas rendering, selective imports, ARIA descriptions, and decal patterns |
+| Validation | [Zod](https://zod.dev/) | Runtime validation for untrusted protocol and IPC data with TypeScript inference |
+| Async renderer state | [TanStack Query](https://tanstack.com/query/latest/) | Explicit loading, stale, retry, refresh, and cached-read behavior for local asynchronous data |
+| Packaging | [electron-builder](https://www.electron.build/) | Direct support for AppImage, deb, rpm, Pacman, signing, release metadata, and Linux updates |
+| Testing | [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), [Playwright](https://playwright.dev/docs/api/class-electron), and [axe-core](https://github.com/dequelabs/axe-core) | Coverage across pure logic, user-facing components, Electron workflows, and common accessibility failures |
+
+Exact versions will be chosen and pinned when implementation is authorized. A library name in this table does not authorize dependency installation by itself.
+
+### Security architecture
+
+The approved architecture treats the renderer as untrusted:
+
+- Renderer sandboxing and context isolation stay enabled.
+- Node integration stays disabled.
+- The app loads packaged local content through a restrictive custom application protocol.
+- A strict Content Security Policy denies remote scripts, frames, objects, forms, and network connections.
+- Remote pages, remote fonts, webviews, arbitrary navigation, popups, and generic downloads are not part of the product.
+- The preload exposes only named, typed, validated functions. It never exposes raw `ipcRenderer`, Electron modules, filesystem access, shell access, environment data, or a generic method call.
+- Every IPC handler validates the sender, top-level frame, input, output, rate, and payload size.
+- The main process owns the Codex child process and protocol adapter.
+- A centralized allowlist permits only initialization and the required account, rate-limit, and aggregate usage reads.
+- Login, logout, token refresh, credit consumption, task operations, configuration writes, shell, filesystem, process, MCP, plugin, feedback, and other mutations remain denied.
+- Protocol data is treated as untrusted, normalized into stable domain objects, and never passed raw to the renderer.
+- Electron fuses, ASAR integrity, dependency review, an SBOM, artifact checksums, current Electron security releases, and release signing are required parts of the release design.
+
+At planning time, the installed Codex CLI describes the app-server and its generated bindings as experimental. Its generated TypeScript contracts include the reads TokenTrail needs, but official public OpenAI documentation does not currently provide a stable third-party schema guarantee. The implementation must therefore use capability detection, runtime validation, fixtures, and explicit compatibility states.
+
+### Linux compatibility position
+
+TokenTrail will target current mainstream 64-bit desktop Linux rather than claiming to work on every Linux system. The intended test matrix includes KDE Plasma and GNOME on Wayland, representative X11 coverage, Cinnamon or Xfce, and Debian/Ubuntu, Fedora, and Arch-family distributions.
+
+[Electron's Wayland overview](https://www.electronjs.org/blog/tech-talk-wayland) states that Electron 38.2 and newer supports Wayland out of the box. [Electron's Tray API](https://www.electronjs.org/docs/latest/api/tray/) uses StatusNotifierItem by default on Linux when available, and [Electron notifications](https://www.electronjs.org/docs/latest/tutorial/notifications) use `libnotify` on desktop environments including KDE. These capabilities support the choice, but TokenTrail must verify scaling, window behavior, tray activation, notifications, package dependencies, and compositor differences in real packaged builds.
+
+Initial package candidates are AppImage, deb, rpm, and Pacman. Flatpak and Snap are deferred because sandboxed access to the user's host Codex process requires a separate security and lifecycle design.
+
+### Alternatives and trade-offs
+
+| Alternative | Strength | Why it was not selected |
+| --- | --- | --- |
+| KDE Kirigami | Best Plasma integration, native conventions, and a smaller web privilege boundary | TokenTrail now prioritizes one highly branded visual system and broader desktop coverage over Kirigami-native identity |
+| Tauri | Smaller bundled runtime and a Rust privilege boundary | Adds Rust and Linux WebView variation; consistent rendering and one TypeScript application stack are higher current priorities |
+| Flutter | Strong custom rendering and cross-platform UI | Introduces a separate language and ecosystem without a clear advantage for the Codex TypeScript boundary or web chart ecosystem |
+| Electron Forge | Official Electron tutorial path with useful plugins | Its Vite plugin is marked experimental, while electron-builder directly covers the intended Linux package and update matrix |
+| Chart.js or Recharts | Simpler standard charts or direct React components | ECharts provides a broader path to heatmaps, rich interaction, SVG or Canvas choice, and accessibility helpers without adding D3-level custom work |
+
+Electron's costs remain real: larger artifacts, higher likely baseline memory than a native KDE build, a privileged main process, and a dependency update burden. The product specification therefore contains measured performance budgets and release security gates. If a packaged prototype cannot meet them, the framework decision can be revisited with evidence.
+
+### Decision outcome
+
+Electron is the approved TokenTrail framework. KDE/Kirigami is superseded as the implementation direction but preserved as an evaluated alternative. The new Electron product specification is the controlling technical plan once it is reviewed and accepted.
+
+This approval authorizes detailed planning documents. It does not authorize implementation, dependency installation, publishing, signing, update deployment, or access beyond the specified read-only boundary.
+
+### Reference links
+
+- [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security): current project guidance for isolation, sandboxing, CSP, navigation, IPC, custom protocols, and fuses.
+- [Electron process model](https://www.electronjs.org/docs/latest/tutorial/process-model): main, renderer, preload, and utility process responsibilities.
+- [Electron context isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation): narrow `contextBridge` design and unsafe generic IPC examples.
+- [Electron process sandboxing](https://www.electronjs.org/docs/latest/tutorial/sandbox): Chromium sandbox behavior in Electron.
+- [Electron ASAR integrity](https://www.electronjs.org/docs/latest/tutorial/asar-integrity): embedded integrity validation and only-load-from-ASAR guidance.
+- [Electron release policy](https://www.electronjs.org/docs/latest/tutorial/electron-timelines): support window for the latest three stable major versions.
+- [electron-builder Linux targets](https://www.electron.build/docs/linux/): supported Linux packaging formats and desktop metadata.
+- [React Aria Components](https://react-aria.adobe.com/): accessible unstyled UI behavior and internationalization.
+- [ECharts accessibility](https://echarts.apache.org/handbook/en/best-practices/aria/): chart descriptions and non-color decal patterns.
+- [Playwright Electron API](https://playwright.dev/docs/api/class-electron): experimental Electron automation and testing limitations.
