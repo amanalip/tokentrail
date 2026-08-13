@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 011 - Electron product specification and security plan approved](#commit-011---electron-product-specification-and-security-plan-approved)
 - [Commit 010 - Linked references and verification reports added](#commit-010---linked-references-and-verification-reports-added)
 - [Commit 009 - Markdown contents navigation added](#commit-009---markdown-contents-navigation-added)
 - [Commit 008 - Tracked Trail logo direction documented](#commit-008---tracked-trail-logo-direction-documented)
@@ -80,109 +81,186 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 5:44:25 PM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 13, 2026 at 5:54:27 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 13, 2026 at 6:08:02 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 6:13:52 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Record Electron as the approved framework and create a complete Electron product specification covering product behavior, interface design, Linux compatibility, implementation choices, security architecture, testing, packaging, and release requirements.
+Add only reliable, secure v1 insights that can be derived from TokenTrail's already approved account, rate-limit, and aggregate-usage reads. Define detailed interfaces, exact formulas, unavailable states, privacy boundaries, and tests before implementation.
 
 ### Important changes
 
-- Created `product_spec_electron.md` as a separate Electron specification instead of overwriting the inherited KDE specification.
-- Defined the complete product vision, v1 requirements, optional features, later opt-in ideas, and rejected privacy-expanding scope.
-- Added 18 ASCII interface and state sketches covering the application shell, onboarding, errors, every primary screen, settings, diagnostics, dialogs, and optional tray behavior.
-- Selected Electron, TypeScript, React, Vite, React Aria Components, Apache ECharts, Zod, TanStack Query, electron-builder, Vitest, React Testing Library, Playwright, and axe-core with reasons and alternatives.
-- Specified main, preload, renderer, Codex adapter, IPC, trust, and data boundaries.
-- Added a detailed threat model, BrowserWindow policy, Content Security Policy, custom protocol, IPC controls, Codex read allowlist, fuse posture, supply-chain rules, release integrity, and security gates.
-- Defined Linux support honestly as a tested mainstream 64-bit matrix rather than every possible Linux system.
-- Added AppImage, deb, rpm, and Pacman as initial package candidates while deferring Flatpak and Snap until host Codex access is designed safely.
-- Updated the chronological decision log with approved Decision 005 and marked the KDE implementation direction as superseded.
-- Added the new Electron specification to the README planning links.
-- Finalized the preceding verification work as Commit 010 in this tracker.
+- Added nine required v1 insights: reset timeline, quota attention ordering, current-session changes, complete-period comparison, calendar heatmap, descriptive activity statistics, data coverage, reset-credit expiry visibility, and combined capacity summary.
+- Added five detailed ASCII interface groups for the new features.
+- Added functional requirements FR-011 through FR-019.
+- Added exact calculation, ordering, completeness, precision, reset-transition, expiry, and availability rules.
+- Added protocol fixtures, security assertions, privacy assertions, and product acceptance criteria for the new behavior.
+- Updated the Codex evidence section to link the current official App Server documentation.
+- Added Design Decision 006 while preserving the earlier Electron decision as historical context.
+- Kept workspace messages, model catalogs, thread monitoring, forecasts, and retained analytics outside this approval.
+- Finalized the previous Electron specification work as Commit 011.
 
 ### Decisions and assumptions
 
-- Electron is approved as the application framework, but implementation remains separately gated.
-- The Renderer is treated as untrusted and receives no Node, Electron, filesystem, shell, environment, credential, or raw protocol access.
-- The first release is read-only and stores no usage history.
-- The installed Codex app-server bindings are experimental evidence, not a permanent compatibility contract.
-- Rich visuals never replace text, tables, provenance, keyboard behavior, or screen-reader access.
-- “All possible features” is documented as a catalog with release labels so later ideas do not silently expand v1 data access.
-- Exact dependency versions and final visual tokens will be decided during authorized implementation and verified through prototypes.
+- No new Codex method is approved.
+- Missing daily dates remain unknown and never become zero.
+- Period comparisons require complete consecutive dates for both periods.
+- Current-session baselines exist only in memory and clear when TokenTrail exits.
+- Reached-state text requires a Codex-reported reached state and remains at bucket scope unless Codex identifies a narrower scope.
+- Quota attention ordering is deterministic but is not a forecast.
+- “Highest supplied day” is limited to the selected supplied range.
+- Reset-credit expiry uses a valid reported timestamp and a disclosed seven-day display threshold.
+- Quota, currency or credit strings, spending controls, and reset-credit counts remain separate units.
+- Combined capacity has no score and makes no claim that capacity is sufficient for another task.
 
 ### Verification
 
-- Primary or project-maintained documentation was researched for Electron security, process isolation, fuses, ASAR integrity, releases, Wayland, theming, tray, notifications, packaging, charting, accessible controls, runtime validation, and testing.
-- The installed `codex-cli 0.146.1` generated experimental TypeScript bindings into a temporary directory. The observed read and denied method families were checked directly without adding generated files to the repository.
-- All 61 unique external URLs across the repository Markdown files returned HTTP 200 during the final link check.
-- All local Markdown file targets and heading anchors passed an automated check across the five Markdown documents.
-- Markdown whitespace, prohibited dash characters, stale pending-framework language, and Git diff formatting passed their final checks.
-- The latest Git history and working tree were reconciled again at the end of the work. Commit `f16d999` remained the latest commit and the four intended documentation files were the only changes.
+- The official Codex App Server page was opened and checked for the rate-limit, aggregate-usage, reset-credit, transport, and experimental-status claims.
+- Experimental TypeScript bindings were regenerated locally from `codex-cli 0.146.1` into a temporary directory.
+- The local bindings confirmed the relevant account structures and also confirmed that no thread-level type is needed by the added features.
+- Markdown structure, fenced blocks, local links, and table-of-contents anchors were checked across all five Markdown documents and passed.
+- `git diff --check` passed with no whitespace errors.
+- A repository-wide Markdown punctuation scan found no em dash or en dash characters.
+- The newly cited official Codex App Server page returned HTTP 200 on August 13, 2026.
+- The final Git review found only the three intended documentation files modified: `product_spec_electron.md`, `design_decisions.md`, and `commit_tracker.md`.
 
 ### Fact-check report
 
-- Electron's official security checklist supports local secure content, context isolation, process sandboxing, restrictive CSP, blocked navigation and windows, current framework versions, IPC sender validation, custom protocols, fuses, and narrowly exposed APIs.
-- Electron's official ASAR integrity guide pairs embedded ASAR validation with the only-load-from-ASAR fuse.
-- Electron's official release policy supports only the latest three stable major lines. The specification therefore avoids pinning a future version and requires current security updates at release time.
-- Electron's official Wayland article states that Wayland works out of the box in version 38.2 and newer.
-- Electron's Tray documentation says Linux uses StatusNotifierItem when available, with a GtkStatusIcon fallback. Its notification guide says `libnotify` works with KDE and other conforming desktops.
-- electron-builder documents AppImage, deb, rpm, Pacman, Flatpak, and Snap targets plus Linux update support. The specification chooses only the formats whose access model fits the current design.
-- Electron Forge's own documentation marks its Vite plugin experimental. This supports choosing separate Vite builds and electron-builder rather than depending on that plugin.
-- ECharts documentation confirms SVG and Canvas renderers, selective imports, ARIA descriptions, and decal patterns. It does not prove TokenTrail's accessibility without manual testing, which the specification requires.
-- React Aria documents unstyled accessibility-focused components and internationalization behavior. It is selected for interaction behavior, not as proof that every assembled screen is accessible.
-- Playwright documents Electron support as experimental and notes limitations around native dialogs and fuse settings. Packaged smoke and direct integration tests remain required.
-- The locally generated Codex bindings include `account/read`, `account/rateLimits/read`, `account/usage/read`, rate-limit updates, quota windows, credits, and aggregate daily and summary usage types. They also include many mutation and content operations that TokenTrail explicitly denies.
-- The installed CLI labels app-server tooling and generated bindings experimental. Official public OpenAI documentation did not provide a stable schema guarantee in the research results, so the specification states that uncertainty instead of claiming support.
-- Memory, startup, and interaction values are labeled initial budgets that require measurement. Comparative framework statements remain reasoned judgments rather than benchmark results.
-- The final external-link pass checked 61 unique destinations and received HTTP 200 from each one. A successful response confirms availability, while the claim review above records whether a page supports the statement made from it.
+- The official App Server documentation describes `account/rateLimits/read`, multi-bucket quota windows, reset timestamps, credit fields, reached state, and reset-credit count and details.
+- The official page states that a reset-credit detail list can be absent or capped while `availableCount` remains authoritative.
+- The official page describes `account/usage/read` summary fields and optional dated daily usage buckets.
+- The locally generated bindings match the required rate-limit, credit, daily-bucket, and aggregate-summary shapes.
+- The official documentation also exposes workspace messages, models, threads, and live thread token usage. None of those broader methods was added to the v1 allowlist by this work.
+- The documentation states that the app-server command and WebSocket transport are experimental and unsupported for production workloads. Capability detection, strict validation, fixtures, and explicit unsupported states therefore remain required.
+- The seven-day expiry label, attention ordering, comparison periods, statistics, and interface layouts are TokenTrail product rules. They are documented as calculations or presentation rules rather than Codex-reported facts.
 
 ### Sanity-check report
 
-- The original KDE specification remains intact for historical comparison, while the new root-level Electron specification is clearly identified as the approved direction.
-- The decision log preserves the earlier uncertainty and records approval in a new chronological entry rather than rewriting history.
-- Framework approval is not described as implementation, dependency installation, publishing, signing, or update authorization.
-- The privacy boundary remains narrower than the available Codex protocol: no credentials, content, tasks, projects, files, Git data, mutations, telemetry, or usage history enter v1.
-- Optional tray, notifications, startup behavior, updates, local history, Windows, macOS, Flatpak, and Snap are separated from required v1 behavior.
-- The interface includes loading, signed-out, unsupported, partial, stale, and error states instead of specifying only successful screens.
-- Accessibility is built into library selection, chart alternatives, interface behavior, test layers, and acceptance criteria rather than relying on a final scanner.
-- Security requirements cover development, runtime, process launch, IPC, storage, diagnostics, dependencies, packaging, updates, and release artifacts.
-- The support statement does not promise flawless behavior on every Linux distribution. It defines a testable matrix and requires documentation of unsupported systems.
-- README navigation, both product specifications, the decision log, and the tracker remain mutually discoverable.
-- The new Electron specification contains a contents section whose targets, along with every other internal Markdown target in the repository, passed the final anchor check.
-- No em dash or en dash appears in the repository Markdown files, and `git diff --check` reports no whitespace error.
+- Every added feature can operate from the current approved account-level data boundary.
+- No prompt, response, thread, task, workspace message, model catalog, path, Git value, credential, or mutation enters the feature design.
+- Missing and invalid source data disables a calculation instead of producing a plausible guess.
+- A bucket-level reached state is not falsely attributed to one quota window.
+- A current-session delta cannot be mistaken for retained account history because its start time, local provenance, and process-lifetime boundary are visible.
+- Cross-reset quota deltas are prevented.
+- A heatmap cannot make missing activity look like zero activity.
+- The combined capacity view avoids arithmetic across unrelated units.
+- Reset credits remain read-only.
+- The scope change is documented as planning and does not imply implementation authorization.
 
 ### Why this work matters
 
-This work turns a framework preference into a testable product and security plan. It gives future implementation a clear answer for what may be read, which process owns each privilege, how every major screen behaves, which libraries are justified, and what must pass before a public release.
+These additions make TokenTrail more useful without weakening its privacy-first purpose. The interface can reveal timing, recent supplied activity patterns, source completeness, and current reported capacity while remaining honest about what Codex did not provide.
 
 ### User lessons so far
 
-- Electron can behave well on KDE without being a KDE-native Kirigami application.
-- Cross-Linux quality comes from a defined distribution, desktop, display-server, architecture, and scaling matrix, not from claiming one package is universal.
-- A hardened Electron renderer should be designed like an untrusted webpage with almost no bridge surface.
-- Electron's larger capability set is manageable only when privileges are concentrated in small main-process services and denied everywhere else.
-- Feature ideas can be documented fully without committing all of them to v1 or broadening privacy access.
-- Generated protocol types are useful evidence, but an experimental label changes the compatibility strategy from hard version promises to detection and graceful fallback.
-- Accessible charting requires tables, text, patterns, keyboard behavior, and manual tests in addition to a library's ARIA option.
+- Useful insights do not require broader access when current account data is validated carefully.
+- A comparison is trustworthy only when its source periods are complete.
+- Missing and zero are different facts.
+- A grouped summary can help without inventing one score from unrelated units.
+- Session-only observation provides immediate context without creating a history database.
+- A display threshold must be disclosed as a product rule rather than attributed to Codex.
 
 ### Agent lessons so far
 
-- A chronological decision log should add the approval as a new decision while preserving the earlier evaluation language in context.
-- Product, trust, protocol, and release boundaries must be designed together because a UI feature can change data access and attack surface.
-- The most useful tool comparison explains both why a choice fits and what evidence could cause it to be revisited.
-- Renderer, preload, main, adapter, and app-server responsibilities need separate statements to keep Electron security reviewable.
-- A specification should distinguish observed local Codex bindings from public support guarantees.
-- Packaging tool selection affects security, signing, update, and Linux format strategy, so it is an architectural decision rather than a late build detail.
-- Performance targets must be framed as budgets until a packaged prototype provides measurements.
+- Derived features need availability rules before formulas.
+- Calendar comparisons require date-set validation, not only array length.
+- Quota deltas need explicit reset-boundary handling.
+- Exact integer arithmetic matters for large token totals and medians.
+- A visual heatmap needs a separate missing-data encoding and accessible equivalent.
+- New official documentation can improve evidence without removing the need for runtime compatibility defenses.
+- Broader locally available methods should not enter scope merely because they exist.
+
+### Risks or limitations
+
+- Daily buckets may not cover enough dates for either comparison.
+- Session deltas disappear by design and cannot explain activity before TokenTrail opened.
+- Attention ordering helps scanning but cannot predict whether Codex will accept future work.
+- The official protocol and local bindings can change while app-server remains experimental.
+- The seven-day expiry threshold may need usability review, but changing it would be an explicit product decision.
 
 ### Follow-up
 
-Review the specification and resolve the open questions. If the user later authorizes implementation, begin with the security and compatibility prototypes in Phase 0. After this documentation is committed, replace this pending entry with its real Git metadata.
+Run final verification. After the user commits this documentation, replace the pending entry with exact Git metadata. Implementation still requires separate authorization.
 
 ---
 
+## Commit 011 - Electron product specification and security plan approved
+
+**Commit:** `b1e71e2` - `Document approved Electron product specification and security plan`
+**Timestamp:** August 13, 2026 at 5:56:09 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Record Electron as the approved TokenTrail framework and preserve a complete implementation-ready product, interface, security, Linux, testing, packaging, and release plan without starting application development.
+
+### Important changes
+
+- Created the 1,655-line `product_spec_electron.md` document.
+- Added the complete feature catalog, 18 interface and state specifications, framework selection, process architecture, Codex compatibility layer, threat model, privacy model, Linux matrix, packaging plan, tests, performance budgets, phases, and acceptance criteria.
+- Added Design Decision 005 and marked KDE as the superseded implementation direction while preserving its historical specification.
+- Updated README navigation to distinguish the original KDE and approved Electron specifications.
+- Reconciled Commit 010 into the tracker.
+
+### Decisions and assumptions
+
+- Electron is approved, but implementation and dependency installation remain separately gated.
+- The sandboxed renderer receives only normalized domain data through a narrow preload contract.
+- v1 remains read-only, local, without task content, credentials, telemetry, or persisted usage history.
+- Linux is the primary release target, tested through an explicit desktop and packaging matrix.
+- Security requirements apply from process launch through release artifact integrity.
+
+### Verification
+
+- Git records 1,917 insertions and 50 deletions across four files.
+- The commit added `product_spec_electron.md` and changed `README.md`, `design_decisions.md`, and `commit_tracker.md`.
+- Commit hash, author, timestamp, subject, files, and statistics were read directly from Git.
+- The preceding pending entry recorded 61 successful external-link checks and passing Markdown structure, internal-link, punctuation, and whitespace checks.
+
+### Fact-check report
+
+- Git metadata matches Commit `b1e71e2`.
+- The committed specification cited project-maintained documentation for Electron, Linux integration, packaging, UI libraries, and testing.
+- The local Codex binding observations were correctly labeled experimental evidence at commit time.
+- Performance values remained budgets awaiting packaged measurements rather than achieved claims.
+
+### Sanity-check report
+
+- The commit changed planning documents only.
+- Framework approval did not become implementation, publication, signing, update deployment, or broader Codex access.
+- The inherited KDE specification remained available for historical context.
+- Security, privacy, accessibility, partial-data behavior, and Linux compatibility were integrated throughout the plan.
+
+### Why this commit matters
+
+This commit established the controlling Electron plan and a reviewable security boundary before application code or dependencies existed. It gives future contributors a concrete standard against which implementation can be checked.
+
+### User lessons
+
+- A framework decision includes process, packaging, testing, and maintenance consequences, not only visual capability.
+- Electron can target KDE well without pretending to be Kirigami-native.
+- Security can be expressed as enforceable architecture and release gates.
+- A historical alternative can remain useful after another direction is approved.
+
+### Agent lessons
+
+- A large specification needs explicit approval boundaries so planning is not confused with execution.
+- Trust boundaries are clearer when main, preload, renderer, adapter, and app-server responsibilities are separate.
+- Runtime and packaging tool decisions should be justified together.
+- Commit-tracker reconciliation must use Git after the user commits.
+
+### Risks or limitations
+
+- No prototype had yet measured memory, startup, packaged size, or desktop behavior.
+- App-server compatibility still required runtime validation and version fixtures.
+- Production logo assets, exact dependency versions, signing identity, and update policy remained unresolved.
+
+### Follow-up
+
+Use the specification as the controlling plan, update it when approved scope changes, and begin Phase 0 only after the user explicitly authorizes implementation.
+
+---
 ## Commit 010 - Linked references and verification reports added
 
 **Commit:** `f16d999` - `Add linked references and verification reports`

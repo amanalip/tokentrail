@@ -5,7 +5,7 @@
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 13, 2026 at 5:44 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 6:08 PM EDT (`America/Toronto`, UTC-04:00)
 
 This document defines the Electron direction for TokenTrail. It describes intended behavior and implementation boundaries. It does not authorize implementation, publication, telemetry, or access beyond the read-only Codex methods listed here.
 
@@ -138,6 +138,10 @@ The primary user runs Codex on Linux and wants a clear view of usage without stu
 - Linux x64 and arm64 release artifacts where build infrastructure supports them.
 - AppImage, deb, rpm, and Pacman packages, subject to release verification.
 - Strict Electron security settings and security acceptance tests.
+- A reset timeline, quota attention ordering, and combined capacity summary derived only from valid current rate-limit and credit fields.
+- Current-session change tracking held only in memory.
+- Complete-period comparisons, calendar activity heatmap, descriptive activity statistics, and source-coverage reporting derived only from supplied daily buckets.
+- Reset-credit expiry visibility derived from valid reported expiry timestamps.
 
 ### 4.3 v1 optional scope
 
@@ -151,7 +155,7 @@ These features are optional because background processes, notifications, and aut
 ### 4.4 Later opt-in scope
 
 - User-controlled local history with an explicit retention period.
-- Trend comparison, burn rate, forecast, and confidence ranges based on sufficient history.
+- Long-term trend comparison, burn rate, forecast, and confidence ranges based on separately approved retained history.
 - Local encrypted backups and user-initiated import or export.
 - Custom dashboard card ordering.
 - Additional languages and right-to-left layout testing.
@@ -183,6 +187,10 @@ These features are optional because background processes, notifications, and aut
 - Credit or spending warning when reported.
 - Last successful refresh, freshness state, and connection state.
 - Direct links to details and contextual explanations.
+- A “Next changes” timeline containing only valid future reset timestamps reported by Codex.
+- A quota attention list grouped by reported bucket and ordered by explicit bucket-level reached state, window percentage, and reset time without predicting exhaustion.
+- A combined capacity summary that keeps quota, spending controls, credit balance, and reset credits in their original units.
+- Changes observed since the current TokenTrail process opened, clearly labeled as an in-memory local observation.
 
 ### 5.2 Quota Windows
 
@@ -192,6 +200,9 @@ These features are optional because background processes, notifications, and aut
 - Show window duration, used percentage, calculated remaining percentage, reset timestamp, and countdown.
 - Explain reached-limit and spend-control states.
 - Show per-field provenance and raw-safe detail, not raw protocol payloads.
+- Provide a chronological reset timeline across all valid windows.
+- Provide deterministic bucket and window attention ordering without inventing severity or assigning a bucket-level reached state to one window.
+- Show the current-session percentage change for a window only after TokenTrail has observed two valid snapshots of that same identified window.
 
 ### 5.3 Usage
 
@@ -201,6 +212,12 @@ These features are optional because background processes, notifications, and aut
 - Lifetime tokens, peak daily tokens, current streak, longest streak, and longest-running turn when reported.
 - Range selection limited to source coverage.
 - Persistent explanation that token totals and quota usage are different measurements.
+- A calendar heatmap in which reported zero, reported positive activity, and missing dates are visually and textually distinct.
+- Latest complete 7-day period versus the preceding complete 7-day period.
+- Latest complete 30-day period versus the preceding complete 30-day period when at least 60 consecutive dated buckets are supplied.
+- Descriptive statistics for the selected supplied range: total, daily average, active-day average, median, highest supplied day, and active-day count.
+- A data-coverage card that lists requested dates, supplied dates, missing dates, and which calculations are available.
+- Changes in aggregate token totals observed since TokenTrail opened, kept only in memory and never presented as account history.
 
 ### 5.4 Credits and spending controls
 
@@ -209,8 +226,25 @@ These features are optional because background processes, notifications, and aut
 - Reset-credit count and safe metadata when reported.
 - Read-only notices where a user might otherwise expect a purchase or redeem action.
 - Neutral unavailable state when the account does not report credit information.
+- Sort available reset credits by valid expiry time, with non-expiring and unknown-expiry credits kept distinct.
+- Show exact remaining time for a future expiry and an “expires within 7 days” notice based on a documented fixed display rule.
+- Include credit and spending-control states in the combined capacity summary without converting them into quota percentage or a synthetic score.
 
-### 5.5 Learn
+### 5.5 Derived insight reliability rules
+
+The new v1 insights use only the already approved `account/rateLimits/read`, `account/rateLimits/updated`, and `account/usage/read` data. They do not add a Codex method, task read, local history database, or network request.
+
+- A derived value is calculated only from valid source fields named in its provenance detail.
+- Missing daily dates remain missing. They are never changed to zero.
+- A comparison requires complete coverage of both periods. Otherwise the comparison is unavailable and the coverage card explains why.
+- Current-session changes begin at the first valid snapshot observed after TokenTrail opens and disappear when the process exits.
+- Quota attention ordering is not an exhaustion forecast and does not claim that a user will be blocked.
+- A reached state appears only when Codex reports it and remains attached to the reported bucket unless the protocol explicitly identifies a narrower scope.
+- Combined capacity is a grouped explanation, not arithmetic across unlike units.
+- “Highest day” means the highest day in the supplied selected range. It is not called the lifetime peak date unless Codex supplies that date.
+- Expiry notices use the reported timestamp. An expiry that is missing or already invalid is not estimated.
+
+### 5.6 Learn
 
 - How rolling quota windows work.
 - Why reported percentages can change unevenly.
@@ -220,8 +254,12 @@ These features are optional because background processes, notifications, and aut
 - Provenance glossary.
 - Privacy and security explanation in plain language.
 - Contextual deep links from metrics to the relevant explanation.
+- How current-session changes differ from retained history.
+- How period completeness, missing dates, averages, medians, and comparisons are calculated.
+- Why quota attention ordering is not a forecast or blocking prediction.
+- Why quota, credits, spending controls, and reset credits are displayed together but not added together.
 
-### 5.6 Settings
+### 5.7 Settings
 
 - Theme: system, light, or dark.
 - Automatic refresh on or off.
@@ -233,7 +271,7 @@ These features are optional because background processes, notifications, and aut
 - Optional tray and start-at-login controls if those features ship.
 - Clear TokenTrail data with confirmation.
 
-### 5.7 Diagnostics
+### 5.8 Diagnostics
 
 - TokenTrail version and build identity.
 - Electron, Chromium, and Node versions in a non-sensitive technical section.
@@ -244,8 +282,10 @@ These features are optional because background processes, notifications, and aut
 - Redacted snapshot preview before save.
 - Explicit export location chosen through a native save dialog.
 - Copy-safe support summary that contains no paths, identifiers, or payload content.
+- Coverage diagnostics containing counts and date bounds, but not raw usage buckets.
+- Current-session observation start time and snapshot count, without persisting the snapshots.
 
-### 5.8 Optional background features
+### 5.9 Optional background features
 
 - Tray tooltip with the selected quota's remaining percentage and reset time.
 - Tray menu: Open TokenTrail, Refresh, Pause automatic refresh, and Quit.
@@ -269,6 +309,15 @@ These features are optional because background processes, notifications, and aut
 | FR-008 | The app shall provide a textual equivalent for every chart. |
 | FR-009 | The app shall preview redacted diagnostics before saving them. |
 | FR-010 | The app shall work without a TokenTrail account or TokenTrail network service. |
+| FR-011 | The app shall display one reset-timeline item for each valid reported future reset and shall not estimate a missing reset. |
+| FR-012 | The app shall order quota attention deterministically, reserve reached-state language for a state reported by Codex, and shall not attribute a bucket-level reached state to one window. |
+| FR-013 | The app shall keep current-session deltas in memory only and clear them when the TokenTrail process exits. |
+| FR-014 | The app shall compare two calendar periods only when every required date in both periods is supplied. |
+| FR-015 | The app shall distinguish a reported zero-activity date from a missing date in charts, tables, statistics, and accessible descriptions. |
+| FR-016 | The app shall label descriptive statistics with the exact supplied range and shall not present a range maximum as the lifetime peak date. |
+| FR-017 | The app shall explain source coverage and the availability of each derived calculation. |
+| FR-018 | The app shall derive reset-credit expiry notices only from valid reported expiry timestamps. |
+| FR-019 | The app shall not add or normalize quota percentages, currency or credit strings, spending controls, and reset-credit counts into one score. |
 
 ### 6.2 Non-functional requirements
 
@@ -674,6 +723,196 @@ Linux tray activation differs between desktop environments, so every tray action
 | Error without data | Error category and next step | Retry, diagnostics |
 | Offline | Local connection explanation | Retry |
 
+### 8.19 Reset timeline and quota attention
+
+```text
++--------------------------------------------------------------------------------+
+| Next changes                                                                   |
+| Valid future reset times reported by Codex, ordered chronologically.           |
+|                                                                                |
+| NOW       Primary window          32% used        68% remaining                |
+|   |                                                                            |
+| 3h 17m    Primary resets          Thu, Aug 13 at 9:00 PM                       |
+|   |                                                                            |
+| 2d 8h     Secondary resets        Sat, Aug 15 at 2:00 AM                       |
+|   |                                                                            |
+| Unknown   Other window            No reset time was reported                   |
+|                                                                                |
+| [View all windows]                         Calculated ordering from reset times |
++--------------------------------------------------------------------------------+
+
++--------------------------------------------------------------------------------+
+| Quota attention                                                                |
+| Ordered to make the most constrained reported windows easy to find.            |
+|                                                                                |
+| 1  OTHER BUCKET      REACHED STATE REPORTED                                    |
+|      Primary window                    100% used   Reset in 28m                 |
+| 2  CODEX BUCKET                                                               |
+|      Primary window                     96% used   Reset in 3h 17m              |
+|      Secondary window                   59% used   Reset in 2d 8h               |
+|                                                                                |
+| The reached state applies to its reported bucket, not an assumed window.        |
+| This order does not predict future use or guarantee that a task will run.       |
++--------------------------------------------------------------------------------+
+```
+
+Attention ordering uses this stable sequence:
+
+1. Bucket groups with a Codex-reported reached state.
+2. Remaining bucket groups by the highest valid `usedPercent` among their windows.
+3. Windows inside each bucket by descending valid `usedPercent`.
+4. Equal percentages by earliest valid future reset.
+5. Remaining ties by stable normalized bucket and window identifiers.
+6. Buckets and windows missing a valid percentage after entries that contain one.
+
+The interface does not assign “safe,” “danger,” or “comfortable” labels from percentage alone. A progress color may reflect the numeric range, but the text always states the reported percentage and never treats color as a prediction.
+
+### 8.20 Current-session changes
+
+```text
++--------------------------------------------------------------------------------+
+| Changes since TokenTrail opened                                    [What is this?]|
+| Observation started today at 5:42:18 PM   4 valid snapshots                    |
+|                                                                                |
+| Primary window used       28%  ->  32%       +4 percentage points              |
+| Secondary window used     59%  ->  59%        No observed change               |
+| Lifetime tokens           4,201,400 -> 4,203,910   +2,510 tokens               |
+| Today                     121,990 -> 124,500       +2,510 tokens               |
+|                                                                                |
+| Local observation only. This is not retained account history.                  |
+| Values clear when TokenTrail exits.                                             |
++--------------------------------------------------------------------------------+
+```
+
+Rules:
+
+- The baseline is the first valid normalized snapshot observed by the current TokenTrail process.
+- A delta appears only when the baseline and current value refer to the same stable metric identity and both values are valid.
+- Quota change is expressed in percentage points, not percent change.
+- A reset between observations starts a new baseline for that window when a changed reset timestamp or a defensible reset transition is observed. The app does not display a misleading negative “usage” delta across a reset.
+- Aggregate token counters display a delta only when the current value is greater than or equal to the baseline. A decrease is shown as “source value changed” and not interpreted.
+- Snapshot bodies are not written to disk, included in logs, or exported.
+
+### 8.21 Usage comparison and calendar heatmap
+
+```text
++--------------------------------------------------------------------------------+
+| Usage patterns                                          [Calendar] [Table]     |
+| Supplied aggregate daily buckets only.                                        |
+|                                                                                |
+| AUGUST 2026                                                                   |
+| Mon   Tue   Wed   Thu   Fri   Sat   Sun                                        |
+|                          1░    2·                                              |
+|  3▒    4▓    5▒    6·    7░    8?    9▒                                      |
+| 10▓   11▒   12▓   13▓                                                          |
+|                                                                                |
+| · Reported zero   ░ Low   ▒ Medium   ▓ Higher within selected range           |
+| ? Missing date, activity unknown                                               |
+|                                                                                |
+| COMPLETE PERIOD COMPARISON                                                     |
+| Aug 7 to Aug 13          812,300 tokens                                        |
+| Jul 31 to Aug 6          746,900 tokens                                        |
+| Difference               +65,400 tokens                                        |
+| Relative change          +8.8%                                                 |
+|                                                                                |
+| Both 7-day periods contain all 14 required dated buckets. [Calculation]        |
++--------------------------------------------------------------------------------+
+```
+
+Heatmap intensity is calculated relative to valid positive values in the selected supplied range. It communicates distribution within that range, not quota pressure. Every cell has an accessible date, reported token value or missing status, and provenance. Missing cells use a pattern and label that cannot be confused with reported zero.
+
+Comparison rules:
+
+- The latest period ends on the latest valid supplied date, not automatically today.
+- A 7-day comparison requires 14 consecutive calendar dates ending on that date.
+- A 30-day comparison requires 60 consecutive calendar dates.
+- The absolute difference is `latest total - preceding total`.
+- Relative change is `(latest - preceding) / preceding * 100` only when the preceding total is greater than zero.
+- If both totals are zero, the interface says “No activity in either complete period.”
+- If the preceding total is zero and the latest is positive, the absolute difference is shown and relative change is unavailable. It does not display infinity or “100% increase.”
+
+### 8.22 Activity statistics and coverage
+
+```text
++--------------------------------------------------------------------------------+
+| Activity statistics                         Selected supplied range: 30 days   |
+|                                                                                |
+| +------------------+ +------------------+ +------------------+                  |
+| | Total            | | Daily average    | | Active-day avg   |                  |
+| | 3,104,200        | | 103,473          | | 124,168          |                  |
+| +------------------+ +------------------+ +------------------+                  |
+| +------------------+ +------------------+ +------------------+                  |
+| | Median day       | | Highest supplied | | Active days      |                  |
+| | 91,210           | | 180,400, Aug 4   | | 25 of 30         |                  |
+| +------------------+ +------------------+ +------------------+                  |
+|                                                                                |
+| Highest supplied day is not necessarily the lifetime peak day.                 |
+| [Show formulas and source coverage]                                             |
++--------------------------------------------------------------------------------+
+
++--------------------------------------------------------------------------------+
+| Data coverage                                                                  |
+|                                                                                |
+| Requested range             Jul 15 to Aug 13, 30 calendar days                 |
+| Valid dated buckets         30 of 30                                            |
+| Reported zero days           5                                                  |
+| Missing dates                0                                                  |
+| Rejected invalid buckets     0                                                  |
+|                                                                                |
+| Available: total, averages, median, heatmap, 7-day comparison                  |
+| Unavailable: 30-day comparison requires 60 consecutive dates                   |
+|                                                                                |
+| Coverage describes the data TokenTrail received. It does not inspect tasks.     |
++--------------------------------------------------------------------------------+
+```
+
+Statistics rules:
+
+- Total is the exact sum of valid supplied buckets in the labeled range.
+- Daily average is total divided by all supplied dated buckets, including reported zero days.
+- Active-day average is total divided only by supplied buckets greater than zero. It is unavailable when there are no active days.
+- Median sorts all valid supplied values, including reported zeros. For an even count it is the arithmetic mean of the two middle values, formatted without losing precision.
+- Highest supplied day is the maximum valid supplied bucket. Ties list the earliest date in the compact card and expose all tied dates in details.
+- Active-day count is the number of valid supplied buckets greater than zero.
+- Duplicate dates, invalid dates, negative values, and unsafe values are rejected and counted in coverage diagnostics. They never silently participate in calculations.
+
+### 8.23 Combined capacity and reset-credit expiry
+
+```text
++--------------------------------------------------------------------------------+
+| Current reported capacity                                                      |
+| Separate account signals shown together without combining unlike units.        |
+|                                                                                |
+| QUOTA WINDOWS                                                                  |
+| Primary                 68% remaining                  Resets in 3h 17m          |
+| Secondary               41% remaining                  Resets in 2d 8h           |
+|                                                                                |
+| WORKSPACE CREDITS                                                              |
+| Balance                 $18.40                         Codex-reported string     |
+|                                                                                |
+| INDIVIDUAL CONTROL                                                             |
+| Remaining               72%                            Resets Sep 1              |
+|                                                                                |
+| EARNED RESET CREDITS                                                           |
+| 2 available                                                                    |
+| [!] 1 expires in 4d 6h on Aug 17 at 11:00 PM                                  |
+| 1 has no reported expiry                                                       |
+|                                                                                |
+| Summary: No reached limit was reported. One reset credit expires within 7 days.|
+| [View quota details] [View credit details] [How this summary works]            |
++--------------------------------------------------------------------------------+
+```
+
+The summary is assembled from a fixed set of factual clauses. It may state reported reached status, reported credit availability, reported spending-control state, exact calculated reset countdowns, and exact calculated expiry countdowns. It does not state that the user has “enough,” estimate task capacity, translate credits into quota, or produce a health score.
+
+Expiry rules:
+
+- Available credits with valid future `expiresAt` values are sorted earliest first.
+- “Expires within 7 days” means the valid expiry is greater than the current time and no more than 604,800 seconds away.
+- Expired, non-expiring, and unknown-expiry items are separate states.
+- The reported `availableCount` remains authoritative even when the service supplies fewer detail rows.
+- TokenTrail never calls the reset-credit consumption method.
+
 ## 9. Visual design system
 
 ### 9.1 Brand foundation
@@ -891,11 +1130,11 @@ It never exposes `ipcRenderer`, channel names, Electron modules, filesystem path
 
 ### 13.1 Evidence status
 
-At specification time, the locally installed Codex CLI identifies its app-server as experimental and can generate experimental TypeScript bindings. The observed bindings include read operations for account, rate limits, and aggregate account usage. Official public OpenAI documentation does not currently establish these generated schemas as a stable third-party compatibility promise.
+The [official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server) now documents the JSON-RPC protocol, `account/rateLimits/read`, `account/rateLimits/updated`, and `account/usage/read`, including their current account-level fields. The locally installed Codex CLI also identifies its app-server tooling and generated TypeScript bindings as experimental. The official documentation states that the app-server command and WebSocket transport are experimental and unsupported for production workloads.
 
 Therefore:
 
-- generated bindings are useful fixtures and development evidence;
+- official documentation and generated bindings are both implementation evidence;
 - runtime behavior is discovered and validated;
 - no hard-coded Codex version is treated as permanently compatible;
 - method and field changes degrade to an explicit unsupported or partial state;
@@ -1013,6 +1252,56 @@ JavaScript `number` cannot exactly represent every 64-bit integer. Protocol inte
 - The header uses last successful refresh for “Updated.”
 - Data becomes stale after a product-defined threshold greater than the normal polling interval.
 - System suspend and resume trigger a delayed refresh, not a burst of missed polls.
+
+### 14.6 Reset timeline and attention ordering
+
+- Timeline inputs are valid future `resetsAt` values attached to a normalized identified window.
+- Entries are sorted by timestamp, then stable window identity.
+- Invalid and missing timestamps appear in a separate unknown-time group instead of entering the timeline.
+- A timestamp passing the current time does not prove that a reset occurred. TokenTrail waits for a new source snapshot.
+- Attention ordering follows the exact sequence in Interface 8.19.
+- Reached state originates only from a supported Codex-reported reached field and stays at bucket scope unless the source explicitly provides a window association.
+- The order is recalculated from each valid snapshot and is never stored as account history.
+
+### 14.7 Current-session deltas
+
+- A baseline snapshot exists only in memory for the lifetime of the TokenTrail process.
+- A metric delta requires stable identity, matching unit, and valid baseline and current values.
+- Percentage-point change is used for quota percentages.
+- Exact integer subtraction is used for token counters without converting unsafe integers to JavaScript `number`.
+- Reset transitions start a new quota baseline rather than producing a cross-reset delta.
+- Counter decreases are reported as source changes, not negative usage.
+- Current-session deltas have `locally_observed` provenance even though their endpoints came from Codex.
+
+### 14.8 Complete-period comparisons
+
+- Date keys are parsed as calendar dates rather than local timestamp instants.
+- Duplicate dates make the affected comparison unavailable until deterministic rejection is reflected in coverage.
+- Periods use consecutive calendar dates ending on the latest valid supplied date.
+- Both periods must contain exactly one valid bucket for every required date.
+- Totals and absolute differences use exact integer arithmetic.
+- Relative change is available only with a positive preceding total.
+- A comparison says nothing about future usage, quota movement, or cause.
+
+### 14.9 Heatmap, statistics, and coverage
+
+- Heatmap intensity uses only valid positive values in the selected supplied range.
+- Missing, reported zero, and positive buckets are separate states in the visual model and accessible text.
+- Statistics follow the formulas in Interface 8.22 and label their exact input range.
+- Coverage records requested date count, valid unique date count, reported-zero count, missing dates, and rejected record count.
+- The coverage model determines availability before a calculation runs.
+- Invalid records are never coerced into plausible values.
+- No statistic from a selected source range is labeled lifetime unless Codex reports it as a lifetime summary.
+
+### 14.10 Combined capacity and reset-credit expiry
+
+- Combined capacity is a presentation group containing independent typed metrics.
+- The domain model has no total-capacity number, common unit, or health score.
+- Summary text is selected from reviewed clauses whose conditions map to reported or directly calculated states.
+- Credit and spending strings retain their upstream units and formatting constraints.
+- Expiry countdown uses a valid reported `expiresAt` and the current clock.
+- The seven-day notice boundary is a fixed interface rule, not a claim from Codex.
+- `availableCount` is authoritative when detail rows are absent or capped.
 
 ## 15. Security specification
 
@@ -1373,6 +1662,14 @@ Each category maps to a safe user message, a recommended action, and a non-sensi
 - Unknown nested fields.
 - Malformed JSON, duplicate IDs, huge arrays, and huge strings.
 - Method-not-found and app-server exit.
+- Multiple windows sharing a reset timestamp and windows missing reset timestamps.
+- A reported reached state alongside high percentage without a reached state.
+- Session baseline, valid increase, reset transition, counter decrease, and process restart.
+- Fourteen complete dates, one missing date, one reported zero date, and a duplicate date.
+- Sixty complete dates and a preceding comparison period with a zero total.
+- Odd and even median counts, tied range maxima, no active days, and values requiring exact integer arithmetic.
+- Reset credits expiring inside and outside seven days, already expired, non-expiring, unknown expiry, and fewer detail rows than `availableCount`.
+- Combined capacity clauses with every independent metric unavailable so no synthetic conclusion is produced.
 
 ### 21.3 Security test examples
 
@@ -1517,6 +1814,14 @@ Implementation begins only after separate user authorization.
 - Calculated values identify inputs and fail safely when inputs are inadequate.
 - Missing dates are not treated as zero usage.
 - Large integer and decimal values retain precision.
+- Reset timeline and attention ordering match their documented deterministic rules for every fixture.
+- Current-session deltas never survive process restart and never compare quota percentages across an observed reset.
+- Period comparison remains unavailable when either calendar period has a missing, duplicate, invalid, or rejected date.
+- Reported zero and missing dates remain distinguishable in the heatmap, table, statistics, and accessible text.
+- Activity statistics reproduce their documented formulas with exact integer-safe calculations.
+- Coverage accurately explains why each derived feature is available or unavailable.
+- Expiry notices use valid reported timestamps and the exact seven-day boundary.
+- No combined-capacity score or cross-unit arithmetic exists in the domain model, renderer, export, or tests.
 
 ### 25.2 Security
 
@@ -1533,6 +1838,8 @@ Implementation begins only after separate user authorization.
 - The only expected non-Codex network behavior is an explicitly enabled update check.
 - No usage snapshot remains on disk after exit in v1.
 - Clear data removes all TokenTrail-owned local settings, cache, and logs.
+- Current-session baselines and deltas are absent from persisted preferences, logs, diagnostics, and files.
+- The added v1 insights use no Codex method beyond the already approved account, rate-limit, and aggregate usage reads.
 
 ### 25.4 Accessibility
 
@@ -1630,9 +1937,9 @@ These questions do not block the framework decision, but must be resolved before
 
 ### Codex evidence
 
-- [Official Codex documentation](https://developers.openai.com/codex/): public Codex documentation entry point.
+- [Official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server): current protocol, account rate-limit, aggregate usage, reset-credit, and transport documentation.
 
-The app-server method and schema observations in this specification were also checked against experimental TypeScript bindings generated locally by `codex-cli 0.146.1` on August 13, 2026. Those generated files were placed in a temporary directory for review and were not added to the repository. They are implementation evidence, not an official stability guarantee.
+The app-server method and schema observations in this specification were also checked against experimental TypeScript bindings generated locally by `codex-cli 0.146.1` on August 13, 2026. Those generated files were placed in a temporary directory for review and were not added to the repository. The official page documents the current account-level methods, while runtime validation and compatibility testing remain necessary because the app-server command is experimental.
 
 ## 29. Approval boundary
 

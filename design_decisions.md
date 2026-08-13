@@ -29,6 +29,12 @@ This document records product and technical design decisions in chronological or
   - [Alternatives and trade-offs](#alternatives-and-trade-offs)
   - [Decision outcome](#decision-outcome-1)
   - [Reference links](#reference-links-2)
+- [006 - Reliable account-level insights added to v1](#006---reliable-account-level-insights-added-to-v1)
+  - [Approved features](#approved-features)
+  - [Reliability boundaries](#reliability-boundaries)
+  - [Security and privacy effect](#security-and-privacy-effect)
+  - [Updated Codex evidence](#updated-codex-evidence)
+  - [Decision outcome](#decision-outcome-2)
 
 ## Decision status guide
 
@@ -362,6 +368,8 @@ The approved architecture treats the renderer as untrusted:
 
 At planning time, the installed Codex CLI describes the app-server and its generated bindings as experimental. Its generated TypeScript contracts include the reads TokenTrail needs, but official public OpenAI documentation does not currently provide a stable third-party schema guarantee. The implementation must therefore use capability detection, runtime validation, fixtures, and explicit compatibility states.
 
+**Later evidence:** Decision 006 records that a detailed official Codex App Server page subsequently documented the current account-level methods. The command remains experimental, so the compatibility requirements above still apply.
+
 ### Linux compatibility position
 
 TokenTrail will target current mainstream 64-bit desktop Linux rather than claiming to work on every Linux system. The intended test matrix includes KDE Plasma and GNOME on Wayland, representative X11 coverage, Cinnamon or Xfce, and Debian/Ubuntu, Fedora, and Arch-family distributions.
@@ -400,3 +408,72 @@ This approval authorizes detailed planning documents. It does not authorize impl
 - [React Aria Components](https://react-aria.adobe.com/): accessible unstyled UI behavior and internationalization.
 - [ECharts accessibility](https://echarts.apache.org/handbook/en/best-practices/aria/): chart descriptions and non-color decal patterns.
 - [Playwright Electron API](https://playwright.dev/docs/api/class-electron): experimental Electron automation and testing limitations.
+
+---
+
+## 006 - Reliable account-level insights added to v1
+
+**Recorded:** August 13, 2026 at 6:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved product specification; implementation not yet authorized
+
+### Context
+
+After reviewing the approved Electron specification against current local Codex bindings and the [official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server), the user approved additional v1 insights that can be calculated safely from the existing account-level reads.
+
+The goal is to make TokenTrail more useful without reading tasks, prompts, responses, projects, paths, Git data, model activity, or thread status. The additions must not guess at missing dates, predict future usage, combine unrelated units, or retain account history.
+
+### Approved features
+
+| Feature | Source | Approved treatment |
+| --- | --- | --- |
+| Next reset timeline | Valid reported quota reset timestamps | Order valid future resets chronologically; keep missing or invalid reset times separate |
+| Quota attention ordering | Reported bucket-level reached state, window percentage, reset time, and stable identities | Use a documented deterministic order; do not predict blocking, label a percentage safe or dangerous, or assign a bucket state to one window |
+| Changes since TokenTrail opened | First and current valid normalized account snapshots | Keep baselines and deltas in memory only; clear them when the process exits |
+| Complete-period comparison | Aggregate daily usage buckets | Compare 7-day periods with 14 complete dates and 30-day periods with 60 complete dates |
+| Calendar activity heatmap | Aggregate daily usage buckets | Keep reported zero, positive activity, and missing dates visibly and semantically distinct |
+| Descriptive activity statistics | Valid supplied daily buckets | Show exact-range total, daily average, active-day average, median, highest supplied day, and active-day count |
+| Data coverage card | Validation and calendar coverage of supplied daily buckets | Explain requested, supplied, missing, zero, and rejected records plus calculation availability |
+| Reset-credit expiry visibility | Valid reported reset-credit expiry timestamps | Sort valid expiries and show a fixed “within 7 days” notice without estimating missing expiry |
+| Combined capacity summary | Independent quota, spending-control, credit, and reset-credit states | Present signals together in original units; never calculate a total capacity or health score |
+
+### Reliability boundaries
+
+- Missing dates are unknown, not zero.
+- A comparison is unavailable unless both complete calendar periods contain one valid bucket for every required date.
+- Duplicate, invalid, negative, oversized, or otherwise rejected buckets do not enter calculations.
+- Relative change is unavailable when the preceding total is zero. TokenTrail never displays infinity.
+- “Highest supplied day” refers only to the selected supplied range and is not presented as the lifetime peak date.
+- A quota reached state is shown only when Codex reports it and stays at bucket scope unless Codex identifies a narrower scope.
+- Attention ordering does not forecast future usage or guarantee whether another task can run.
+- A reset transition starts a new in-memory quota baseline so the interface does not calculate a false change across windows.
+- Counter decreases are described as source changes rather than negative usage.
+- The seven-day expiry label is a fixed, disclosed interface threshold of 604,800 seconds.
+- Quota percentage, credit balance, spending limits, and reset-credit count remain different typed values.
+
+### Security and privacy effect
+
+These features do not expand the Codex allowlist. They use only initialization plus the already approved account, rate-limit, rate-limit-update, and aggregate-usage reads.
+
+- No thread, turn, task, model, workspace-message, filesystem, Git, shell, process, configuration, login, logout, token-refresh, feedback, or mutation method is added.
+- No reset credit can be consumed.
+- No raw protocol object reaches the renderer.
+- Session baselines and deltas are held in memory and excluded from preferences, logs, diagnostics, and exports.
+- Daily buckets remain in the current in-memory normalized snapshot and are not written as history.
+- Calculation availability is decided by validated coverage before arithmetic runs.
+- Every displayed result names its provenance and calculation.
+
+### Updated Codex evidence
+
+The [official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server) currently documents:
+
+- `account/rateLimits/read` and `account/rateLimits/updated` with multi-bucket quota windows, percentages, duration, reset timestamps, plan type, credit details, reached state, and reset-credit metadata.
+- `account/usage/read` with lifetime tokens, peak daily tokens, longest-running turn, current and longest streaks, and optional dated aggregate daily buckets.
+- The distinction between an authoritative reset-credit count and a detail list that may be absent or capped.
+
+The same structures were checked in TypeScript bindings generated locally from `codex-cli 0.146.1`. The official page also states that the app-server command and WebSocket transport are experimental and unsupported for production workloads. TokenTrail therefore retains capability detection, strict runtime validation, method allowlisting, version fixtures, and explicit unsupported states.
+
+### Decision outcome
+
+The nine account-level insights are required v1 features in `product_spec_electron.md`. Workspace messages, model catalogs, active-thread token monitoring, attention-center thread reads, forecasts, and retained personal analytics remain outside this approval.
+
+This decision changes documentation and v1 scope only. It does not authorize implementation or any broader access.
