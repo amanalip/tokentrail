@@ -23,7 +23,8 @@ Commit-message quality, related decision-log entries, and whether a change affec
 
 ## Tracking rules
 
-- Entries follow Git's oldest-to-newest order.
+- Committed entries follow Git's newest-to-oldest order so the latest commit appears first.
+- Current uncommitted work appears before committed history but remains clearly separated from actual commits.
 - Commit hashes, timestamps, subjects, and changed files come from Git, not memory.
 - A documentation commit is still tracked when it materially changes project scope or understanding.
 - Uncommitted work is kept in a separate section and is never presented as a commit.
@@ -33,100 +34,197 @@ Commit-message quality, related decision-log entries, and whether a change affec
 
 ---
 
-## Commit 001 — Repository initialization
+## Current uncommitted work
 
-**Commit:** `346798b` — `Initial commit`  
-**Timestamp:** August 13, 2026 at 1:53:44 AM EDT (`America/Toronto`, UTC−04:00)  
-**Author:** Aman Ali
+**First recorded:** August 13, 2026 at 4:32:19 PM EDT (`America/Toronto`, UTC−04:00)
+**Last updated:** August 13, 2026 at 4:34:10 PM EDT (`America/Toronto`, UTC−04:00)
+**State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Create the initial Git repository and establish its basic legal and documentation files.
+Make the tracker a detailed, reverse-chronological project memory rather than a compact list with one lesson per commit.
 
 ### Important changes
 
-- Added `.gitattributes`.
-- Added the project license.
-- Added the original two-line README using the earlier `kodex_usage` name.
-- Established the baseline from which TokenTrail planning could proceed.
-
-### Decisions and assumptions
-
-- A version-controlled repository was established before application development.
-- No product architecture, implementation stack, or application behavior was introduced.
+- Expanded every tracked commit with several user lessons and several agent lessons.
+- Added a “Why this commit matters” explanation to each historical entry.
+- Changed committed history from oldest-first to newest-first.
+- Kept current uncommitted work separate and positioned it before committed history.
+- Added the now-existing tracker creation commit, `0648a2b`, to committed history.
+- Updated tracking rules so future entries use the same reverse-chronological structure.
 
 ### Verification
 
-- Git records three files and 678 inserted lines in this commit.
-- No build or application tests applied because no application code existed.
+- The newest tracked commit is listed before earlier commits.
+- Commit `0648a2b` and its metadata were read directly from Git.
+- Toronto timestamps retain the applicable EDT abbreviation and UTC−04:00 offset.
+- All five committed hashes remain represented exactly once.
+- Markdown whitespace and section ordering are checked before handoff.
 
-### Lessons
+### Why this work matters
 
-**User:** Starting with Git makes later planning and implementation inspectable and reversible.  
-**Agent:** The initial README name was historical context, not a permanent product decision; repository metadata and public-facing documentation must be checked after a rename.
+Git precisely stores content changes, but a short commit message rarely preserves the complete product reasoning, uncertainty, learning, and safe next step. This tracker is intended to become durable project memory for both the owner and future agents or contributors.
 
-### Risks or limitations
+### User lessons so far
 
-- The README retained the old project name.
-- The repository did not yet explain the product's purpose or status.
+- Lessons do not need to be limited to one sentence or one item; a meaningful commit can establish several kinds of understanding.
+- Reverse chronology makes the most recent project state easier to find as the history grows.
+- The tracker can be detailed without becoming an unstructured diary; consistent subsections keep it usable.
+- Commit-level lessons can accumulate over time and need not be forced into one artificial takeaway.
+- The latest uncommitted work still needs a visible place, but it must not be confused with stable history.
+- More detail is valuable when it remains structured, factual, and easy to scan.
+
+### Agent lessons so far
+
+- User preferences about documentation depth and ordering are project requirements and should become explicit tracker rules.
+- When a pending file becomes committed between updates, the tracker must re-read Git and replace the obsolete pending account with real metadata.
+- Reverse chronological ordering must be preserved on every future insertion, not repaired occasionally.
+- Expansion should add insight and evidence, not repeat the same lesson using different words.
+- A detailed tracker still must not fabricate the user's internal thoughts.
+- Future entries should grow or shrink according to the importance of the commit instead of obeying an arbitrary fixed length.
 
 ### Follow-up
 
-Document the product direction before implementation.
+After these expansions are committed, a later tracker update should replace this pending section with the actual commit hash, timestamp, message, statistics, and final verification result.
 
 ---
 
-## Commit 002 — Product specification created
+## Commit 005 — Commit tracker introduced
 
-**Commit:** `3067331` — `Create PRODUCT_SPEC.md`  
-**Timestamp:** August 13, 2026 at 4:10:49 PM EDT (`America/Toronto`, UTC−04:00)  
+**Commit:** `0648a2b` — `Create commit tracker.md`
+**Timestamp:** August 13, 2026 at 4:30:58 PM EDT (`America/Toronto`, UTC−04:00)
 **Author:** Aman Ali
 
 ### Intent
 
-Turn the inherited TokenTrail handoff into a reviewable first-release product specification without beginning application implementation.
+Create a durable document that explains the important work, reasoning, verification, lessons, limitations, and follow-up associated with each Git commit.
 
 ### Important changes
 
-- Added `docs/PRODUCT_SPEC.md`.
-- Defined v1 goals, explicit non-goals, screen structure, metric catalog, and provenance rules.
-- Documented privacy, retention, Codex compatibility, and the read-only security boundary.
-- Proposed packaging targets, quality expectations, acceptance criteria, and implementation phases.
-- Kept task analytics, persistent history, forecasts, write actions, and publication outside the initial scope.
+- Added `commit tracker.md` with entries for the first four repository commits.
+- Defined a consistent entry structure covering intent, meaningful changes, decisions, verification, user learning, agent learning, risks, and follow-up.
+- Added rules for separating committed history from pending work.
+- Established Git as the factual source for hashes, timestamps, subjects, authors, order, and statistics.
+- Recorded the tracker creation itself as pending because its final commit hash was not available while the file was being authored.
 
 ### Decisions and assumptions
 
-- The document treated C++20, Qt 6, KDE Kirigami 6, and CMake as the proposed starting stack inherited from the handoff.
-- No framework choice or implementation work was approved merely by documenting it.
-- Reported, locally observed, calculated, and unavailable metrics must remain distinguishable.
+- The tracker supplements Git history instead of copying complete diffs.
+- Toronto local time is the standard display timezone for project history.
+- User and agent lessons are recorded separately because they serve different future readers.
+- Lessons must be grounded in repository evidence or conversation context.
+- Documentation commits are considered important when they affect product direction, privacy, security, or shared understanding.
+- Pending work cannot be labeled as a commit until Git contains it.
 
 ### Verification
 
-- Git records one new specification file with 449 lines.
-- The specification was reviewed as Markdown content.
-- No code, build, protocol, or packaging verification applied.
+- Git records one new file with 245 inserted lines.
+- The final commit subject is `Create commit tracker.md`.
+- The commit author time is August 13, 2026 at 4:30:58 PM EDT.
+- The commit contains documentation only; no build or runtime tests applied.
+- The first version correctly included commits `346798b`, `3067331`, `2eaa34c`, and `319d60b`, but initially ordered them oldest-first.
 
-### Lessons
+### Why this commit matters
 
-**User:** Planning can define privacy boundaries, non-goals, and success criteria before code makes those choices expensive to change. A product-spec discussion does not itself authorize building the product.  
-**Agent:** TokenTrail must distinguish quota percentage from token totals, treat the Codex app-server as experimental, and keep all initial integration read-only and capability-aware.
+This commit creates a long-term memory layer between terse Git messages and the much larger conversation that produced each change. It gives the project owner, future agents, and potential contributors a structured place to understand not just what changed, but why it changed, what was verified, what remained uncertain, and what understanding should carry forward.
+
+### User lessons
+
+- A one-line commit subject is useful for scanning but cannot preserve all important project reasoning.
+- A dedicated tracker can record both technical work and the learning that occurred around it.
+- Verification and limitations belong beside accomplishments so future readers do not overestimate what a commit proved.
+- User and agent lessons benefit from separate treatment because the owner and the implementation assistant have different responsibilities.
+- A tracker is most trustworthy when it acknowledges missing information rather than filling gaps with guesses.
+- Pending work needs a separate status because a future commit hash cannot be known in advance without rewriting history.
+
+### Agent lessons
+
+- Git must be queried before documenting earlier commits; hashes, order, timestamps, authors, and statistics should never be reconstructed from memory.
+- The user's internal experience must not be invented. User lessons should state project understanding supported by the conversation.
+- The tracker should preserve reasoning without becoming a duplicate of `git show`.
+- The applicable timezone abbreviation and numeric offset should accompany local times to remain unambiguous across daylight-saving changes.
+- The file that introduces the tracker creates a self-reference problem; the next update must convert its pending description into a normal committed entry.
+- Documentation maintenance is part of project quality, especially before application code exists.
+- The first tracker structure was useful but too compact in its lesson sections and used oldest-first ordering, both of which were corrected by subsequent feedback.
 
 ### Risks or limitations
 
-- The technology stack remained provisional.
-- The broad v1 specification may need revision after the final framework and visual direction are chosen.
-- Protocol expectations were based on the handoff and still require fixture and live compatibility validation during an approved implementation phase.
+- The initial version used only one user lesson and one agent lesson per commit, which was less detailed than intended.
+- The initial committed entries were ordered oldest-first rather than newest-first.
+- Maintaining the tracker manually creates a risk of drift from Git history unless each update rechecks repository metadata.
+- The tracker can become long; consistent headings and reverse chronology are necessary to keep recent context discoverable.
 
 ### Follow-up
 
-Review and approve or revise the major scope decisions before application code is created.
+Expand lessons where the history supports them, keep newest commits first, and finalize each pending entry after its containing commit exists.
+
+---
+
+## Commit 004 — README aligned with TokenTrail
+
+**Commit:** `319d60b` — `Document TokenTrail project vision and planning status`
+**Timestamp:** August 13, 2026 at 4:24:14 PM EDT (`America/Toronto`, UTC−04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Replace the old project name in the repository landing page and give visitors a concise, accurate explanation of TokenTrail.
+
+### Important changes
+
+- Changed the README title from `kodex_usage` to `TokenTrail`.
+- Marked the project as being in design and planning.
+- Added a short description of the intended privacy-first Codex usage dashboard.
+- Linked the product specification and design-decision log.
+
+### Decisions and assumptions
+
+- The README remains intentionally brief while the project is still being designed.
+- Detailed requirements belong in the specification and decision log rather than being duplicated in the landing page.
+
+### Verification
+
+- Git records nine inserted lines and two removed lines in `README.md`.
+- Markdown links point to files present in the repository.
+- No application tests applied.
+
+### Why this commit matters
+
+The README is the repository's front door. This small change makes the visible project identity match TokenTrail and tells a new visitor what the project is trying to achieve without falsely suggesting that an application already exists. It also routes readers to deeper documents instead of leaving important context discoverable only through conversation history.
+
+### User lessons
+
+- A repository rename should be followed by a documentation audit so the public landing page does not retain the old identity.
+- A planning-stage project still benefits from a concise, honest explanation of its purpose.
+- The README does not have to contain the full product specification to be useful.
+- Status labeling manages expectations: visitors can distinguish an idea under design from software ready to install.
+- Linking specialized documents lets the README remain approachable while detailed decisions stay available.
+- Small documentation inconsistencies are worth fixing early because they become more confusing as the repository grows.
+
+### Agent lessons
+
+- Lead a project README with the current product name, status, and purpose.
+- Keep the README approachable and use dedicated documents for detail.
+- Repeating the full specification in multiple places creates synchronization problems and contradictory future edits.
+- User requests for “just a little” context should be respected; completeness does not always mean adding more prose.
+- Documentation-only changes still deserve verification for names, relative links, Markdown formatting, and consistency with current decision status.
+- Do not imply that planning documents represent completed features.
+- When a major choice is still pending, wording such as “intended” and “currently being designed” is more accurate than definitive implementation claims.
+
+### Risks or limitations
+
+- The README will need another review after the framework, exact v1 scope, installation process, and release status are approved.
+
+### Follow-up
+
+Keep the README synchronized with major approved decisions without allowing it to become a second product specification.
 
 ---
 
 ## Commit 003 — KDE and Electron directions compared
 
-**Commit:** `2eaa34c` — `Create design_decisions.md`  
-**Timestamp:** August 13, 2026 at 4:17:54 PM EDT (`America/Toronto`, UTC−04:00)  
+**Commit:** `2eaa34c` — `Create design_decisions.md`
+**Timestamp:** August 13, 2026 at 4:17:54 PM EDT (`America/Toronto`, UTC−04:00)
 **Author:** Aman Ali
 
 ### Intent
@@ -154,10 +252,33 @@ Preserve the inherited KDE-native proposal and evaluate Electron as an alternati
 - Current official KDE, Qt, and Electron documentation was consulted for the comparison.
 - No executable prototype or performance benchmark was produced, so resource and development-speed comparisons remain informed expectations rather than measured TokenTrail results.
 
-### Lessons
+### Why this commit matters
 
-**User:** “More visual libraries” and “better application” are different questions. Electron offers more visual choices, while KDE offers a more native Linux identity and integration.  
-**Agent:** Framework recommendations must be tied to product priorities. For TokenTrail, visuals, KDE identity, resource use, security boundaries, and possible cross-platform distribution pull the choice in different directions.
+This commit prevents the inherited KDE proposal from becoming an unquestioned implementation choice. It puts two credible approaches beside each other and makes their trade-offs reviewable. It also preserves why a future framework was chosen, which will matter when contributors later ask why the project accepts that framework's dependencies, security model, packaging work, or visual constraints.
+
+### User lessons
+
+- “More visual libraries” and “better application” are different questions.
+- Electron offers a broader ready-made visual ecosystem, while KDE/Kirigami offers stronger native Linux and Plasma integration.
+- A toolkit does not create good design automatically; layout, hierarchy, typography, accessibility, and coherent interaction still require deliberate work.
+- Electron's cross-platform promise reduces UI duplication, but it does not remove platform-specific testing, packaging, signing, or Codex compatibility work.
+- Native KDE development can still produce rich custom visuals through QML, Qt Quick, Qt Graphs, and KQuickCharts; the difference is largely ecosystem breadth and effort.
+- Electron usually carries a larger runtime footprint because it bundles Chromium and Node.js, but TokenTrail should measure packaged size, memory, and startup time rather than rely only on general reputation.
+- Security must be considered while choosing the framework, not attached after the UI is built.
+- A small disposable prototype can answer visual and performance questions more reliably than a long abstract debate.
+- Changing the framework later would require updating the product specification, acceptance criteria, packaging plan, and terminology consistently.
+
+### Agent lessons
+
+- Framework recommendations must be tied to explicit product priorities rather than personal preference or library counts.
+- For TokenTrail, visual-library breadth, KDE identity, resource use, contributor learning curve, security boundaries, and possible cross-platform distribution pull the choice in different directions.
+- Electron requires a deliberately narrow main/preload/renderer architecture; the visual renderer must never gain generic process, filesystem, shell, or protocol access.
+- `contextIsolation`, renderer sandboxing, disabled Node integration, a restrictive Content Security Policy, and validated purpose-specific IPC are baseline requirements if Electron is selected.
+- The Codex protocol adapter and its read-only allowlist should remain conceptually independent of the UI framework, even though their implementations would differ.
+- Current official documentation should be used for framework comparisons because Electron, Qt, Kirigami, and packaging practices evolve.
+- Claims such as “lighter,” “faster,” or “easier” should be labeled as expectations until TokenTrail-specific prototypes provide measurements.
+- A decision log must record alternatives and status clearly so “evaluated” is not later misread as “approved.”
+- If Electron is selected, dependency count and visual-library selection should stay intentional; the availability of many npm packages is not a reason to adopt many packages.
 
 ### Risks or limitations
 
@@ -171,75 +292,127 @@ The user should choose KDE/Kirigami, choose Electron, or explicitly approve a di
 
 ---
 
-## Commit 004 — README aligned with TokenTrail
+## Commit 002 — Product specification created
 
-**Commit:** `319d60b` — `Document TokenTrail project vision and planning status`  
-**Timestamp:** August 13, 2026 at 4:24:14 PM EDT (`America/Toronto`, UTC−04:00)  
+**Commit:** `3067331` — `Create PRODUCT_SPEC.md`
+**Timestamp:** August 13, 2026 at 4:10:49 PM EDT (`America/Toronto`, UTC−04:00)
 **Author:** Aman Ali
 
 ### Intent
 
-Replace the old project name in the repository landing page and give visitors a concise, accurate explanation of TokenTrail.
+Turn the inherited TokenTrail handoff into a reviewable first-release product specification without beginning application implementation.
 
 ### Important changes
 
-- Changed the README title from `kodex_usage` to `TokenTrail`.
-- Marked the project as being in design and planning.
-- Added a short description of the intended privacy-first Codex usage dashboard.
-- Linked the product specification and design-decision log.
+- Added `docs/PRODUCT_SPEC.md`.
+- Defined v1 goals, explicit non-goals, screen structure, metric catalog, and provenance rules.
+- Documented privacy, retention, Codex compatibility, and the read-only security boundary.
+- Proposed packaging targets, quality expectations, acceptance criteria, and implementation phases.
+- Kept task analytics, persistent history, forecasts, write actions, and publication outside the initial scope.
 
 ### Decisions and assumptions
 
-- The README remains intentionally brief while the project is still being designed.
-- Detailed requirements belong in the specification and decision log rather than being duplicated in the landing page.
+- The document treated C++20, Qt 6, KDE Kirigami 6, and CMake as the proposed starting stack inherited from the handoff.
+- No framework choice or implementation work was approved merely by documenting it.
+- Reported, locally observed, calculated, and unavailable metrics must remain distinguishable.
 
 ### Verification
 
-- Git records nine inserted lines and two removed lines in `README.md`.
-- Markdown links point to files present in the repository.
-- No application tests applied.
+- Git records one new specification file with 449 lines.
+- The specification was reviewed as Markdown content.
+- No code, build, protocol, or packaging verification applied.
 
-### Lessons
+### Why this commit matters
 
-**User:** A repository rename should be followed by a small documentation audit so the public landing page does not retain the old identity. A planning-stage project still benefits from a concise explanation.  
-**Agent:** Keep the README approachable and use dedicated documents for detail; repeating the full specification in several places creates future consistency problems.
+This is the first commit that explains what TokenTrail is supposed to become. It converts a broad handoff into testable product boundaries and makes future implementation review possible. It is also a guardrail: contributors can compare a proposed feature with documented goals, non-goals, privacy rules, and acceptance criteria before adding it.
+
+### User lessons
+
+- Planning can define privacy boundaries, non-goals, and success criteria before code makes those choices expensive to change.
+- A product-spec discussion or specification commit does not itself authorize building the product.
+- Explicit non-goals are as important as goals because they protect the first release from uncontrolled scope growth.
+- “Display as many metrics as possible” still requires reliability, provenance, and privacy limits; more data is not automatically better data.
+- Token totals and quota consumption answer different questions and must not be blended into one number.
+- A useful first version can deliberately defer attractive features such as forecasts, task analytics, notifications, and historical databases.
+- Acceptance criteria turn product ideas into observable outcomes that can later be tested.
+- Packaging and distribution need early consideration, even though publishing remains a separate future decision.
+
+### Agent lessons
+
+- TokenTrail must distinguish OpenAI-reported values, locally observed values, TokenTrail calculations, and unavailable values throughout its data model and UI.
+- The Codex app-server is experimental, so raw protocol behavior must be isolated behind a compatibility adapter.
+- Protocol fields and methods cannot be assumed to exist forever; capability detection, optional parsing, unknown values, and partial failure are core requirements.
+- The initial integration must remain read-only. Displaying a reset credit does not authorize consuming it.
+- Authentication must stay owned by Codex; TokenTrail must never copy, expose, or store Codex or ChatGPT credentials.
+- Task titles, project paths, Git data, and turn details are privacy-sensitive and cannot silently enter the initial scope.
+- Calculated totals must show incomplete source ranges instead of presenting partial data as complete.
+- A specification should separate current product decisions from future implementation sequencing so a plan is not mistaken for authorization.
+- Technical version observations from one machine are evidence for compatibility testing, not permanent minimum requirements.
 
 ### Risks or limitations
 
-- The README will need another review after the framework, exact v1 scope, installation process, and release status are approved.
+- The technology stack remained provisional.
+- The broad v1 specification may need revision after the final framework and visual direction are chosen.
+- Protocol expectations were based on the handoff and still require fixture and live compatibility validation during an approved implementation phase.
 
 ### Follow-up
 
-Keep the README synchronized with major approved decisions without allowing it to become a second product specification.
+Review and approve or revise the major scope decisions before application code is created.
 
 ---
 
-## Current uncommitted work
+## Commit 001 — Repository initialization
 
-**Observed:** August 13, 2026 at 4:29:38 PM EDT (`America/Toronto`, UTC−04:00)  
-**State:** Pending; not yet a Git commit when this entry was written
+**Commit:** `346798b` — `Initial commit`
+**Timestamp:** August 13, 2026 at 1:53:44 AM EDT (`America/Toronto`, UTC−04:00)
+**Author:** Aman Ali
 
 ### Intent
 
-Create this commit tracker and reconstruct the important context of the repository's existing commits.
+Create the initial Git repository and establish its basic legal and documentation files.
 
 ### Important changes
 
-- Added a durable format for commit purpose, verification, lessons, limitations, and follow-up work.
-- Reconstructed commits `346798b`, `3067331`, `2eaa34c`, and `319d60b` from Git metadata and project documents.
-- Explicitly separated factual history from uncommitted work and unknown information.
+- Added `.gitattributes`.
+- Added the project license.
+- Added the original two-line README using the earlier `kodex_usage` name.
+- Established the baseline from which TokenTrail planning could proceed.
+
+### Decisions and assumptions
+
+- A version-controlled repository was established before application development.
+- No product architecture, implementation stack, or application behavior was introduced.
 
 ### Verification
 
-- Commit order, hashes, subjects, authors, timestamps, and file statistics were read from Git.
-- Toronto timestamps retain the applicable EDT abbreviation and UTC−04:00 offset.
-- Markdown formatting and whitespace should be checked before handoff.
+- Git records three files and 678 inserted lines in this commit.
+- No build or application tests applied because no application code existed.
 
-### Lessons so far
+### Why this commit matters
 
-**User:** A commit tracker can preserve the reasoning and learning that a normal one-line Git subject cannot capture.  
-**Agent:** A tracker must not fabricate personal lessons or call pending work a commit. Self-tracking needs a later update because a file cannot know the final hash of the commit that contains it without rewriting that commit.
+This commit is the repository's factual starting point. Later documents, names, architecture choices, and implementation work can all be compared with this clean baseline. It also establishes that the project began with almost no product definition, so later planning documents are intentional additions rather than descriptions of pre-existing code.
+
+### User lessons
+
+- Starting with Git makes later planning and implementation inspectable and reversible.
+- A repository can exist before the product is fully defined; early commits do not need to pretend that unsettled decisions are final.
+- Repository names, folder names, GitHub names, and README titles are separate pieces of project identity. Renaming one does not necessarily update the others.
+- Even a minimal initial commit benefits from a clear license and predictable text-file settings.
+- A clean baseline makes it easier to identify exactly when scope, branding, or technical assumptions entered the project.
+
+### Agent lessons
+
+- The initial `kodex_usage` README name was historical context, not a permanent product decision.
+- Public-facing documentation must be audited after a project rename instead of assuming repository metadata changed every reference.
+- A sparse repository should not be interpreted as permission to scaffold an application; the user's requested planning sequence still controls.
+- Existing files belong to the user and must be preserved unless an explicit change is requested.
+- Git history is the strongest source for reconstructing what existed at a particular point; later descriptions should not be projected backward onto this commit.
+
+### Risks or limitations
+
+- The README retained the old project name.
+- The repository did not yet explain the product's purpose or status.
 
 ### Follow-up
 
-After this file is committed, a later tracker update should replace this pending section with the actual commit hash, timestamp, message, and verified statistics.
+Document the product direction before implementation.
