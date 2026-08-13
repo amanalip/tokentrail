@@ -8,7 +8,9 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 
 - [What each entry tracks](#what-each-entry-tracks)
 - [Tracking rules](#tracking-rules)
+- [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 009 - Markdown contents navigation added](#commit-009---markdown-contents-navigation-added)
 - [Commit 008 - Tracked Trail logo direction documented](#commit-008---tracked-trail-logo-direction-documented)
 - [Commit 007 - Tracker filename normalized](#commit-007---tracker-filename-normalized)
 - [Commit 006 - Tracker expanded and reordered](#commit-006---tracker-expanded-and-reordered)
@@ -28,6 +30,8 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 | Important changes | The meaningful outcome rather than a line-by-line file list |
 | Decisions and assumptions | Product or technical direction introduced or affected |
 | Verification | Checks performed and checks still missing |
+| Fact check | Sources consulted, links checked, claims confirmed, and any remaining uncertainty |
+| Sanity check | Consistency, scope, usability, security, and project-fit review |
 | User learning | Useful understanding established for the project owner |
 | Agent learning | Context the agent should carry into later work |
 | Risks or limitations | Known gaps, uncertainty, or debt introduced by the commit |
@@ -44,58 +48,175 @@ Commit-message quality, related decision-log entries, and whether a change affec
 - Uncommitted work is kept in a separate section and is never presented as a commit.
 - The commit that creates or edits this tracker cannot reliably contain its own final hash without amending history. It starts as pending work and should be finalized by a later tracker update.
 - A lesson describes what became clearer; it does not assign blame.
+- Fact-check and sanity-check reports are included for every meaningful change moving forward.
+- A fact check names the evidence used and distinguishes confirmed facts from estimates, opinions, or untested assumptions.
+- A sanity check asks whether the change is coherent with project scope, privacy, security, naming, navigation, and existing decisions.
 - Approval to document a future action does not authorize implementation, publication, pushing, or release.
+
+## Verification standards
+
+### Fact-check report
+
+A fact-check report should cover the claims that could be verified for that change. Depending on the work, this may include:
+
+- Git hashes, authors, timestamps, subjects, and file statistics read from Git.
+- Technical behavior checked against primary or project-maintained documentation.
+- External links checked for a successful response and corrected when they fail.
+- Local paths, dimensions, formats, calculations, and version observations checked with appropriate tools.
+- Estimates and judgments labeled honestly when they cannot be proven by the available evidence.
+
+### Sanity-check report
+
+A sanity-check report should confirm that the change makes sense within TokenTrail as a whole. It should look for:
+
+- Conflicts with approved decisions, privacy rules, security boundaries, or current planning status.
+- Broken navigation, duplicated information, stale terminology, and inconsistent filenames.
+- Unnecessary scope growth or language that implies unapproved implementation.
+- Usability problems, confusing metaphors, unsupported claims, and missing edge cases.
+- Verification gaps that should remain visible to future readers.
 
 ---
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 5:15:07 PM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 13, 2026 at 5:15:07 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 13, 2026 at 5:20:28 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 13, 2026 at 5:26:12 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Make every Markdown document easier to navigate with a useful table of contents.
+Make the design-decision log easier to research by placing direct links beside the technologies and claims they support. Establish fact-check and sanity-check reports as permanent tracker requirements.
 
 ### Important changes
 
-- Added a short contents section to `README.md` and gave its existing text clear section headings.
-- Added decision-level navigation to `design_decisions.md`, with selected links to important subsections.
-- Added a detailed section map to `docs/PRODUCT_SPEC.md`, including its numbered subsections.
-- Added tracker navigation to this file, with current work first and commits listed newest to oldest.
-- Added Commit 008 using metadata read from Git.
+- Linked KDE, Qt, packaging, Electron, security, UI, and charting technologies directly inside the relevant tables.
+- Embedded official documentation links naturally in explanatory paragraphs.
+- Renamed both `Sources reviewed` sections to `Reference links` and added a short explanation of what each source covers.
+- Turned the three local logo asset paths into clickable file links.
+- Corrected the Recharts documentation URL after the first link check found a 404 response.
+- Added fact-check and sanity-check fields, standards, and tracking rules to this file.
+- Added Commit 009 from the latest Git history.
 
 ### Verification
 
-- All four Markdown files in the repository contain a `Contents` section.
-- The table entries follow the visible heading structure of each document.
-- The commit tracker remains in reverse chronological order.
-- Git metadata for Commit 008 was read directly from the repository.
-- Markdown whitespace and the no-em-dash rule were checked after editing.
+- External URLs were extracted from `design_decisions.md` and checked directly.
+- Local logo paths and Markdown anchors were checked against files and headings in the repository.
+- Git metadata for Commit 009 was read directly from Git.
+- Markdown whitespace, table structure, and the no-em-dash rule were checked after editing.
+
+### Fact-check report
+
+- The initial link check tested 36 unique external destinations. Thirty-five returned HTTP 200 and the old Recharts URL returned HTTP 404.
+- The Recharts link was changed to its current project-maintained getting-started page. A second full check confirmed that all 36 unique external destinations now return HTTP 200.
+- KDE's documentation confirms that Kirigami is built on QML and Qt Quick Controls and supports C++ integration.
+- KDE's API index identifies KQuickCharts as a Qt Quick chart module.
+- Qt's documentation confirms that Qt Graphs supports area, bar, donut, line, pie, scatter, and spline graphs in 2D.
+- Electron's documentation confirms its main and renderer process model, context isolation guidance, sandbox support, security checklist, IPC model, and separate packaging tooling.
+- Electron's security page contains the linked Content Security Policy section and recommends context isolation, process sandboxing, sender validation, and narrowly exposed APIs.
+- Comparative statements about development speed, resource use, and visual ecosystem fit remain evaluation judgments. The document continues to call for TokenTrail-specific prototypes and measurements before treating those points as proven.
+
+### Sanity-check report
+
+- Links appear at the point of use, so a reader can open documentation without searching a separate source list.
+- Reference sections remain because they provide a compact reading list and explain why each source matters.
+- Repeated links are intentional where tables may be read independently.
+- The framework decision remains pending; adding references does not change either option's approval status.
+- No application implementation, dependency installation, packaging, publication, or framework selection was implied by this documentation work.
+- Local logo links use paths relative to `design_decisions.md`, which is stored at the repository root.
+- An automated local-link and heading-anchor check found no missing target in any repository Markdown file.
 
 ### Why this work matters
 
-The planning documents are already detailed and will continue to grow. A table of contents lets readers jump directly to the product area, decision, or commit they need without scanning the full file.
+Design decisions are easier to evaluate when the supporting material is one click away. Recording both factual checks and project-level sanity checks also makes it clear which statements are verified, which are judgments, and which still need testing.
 
 ### User lessons so far
 
-- Navigation matters even before implementation because planning documents can become long quickly.
-- A README benefits from a small contents section, while a product specification needs deeper subsection links.
-- Tables of contents should match the purpose and size of each document instead of using one identical template everywhere.
-- The commit tracker contents should mirror its newest-first reading order.
+- Links are most useful when they appear beside the exact tool, library, or claim they explain.
+- A separate reference list can still be helpful when it acts as a guided reading list rather than repeating bare URLs.
+- Fact checking and sanity checking serve different purposes: one tests evidence, while the other tests whether the work makes sense for the product.
+- A failed link is useful feedback when it is recorded and corrected rather than hidden.
 
 ### Agent lessons so far
 
-- Hand-written contents lists are preferable here because the files are small enough to review and the links remain visible in GitHub source.
-- GitHub heading anchors remove punctuation and lowercase text, so numbered and hyphenated headings need careful links.
-- Duplicate subsection names should not be linked ambiguously when a unique higher-level link is sufficient.
-- Every repository Markdown file must be discovered with a file search rather than assumed from memory.
-- Tracker updates still require a fresh Git read because the user may commit between turns.
+- Links should point to specific primary or project-maintained documentation instead of search pages or vague homepages when a better target exists.
+- URL status checks and claim verification are separate tasks; a page can load without supporting the statement beside it.
+- Comparative recommendations need measured evidence or clear judgment labels.
+- Fact-check reports should include failures and remaining uncertainty, not only successful checks.
+- Sanity checks should confirm that documentation work has not silently changed product scope or approval status.
 
 ### Follow-up
 
-After this work is committed, replace this pending entry with the real commit metadata and keep each contents list synchronized when headings change.
+After this work is committed, replace the pending entry with real commit metadata and keep the fact-check and sanity-check reports in future tracker updates.
+
+---
+
+## Commit 009 - Markdown contents navigation added
+
+**Commit:** `64df0f8` - `Add contents navigation to Markdown documents`
+**Timestamp:** August 13, 2026 at 5:17:45 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Add useful navigation to every Markdown document in the repository.
+
+### Important changes
+
+- Added a short contents section and clearer structure to `README.md`.
+- Added decision and subsection links to `design_decisions.md`.
+- Added a detailed numbered contents list to `docs/PRODUCT_SPEC.md`.
+- Added newest-first commit navigation to `commit_tracker.md`.
+- Finalized the previous logo work as Commit 008 in the tracker.
+
+### Decisions and assumptions
+
+- Every repository Markdown document should have navigation suited to its length and purpose.
+- Contents lists are maintained by hand so their structure remains visible and intentional.
+- The commit tracker contents follow the same reverse chronological order as the document.
+
+### Verification
+
+- Git records 183 insertions and 34 deletions across four Markdown files.
+- All four Markdown files contained one `Contents` section at commit time.
+- A heading-anchor check found no missing internal contents target.
+- The no-em-dash and Markdown whitespace checks passed.
+
+### Fact-check report
+
+- Commit hash, subject, author, timestamp, changed files, and statistics were read directly from Git.
+- All table-of-contents targets were derived from actual headings rather than assumed filenames or sections.
+- No external technical claim was introduced by this commit.
+
+### Sanity-check report
+
+- README navigation stayed short, while the longer product specification received deeper links.
+- The tracker remained newest first.
+- The change improved navigation without changing product scope, framework status, privacy rules, or implementation approval.
+
+### Why this commit matters
+
+The planning documents had grown enough that scrolling was becoming a poor navigation method. This commit makes their structure visible and gives readers direct access to the section they need.
+
+### User lessons
+
+- Navigation depth should match document depth.
+- Contents lists can make planning documents useful before any application code exists.
+- A tracker contents list should reflect the tracker's reading order.
+
+### Agent lessons
+
+- Every Markdown file should be discovered from the repository rather than assumed from memory.
+- Anchor links need validation because punctuation and numbering affect generated heading IDs.
+- Duplicate subsection names should be avoided in contents lists when their generated anchors could be ambiguous.
+
+### Risks or limitations
+
+- Hand-written contents lists can become stale when headings change.
+- Future commits must add their tracker entry to the contents list as well as the body.
+
+### Follow-up
+
+Keep contents links synchronized with future heading and commit changes.
 
 ---
 
