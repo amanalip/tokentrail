@@ -1,6 +1,6 @@
-# Token Trail Product Specification
+# Token Trail KDE Alternate Product Specification
 
-Status: Draft for review
+Status: Historical alternate; superseded by the [approved Electron specification](../../product_spec_electron.md)
 Target: First public-ready release (v1)
 Tagline: Understand your Codex usage.
 Last updated: 2026-08-13

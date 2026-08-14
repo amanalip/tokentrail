@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 020 - Architecture documentation expanded](#commit-020---architecture-documentation-expanded)
 - [Commit 019 - Phase 3 requirements and test evidence reorganized](#commit-019---phase-3-requirements-and-test-evidence-reorganized)
 - [Commit 018 - Phase 2 core read-only slice completed](#commit-018---phase-2-core-read-only-slice-completed)
 - [Commit 017 - Development CSP repair planned](#commit-017---development-csp-repair-planned)
@@ -91,9 +92,80 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 after commit `b614cdd`
-**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 after commit `39f4d13`
+**Last updated:** August 14, 2026 at 12:08 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+### Intent
+
+Complete the planned documentation lifecycle through Phases 4, 5, and 6 so the final project explains product quality, distribution, user operation, support, release validation, and maintenance in addition to source architecture.
+
+### Important changes
+
+- Added five Phase 4 product-quality/support documents plus the required evidence update to accessibility architecture.
+- Expanded Phase 5 to include supply-chain and artifact/versioning architecture.
+- Added six exact user guides for getting started, installation, upgrading, troubleshooting, uninstalling, and privacy.
+- Added Phase 6 release validation, support policy, maintenance/compatibility, rollback/incident response, known-limitations, and release-checklist documents.
+- Required final changelog and version-specific release notes from verified changes.
+- Expanded the specification's planned repository shape and documentation timing rules.
+- Moved the superseded KDE product proposal to `docs/kde_alternate_ideation/PRODUCT_SPEC.md`, labeled it historical, and updated active references while preserving the Electron specification as controlling.
+
+### Decisions and assumptions
+
+- Documentation completeness covers developers, users, release maintainers, support, and incident handling—not only component architecture.
+- Files are created during their owning phase and promoted from planned to implemented/tested only from evidence.
+- Accessibility receives one evolving architecture document rather than duplicate Phase 3 and Phase 4 files.
+- Support promises cannot exceed the verified compatibility matrix.
+- Historical alternate specifications remain available for context but are physically separated from active architecture and controlling product documents.
+
+### Verification
+
+- Phase heading numbering, planned filenames, document ownership, local Markdown links, and whitespace are checked.
+- Application tests are not rerun because this change modifies Markdown only.
+
+### Fact-check report
+
+- Git confirms the prior architecture expansion was committed as `39f4d13` before this work began.
+- The added tasks map directly to existing Phase 4 quality, Phase 5 packaging/release, and Phase 6 validation/publication responsibilities.
+- No future document is presented as an existing file or implemented capability.
+- The KDE specification's content remains present at its new path, and active links now resolve there.
+
+### Sanity-check report
+
+- The expanded documentation scope does not add product features, network behavior, release authority, or support claims.
+- Documents are assigned to the phase that can produce their evidence, avoiding speculative current-state prose.
+- User documentation and operational documentation are separated from architecture while remaining part of the final completion gate.
+- Moving the KDE proposal does not change the approved Electron framework decision or revive KDE scope.
+
+### User lessons
+
+- A complete project record includes how users install and recover, how maintainers release and patch, what is supported, and how incidents are handled.
+- Documentation can be comprehensive without being speculative when every file has an owning phase and evidence gate.
+- Separating alternate ideation prevents a historical product specification from appearing to be the active document at the `docs/` root.
+
+### Agent lessons
+
+- Audit documentation coverage across the whole lifecycle: design, implementation, quality, distribution, operation, support, incident response, and maintenance.
+- Do not satisfy documentation completeness by placing every topic in architecture; use user, support, release, and maintenance collections where appropriate.
+- Treat documentation walkthroughs as verification for installation, upgrade, uninstall, and release procedures.
+- When moving a historical document, preserve its context, update active links and repository maps, and retain exact old paths only where describing historical Git facts.
+
+### Risks or limitations
+
+- The larger documentation set creates maintenance cost; phase exit checks must prevent stale or contradictory files.
+- Final support and incident-response detail depends on actual packages, workflows, and observed compatibility and therefore remains planned.
+
+### Follow-up
+
+Review and commit this phase-wide documentation plan. Create and validate each file only during its assigned phase.
+
+---
+
+## Commit 020 - Architecture documentation expanded
+
+**Commit:** `39f4d13` - `Expand architecture documentation and phase-gate planned documents`
+**Timestamp:** August 14, 2026 at 11:39:42 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -120,6 +192,7 @@ Complete the currently implemented architecture picture without describing futur
 
 ### Fact-check report
 
+- Git confirms commit `39f4d13`, author Aman Ali, timestamp August 14, 2026 at 11:39:42 AM EDT, 9 changed files, 387 insertions, and 28 deletions.
 - Repository source and Phase 2 tests were used to describe current build, lifecycle, categories, domain DTOs, trust boundaries, configuration inputs, and known limitations.
 - No packaging workflow, update client, preference store, diagnostic export, or Phase 3 route is described as currently implemented.
 
@@ -147,7 +220,7 @@ Complete the currently implemented architecture picture without describing futur
 
 ### Follow-up
 
-Review and commit this architecture expansion. Create the five Phase 3 documents and three Phase 5 documents only during their scheduled implementation work.
+The architecture expansion is committed. Create the planned Phase 3 and Phase 5 documents only during their scheduled implementation work.
 
 ---
 

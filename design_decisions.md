@@ -330,7 +330,7 @@ The user confirmed that Token Trail should use Electron. The deciding priorities
 
 Electron applications can work well on KDE even though their controls are not Kirigami-native. Current Electron releases support native Wayland, system theme detection, StatusNotifierItem-based Linux tray behavior, and desktop notifications on environments that follow the freedesktop notification specification. Token Trail will still test these behaviors on KDE, GNOME, Wayland, and X11 instead of assuming that one runtime removes Linux variation.
 
-The complete approved planning specification is [product_spec_electron.md](product_spec_electron.md). The earlier KDE document remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as historical context rather than being overwritten.
+The complete approved planning specification is [product_spec_electron.md](product_spec_electron.md). The earlier KDE document remains in [docs/kde_alternate_ideation/PRODUCT_SPEC.md](docs/kde_alternate_ideation/PRODUCT_SPEC.md) as historical context rather than being overwritten.
 
 ### Approved product direction
 

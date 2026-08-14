@@ -1,7 +1,7 @@
 # Token Trail Architecture Guide
 
 **Status:** Phase 2 implemented-system index; later documents scheduled by phase
-**Last updated:** August 14, 2026 at 11:28 AM EDT
+**Last updated:** August 14, 2026 at 12:08 PM EDT
 
 This directory explains how Token Trail works as a complete system. The product specification defines required behavior, the implementation plan defines delivery order, and these documents explain the implemented technical boundaries and why they exist.
 
@@ -59,4 +59,33 @@ The following documents are created alongside their implementations, not specula
 - `navigation-and-route-composition.md`;
 - `accessibility-architecture.md`.
 
-Phase 5 creates `packaging-architecture.md`, `github-release-pipeline.md`, and `installation-and-upgrade-model.md` alongside the implemented workflows. Until then these filenames are planned work, not descriptions of current capabilities. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.
+Phase 4 creates the following from implemented product-quality behavior and test evidence:
+
+- `design-system-and-theming.md`;
+- `performance-and-resource-model.md`;
+- `resilience-and-lifecycle.md`;
+- `linux-desktop-integration.md`;
+- `docs/support/compatibility-and-support-matrix.md` outside this directory;
+- evidence updates to `accessibility-architecture.md` rather than a duplicate accessibility file.
+
+Phase 5 creates the following alongside implemented packaging and release-candidate workflows:
+
+- `packaging-architecture.md`;
+- `github-release-pipeline.md`;
+- `installation-and-upgrade-model.md`;
+- `software-supply-chain-security.md`;
+- `artifact-and-versioning-model.md`.
+
+Phase 5 also creates the user-facing `docs/user/getting-started.md`, `installing.md`, `upgrading.md`, `troubleshooting.md`, `uninstalling.md`, and `privacy.md` guides.
+
+Phase 6 creates:
+
+- `docs/release/release-validation-process.md`;
+- `docs/support/support-policy.md`;
+- `docs/maintenance/maintenance-and-compatibility.md`;
+- `docs/release/rollback-and-incident-response.md`;
+- `docs/support/known-limitations.md`;
+- `docs/release/release-checklist.md`;
+- the finalized root `CHANGELOG.md` and version-specific release notes.
+
+Until their owning phase begins, these filenames are planned work, not descriptions of current capabilities. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.

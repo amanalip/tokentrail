@@ -5,13 +5,13 @@
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 12:08 PM EDT (`America/Toronto`, UTC-04:00)
 
 This document defines the controlling Electron direction and implementation boundary for Token Trail. Phases 1 and 2 are complete locally: the hardened foundation now carries a tested, normalized, read-only Codex-to-Overview path. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
 **Naming rule:** The product name shown to people is **Token Trail**, with a space. The repository and machine-facing identifiers may remain `tokentrail`, while conventional source identifiers may use `TokenTrail`. Window titles, headings, menus, onboarding, logo wordmarks, accessibility names, desktop metadata, documentation, screenshots, and release copy must use **Token Trail**.
 
-The inherited KDE proposal remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as a historical alternative. The approved framework decision and its reasoning are recorded in [design_decisions.md](design_decisions.md).
+The inherited KDE proposal remains in [docs/kde_alternate_ideation/PRODUCT_SPEC.md](docs/kde_alternate_ideation/PRODUCT_SPEC.md) as a historical alternative. The approved framework decision and its reasoning are recorded in [design_decisions.md](design_decisions.md).
 
 ## Contents
 
@@ -1049,7 +1049,7 @@ Kirigami remains the best option for deep Plasma conventions and native KDE iden
 
 The maintained contributor entry point is [docs/architecture/README.md](docs/architecture/README.md). It links the implemented system overview, repository/build system, process lifecycle, security boundaries, configuration/environments, Codex adapter, domain/provenance model, IPC/data contracts, error/recovery model, renderer state model, runtime/CSP modes, testing architecture, data inventory, threat model, protocol compatibility, and dependency rationale. Architecture documentation is updated with the implementation boundary it describes; source code must not remain the only record of a material trust, lifecycle, state, build, configuration, error, or persistence decision.
 
-Future documents follow implementation timing. Phase 3 creates calculation/precision, preference/storage, diagnostics/redaction, navigation/route, and accessibility architecture when those systems exist. Phase 5 creates packaging, GitHub release-pipeline, and installation/upgrade architecture with the actual workflows and tested packages. Until implementation begins, these remain planned filenames rather than documents that imply unbuilt behavior is current.
+Future documents follow implementation timing. Phase 3 creates calculation/precision, preference/storage, diagnostics/redaction, navigation/route, and accessibility architecture when those systems exist. Phase 4 adds implemented design-system/theming, performance/resource, resilience/lifecycle, Linux-integration, and evidence-based compatibility/support documentation. Phase 5 adds packaging, GitHub release-pipeline, installation/upgrade, software-supply-chain, and artifact/versioning architecture plus complete user guides. Phase 6 adds release validation, support policy, maintenance/compatibility, rollback/incident response, known limitations, and the release checklist. Until each owning phase begins, these remain planned filenames rather than documents that imply unbuilt behavior is current.
 
 ### 12.1 Process and trust boundaries
 
@@ -1768,7 +1768,13 @@ tokentrail/
 |-- assets/
 |   `-- branding/
 |-- docs/
-|   `-- PRODUCT_SPEC.md
+|   |-- architecture/
+|   |-- kde_alternate_ideation/
+|   |   `-- PRODUCT_SPEC.md
+|   |-- maintenance/
+|   |-- release/
+|   |-- support/
+|   `-- user/
 |-- src/
 |   |-- main/
 |   |   |-- codex/
@@ -1791,8 +1797,11 @@ tokentrail/
 |   |-- integration/
 |   |-- security/
 |   |-- e2e/
-|   `-- <version>/
-|       `-- test_report.md
+|   `-- test_reports/
+|       `-- <version>/
+|           |-- metrics/
+|           |-- screenshots/
+|           `-- test_report.md
 |-- product_spec_electron.md
 |-- design_decisions.md
 `-- commit_tracker.md
@@ -1810,6 +1819,8 @@ The implementation should provide single-purpose commands for formatting check, 
 - New IPC methods include a threat review and tests.
 - New data fields update the inventory, retention model, redaction schema, and fixtures.
 - New external network behavior requires an explicit decision and visible setting where appropriate.
+- Each implemented phase creates or updates its assigned architecture, user, support, release, and maintenance documents from actual behavior and evidence.
+- Planned documentation is labeled planned and cannot be cited as proof that a capability exists.
 
 ### 23.4 Readability and commenting standard
 

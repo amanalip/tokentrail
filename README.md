@@ -47,7 +47,7 @@ Electron security and packaged tests may need to run outside a restricted contai
 
 ## Project documents
 
-- [Original KDE product specification](docs/PRODUCT_SPEC.md)
+- [Historical KDE alternate specification](docs/kde_alternate_ideation/PRODUCT_SPEC.md)
 - [Approved Electron product specification](product_spec_electron.md)
 - [Detailed implementation plan](implementation_plan.md)
 - [Design decision log](design_decisions.md)

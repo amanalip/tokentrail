@@ -4,7 +4,7 @@
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
 **Current phase:** Phase 2 complete with `tests/test_reports/0.2.0/test_report.md`; Phase 3 is next
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 12:08 PM EDT (`America/Toronto`, UTC-04:00)
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -468,15 +468,26 @@ Turn the functionally complete application into a coherent, accessible, resilien
 - [ ] Avoid forbidden Wayland assumptions about focus or window positioning.
 - [ ] Verify application name, icon, WM class, and desktop identity in packaged prototypes.
 
-### 8.7 Phase 4 deliverables
+### 8.7 Product-quality and compatibility documentation
+
+- [ ] Create `docs/architecture/design-system-and-theming.md` from the implemented tokens, assets, typography, themes, responsive rules, motion, chart language, and license decisions.
+- [ ] Create `docs/architecture/performance-and-resource-model.md` from measured startup, CPU, memory, bundle, chart, polling, and lifecycle budgets, including the profiling method and approved revisions.
+- [ ] Create `docs/architecture/resilience-and-lifecycle.md` from implemented suspend/resume, timezone, display, window, Codex restart, retry, cleanup, and leak-prevention behavior.
+- [ ] Create `docs/architecture/linux-desktop-integration.md` from tested Wayland/X11, KDE/GNOME, scaling, window identity, theme, desktop-entry, and compositor behavior.
+- [ ] Create `docs/support/compatibility-and-support-matrix.md` from actual distribution, architecture, desktop, display-server, package, and quality-level evidence.
+- [ ] Expand `docs/architecture/accessibility-architecture.md` with actual automated and manual Phase 4 evidence instead of creating a duplicate accessibility document.
+- [ ] Keep each file planned until its relevant implementation or test campaign begins; convert claims to implemented/tested only from recorded evidence.
+
+### 8.8 Phase 4 deliverables
 
 - Production visual assets and documented licenses.
 - Accessibility review and remediation record.
 - Performance measurements and enforced budgets.
 - Linux desktop, lifecycle, and scaling evidence.
 - Updated known limitations and support matrix draft.
+- Implemented design-system, performance, resilience, Linux-integration, accessibility, and compatibility/support documentation.
 
-### 8.8 Phase 4 exit criteria
+### 8.9 Phase 4 exit criteria
 
 - [ ] Every primary workflow completes by keyboard.
 - [ ] No unreviewed serious automated accessibility violation remains.
@@ -485,6 +496,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 - [ ] Repeated refresh and lifecycle tests show no unbounded resource growth.
 - [ ] The UI is complete at supported widths and themes without remote assets.
 - [ ] Available KDE and GNOME packaged-shell checks pass.
+- [ ] Phase 4 architecture and support documents match the tested product-quality behavior and identify unavailable environments honestly.
 
 ## 9. Phase 5 - Packaging and release engineering
 
@@ -519,6 +531,12 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 
 ### 9.4 Installation and support documentation
 
+- [ ] Create `docs/user/getting-started.md` with Codex prerequisites, first launch, connection states, navigation, refresh behavior, provenance, and privacy expectations.
+- [ ] Create `docs/user/installing.md` covering architecture selection and verified AppImage, deb, rpm, and Pacman installation paths.
+- [ ] Create `docs/user/upgrading.md` covering manual v1 upgrades, version checks, settings compatibility, checksum verification, and downgrade limitations.
+- [ ] Create `docs/user/troubleshooting.md` covering Codex detection, sign-in, compatibility, FUSE, package dependencies, desktop identity, unavailable metrics, and diagnostic export.
+- [ ] Create `docs/user/uninstalling.md` covering each package format, Token Trail-owned files, retained user choices, and verification of removal.
+- [ ] Create `docs/user/privacy.md` covering local reads, memory-only usage data, settings, diagnostics, network behavior, explicit exclusions, and clear-data behavior.
 - [ ] Explain how to select x64 versus arm64.
 - [ ] Document AppImage download, checksum verification, executable permission, launch, integration choices, FUSE issues, upgrade, and removal.
 - [ ] Document deb download, checksum verification, installation, dependency resolution, upgrade, and uninstall.
@@ -535,6 +553,8 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] Create `docs/architecture/packaging-architecture.md` alongside implemented electron-builder targets, covering inputs, ASAR/fuses, artifact naming, architecture separation, metadata, icons, dependencies, and package verification.
 - [ ] Create `docs/architecture/github-release-pipeline.md` alongside the implemented Actions workflow, covering triggers, permissions, protected environments, pinned actions, build jobs, provenance, draft creation, immutability, and publication approval.
 - [ ] Create `docs/architecture/installation-and-upgrade-model.md` alongside verified packages, covering format selection, install locations, checksums/signatures, upgrade behavior, settings compatibility, rollback limits, uninstall ownership, and manual v1 updates.
+- [ ] Create `docs/architecture/software-supply-chain-security.md` from the implemented dependency, lockfile, action pinning, SBOM, checksum, provenance, signing, permission, and artifact-review controls.
+- [ ] Create `docs/architecture/artifact-and-versioning-model.md` from the implemented version source, tag rules, artifact names, architecture labels, checksums, source archives, immutability, prereleases, and patch-release policy.
 - [ ] Mark each document planned until its workflow exists, then update it from actual workflow files, packages, and verification evidence before Phase 5 closes.
 
 ### 9.6 Package verification
@@ -564,7 +584,8 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - Complete installation, upgrade, troubleshooting, and uninstall documentation.
 - Package smoke-test evidence and a draft prerelease.
 - Versioned prerelease test report under `tests/test_reports/<version>/test_report.md`.
-- Implemented packaging, GitHub release pipeline, and installation/upgrade architecture documents.
+- Implemented packaging, GitHub release pipeline, installation/upgrade, supply-chain, and artifact/versioning architecture documents.
+- Complete getting-started, installation, upgrade, troubleshooting, uninstall, and privacy user guides.
 
 ### 9.9 Phase 5 exit criteria
 
@@ -575,7 +596,8 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] CI permissions, pinned Actions, protected environment, and untrusted-fork behavior pass review.
 - [ ] No critical or high release-security finding remains.
 - [ ] The prerelease test report recommends `preview-only` or better and names all missing stable-release evidence.
-- [ ] The three Phase 5 architecture documents match the actual workflows and tested package behavior and are no longer marked merely planned.
+- [ ] The five Phase 5 architecture documents match the actual workflows and tested package behavior and are no longer marked merely planned.
+- [ ] Every Phase 5 user guide has been followed against the relevant release-candidate package and corrected from observed results.
 
 ## 10. Phase 6 - Release validation and publication
 
@@ -632,15 +654,28 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 - [ ] Record publication time, release URL, final commit, tag, and verification result in the commit tracker and test report.
 - [ ] If a published defect is found, create a new patch version. Never replace the immutable v1.0.0 tag or assets.
 
-### 10.7 Phase 6 deliverables
+### 10.7 Release, support, and maintenance documentation
+
+- [ ] Create `docs/release/release-validation-process.md` from the actual freeze, matrix, soak, remediation, evidence, approval, publication, and public-verification workflow.
+- [ ] Create `docs/support/support-policy.md` defining supported versions, environments, response boundaries, security-report handling, compatibility labels, and end-of-support rules.
+- [ ] Create `docs/maintenance/maintenance-and-compatibility.md` defining Electron/Chromium and Codex upgrade cadence, dependency review, fixture updates, migrations, regression scope, and patch-release triggers.
+- [ ] Create `docs/release/rollback-and-incident-response.md` defining immutable-release correction, patch versions, compromised artifact response, advisory handling, rollback limits, communication, and evidence preservation.
+- [ ] Create `docs/support/known-limitations.md` from final observed limitations, unavailable environments, preview-quality targets, workarounds, and linked follow-up identifiers.
+- [ ] Create `docs/release/release-checklist.md` as the executable human checklist for candidate creation, evidence review, approval, publication, checksum download, clean installation, and handoff.
+- [ ] Finalize `CHANGELOG.md` and version-specific release notes from verified changes rather than planned features.
+- [ ] Keep support and maintenance promises no broader than the final verified compatibility matrix.
+
+### 10.8 Phase 6 deliverables
 
 - Complete `tests/test_reports/1.0.0/test_report.md`.
 - Final release notes, known limitations, installation documentation, checksums, SBOM, and approved signatures if available.
 - Immutable public v1.0.0 GitHub Release.
 - Final compatibility and support statement.
 - Closed v1 implementation checklist and initialized post-v1 tracker state.
+- Final release-validation, support, maintenance, rollback/incident, known-limitations, and release-checklist documents.
+- Final changelog and version-specific release notes.
 
-### 10.8 Phase 6 exit criteria
+### 10.9 Phase 6 exit criteria
 
 - [ ] Every required acceptance criterion has evidence or an explicitly approved exception.
 - [ ] The v1.0.0 test report recommends `ready`.
@@ -648,6 +683,8 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 - [ ] Public artifacts match reviewed checksums and install successfully from the release page.
 - [ ] No unresolved critical or high-severity defect remains.
 - [ ] All known limitations and deferred work have identifiers and are visible.
+- [ ] Release, support, maintenance, incident-response, and user documentation match the exact published artifacts and verified support scope.
+- [ ] A new maintainer can reproduce the release-validation and public-verification process from the completed documentation without relying on undocumented project knowledge.
 - [ ] The approved v1 project scope is declared complete.
 
 ## 11. Cross-phase quality gates
@@ -721,7 +758,7 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Protocol compatibility and fixture guide.
 - Security architecture and IPC contract guide.
 - Testing guide and versioned report template.
-- Phase-specific domain, preferences, diagnostics, navigation, accessibility, packaging, release, installation, and upgrade architecture added when those systems become implemented rather than described as current prematurely.
+- Phase-specific domain, preferences, diagnostics, navigation, accessibility, visual-system, performance, resilience, Linux-integration, packaging, supply-chain, versioning, release, installation, and upgrade architecture added when those systems become implemented rather than described as current prematurely.
 
 ### 13.2 User documentation
 
@@ -734,6 +771,7 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Diagnostics preview and export.
 - Troubleshooting for Codex detection, sign-in, FUSE, desktop integration, unsupported versions, and unavailable metrics.
 - Support matrix and known limitations.
+- Individually testable getting-started, installation, upgrade, troubleshooting, uninstall, and privacy guides under `docs/user/`.
 
 ### 13.3 Release documentation
 
@@ -743,6 +781,9 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Versioned test report.
 - Upgrade compatibility and settings-migration notes.
 - Clear stable versus preview labels.
+- Release validation, rollback/incident response, and executable release checklist under `docs/release/`.
+- Support policy and known limitations under `docs/support/`.
+- Recurring maintenance and compatibility policy under `docs/maintenance/`.
 
 ## 14. Open-question resolution schedule
 
