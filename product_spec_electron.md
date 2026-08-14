@@ -1561,15 +1561,25 @@ No one artifact is called universal. AppImage compatibility, including FUSE and 
 - Linux dependencies are declared per package format and verified in clean environments.
 - CI builds x64 and arm64 separately and never relabels an artifact.
 
-### 18.2 Update phases
+### 18.2 GitHub release workflow
 
-1. **v1 preview:** no automatic update installation; releases provide checksums and manual instructions.
-2. **verified update check:** user-initiated check against a fixed HTTPS provider.
+- The public GitHub repository is the source of record. Standard GitHub-hosted Actions runners build and test releases, and GitHub Releases hosts the public artifacts.
+- An ordinary branch push never publishes an application update. A release begins from an approved version commit and matching immutable tag such as `v0.1.0`.
+- The release workflow performs a frozen dependency install, required quality and security checks, and separate verified builds for each supported architecture.
+- The workflow uploads AppImage, deb, rpm, Pacman, release notes, checksums, update metadata when approved, and any required signatures to a draft GitHub Release.
+- A maintainer reviews the draft, artifact names, checksums, test results, and release notes before publishing it. Preview releases are explicitly marked as prereleases.
+- Workflow permissions remain least-privilege. Third-party Actions are pinned to reviewed commit SHAs, release publication requires the protected release environment, and untrusted pull-request code cannot publish artifacts.
+- GitHub Actions artifacts are temporary CI outputs. User-facing installers are retained as GitHub Release assets and are not committed to Git.
+
+### 18.3 Update phases
+
+1. **v1 preview:** no automatic update installation; GitHub Releases provides checksums and manual instructions.
+2. **verified update check:** user-initiated check against the fixed HTTPS GitHub Releases provider.
 3. **download with consent:** signed or otherwise verified artifact download with release notes.
 4. **automatic checks:** optional, documented network behavior, no silent installation by default.
 5. **staged rollout:** only after rollback, signature, proxy, offline, and partial-download tests pass.
 
-### 18.3 Release channels
+### 18.4 Release channels
 
 - Stable is the only required public channel.
 - Preview builds are clearly named, use separate update metadata, and never overwrite stable settings without migration.
