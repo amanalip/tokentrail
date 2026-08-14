@@ -1,13 +1,13 @@
 # TokenTrail Electron Product Specification
 
-**Status:** Approved technical direction, detailed specification for review
-**Product stage:** Design and planning only
+**Status:** Approved controlling implementation specification
+**Product stage:** Phase 0 development authorized
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 13, 2026 at 6:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
 
-This document defines the Electron direction for TokenTrail. It describes intended behavior and implementation boundaries. It does not authorize implementation, publication, telemetry, or access beyond the read-only Codex methods listed here.
+This document defines the controlling Electron direction and implementation boundary for TokenTrail. Phase 0 development and dependency installation within this specification are authorized. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
 The inherited KDE proposal remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as a historical alternative. The approved framework decision and its reasoning are recorded in [design_decisions.md](design_decisions.md).
 
@@ -1708,6 +1708,16 @@ At minimum before stable release:
 - 100, 125, 150, and 200 percent display scaling where the desktop supports it.
 - Light, dark, system, high-contrast observation, and reduced-motion behavior.
 
+### 21.5 Versioned test reports
+
+- Every preview and stable version has a detailed Markdown report at `tests/<version>/test_report.md`, for example `tests/0.1.0/test_report.md`.
+- The report identifies the version, release tag when present, exact commit, test date, runner or machine, operating system, architecture, desktop environment, display server, relevant tool versions, and package format.
+- It records the exact commands executed and the evidence-backed result of unit, schema, integration, preload, component, end-to-end, security, accessibility, compatibility, performance, packaging, and packaged-smoke checks that apply to that version.
+- Failures, warnings, skipped checks, unavailable hardware, incomplete matrix coverage, known limitations, artifact names, and checksums remain visible. A check that did not run is never presented as passing.
+- The report ends with a clear release recommendation: ready, preview-only, or not ready, plus the reasons for that recommendation.
+- Reports contain no credentials, account identifiers, private paths, prompts, responses, raw protocol payloads, or other sensitive diagnostic data.
+- The report is committed with the version candidate and updated from actual CI and manual evidence before its GitHub Release is published.
+
 ## 22. Observability and diagnostics
 
 ### 22.1 Local health events
@@ -1755,7 +1765,9 @@ tokentrail/
 |   |-- fixtures/
 |   |-- integration/
 |   |-- security/
-|   `-- e2e/
+|   |-- e2e/
+|   `-- <version>/
+|       `-- test_report.md
 |-- product_spec_electron.md
 |-- design_decisions.md
 `-- commit_tracker.md
@@ -1773,6 +1785,17 @@ The implementation should provide single-purpose commands for formatting check, 
 - New IPC methods include a threat review and tests.
 - New data fields update the inventory, retention model, redaction schema, and fixtures.
 - New external network behavior requires an explicit decision and visible setting where appropriate.
+
+### 23.4 Readability and commenting standard
+
+- Authored source uses descriptive names, small focused functions, explicit types at trust boundaries, and a straightforward control flow before relying on comments.
+- Where the file format permits comments, every authored executable statement must either have an adjacent detailed comment or belong to a small, directly preceding commented group that explains its purpose, inputs, outcome, and important failure behavior.
+- Security boundaries, IPC validation, Codex allowlisting, parsing, calculations, date handling, precision rules, privacy behavior, error recovery, and platform-specific workarounds receive especially detailed rationale comments.
+- File and module comments explain responsibility, trust level, dependencies, and what the code intentionally refuses to do. Public functions and contracts explain parameters, return values, side effects, errors, and invariants.
+- Comments explain why the code exists and how its constraints work. They do not merely translate syntax into English or preserve dead code.
+- Tests receive the same teaching-style treatment, including the behavior protected and why each edge case matters.
+- Generated files, dependency lockfiles, machine-produced artifacts, external vendored code, snapshots, and data-only formats that do not support comments are exempt. Their origin and purpose are documented in the nearest authored file.
+- Comment accuracy is part of review. A behavior change updates its comments in the same commit, and stale or misleading comments fail the quality standard.
 
 ## 24. Delivery phases
 
@@ -1958,15 +1981,15 @@ Approved by the user in this planning discussion:
 - Electron as TokenTrail's application framework.
 - Creation of a separate, detailed Electron product specification.
 - A strong security emphasis and a visually rich, cross-Linux product goal.
+- Phase 0 implementation and project dependency installation within this specification, authorized on August 14, 2026.
+- Detailed versioned test reports at `tests/<version>/test_report.md`.
+- Teaching-style, detailed comments throughout authored code, subject to the documented generated-file and file-format exceptions.
 
 Still requiring separate approval or completion:
 
-- Starting implementation.
-- Installing project dependencies or a security plugin.
-- Choosing exact package versions.
 - Publishing, signing, updating, or distributing an application.
 - Enabling telemetry, which is not proposed.
 - Expanding beyond the read-only data boundary.
 - Adding local usage history, task analytics, background behavior, or cloud features.
 
-The next safe step after review is to resolve the open questions, approve implementation scope, and begin Phase 0 with security and compatibility prototypes.
+The next step is to begin Phase 0 with exact dependency selection, the secure Electron scaffold, threat and data-flow review, and compatibility prototypes. Open questions are resolved before the implementation phase or feature they affect.

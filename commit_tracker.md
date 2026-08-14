@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 014 - Commit history reconciled](#commit-014---commit-history-reconciled)
 - [Commit 013 - GitHub release workflow documented](#commit-013---github-release-workflow-documented)
 - [Commit 012 - Privacy-safe v1 insights approved](#commit-012---privacy-safe-v1-insights-approved)
 - [Commit 011 - Electron product specification and security plan approved](#commit-011---electron-product-specification-and-security-plan-approved)
@@ -83,36 +84,77 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 at 1:10:30 AM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 14, 2026 at 1:10:30 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Reconcile the commit tracker with the two latest documentation commits using exact Git metadata.
+Record the user's authorization to begin Phase 0 development and establish the source-commenting and versioned test-report standards before application code is created.
 
 ### Important changes
 
-- Added the finalized tracker record for Commit 012.
-- Added the finalized tracker record for Commit 013.
+- Changed the repository and Electron specification status from planning to Phase 0 development.
+- Authorized dependency selection and installation within the approved read-only Electron scope.
+- Required teaching-style explanations for authored executable code while documenting narrow generated-file and format exceptions.
+- Required an evidence-based `tests/<version>/test_report.md` for every preview and stable version.
+- Added Design Decision 007 and reconciled the finalized metadata for Commit 014.
 
 ### Verification
 
-- Commit hashes, authors, timestamps, subjects, changed files, and statistics were read directly from Git.
-- `git diff --check` is required before this tracker update is committed.
+- Markdown structure, local links, contents anchors, repository status language, and whitespace must be checked before commit.
+- No application dependency, source file, workflow, package, release, or external system is changed by this documentation update.
 
 ### Fact-check report
 
-- Commit 012 is `a13e6b8`; it changed three documentation files with 541 insertions and 79 deletions.
-- Commit 013 is `f7e97a2`; it changed only `product_spec_electron.md` with 14 insertions and 4 deletions.
+- The user explicitly authorized development to begin and explicitly requested detailed comments and version-specific test reports.
+- Commit 014 is `ed54725`; it changed only `commit_tracker.md` with 105 insertions and 3 deletions.
+- Exact package versions and implementation results do not exist yet and are not claimed.
 
 ### Sanity-check report
 
-- This reconciliation records already committed planning changes and introduces no application code, publication, or release action.
+- Development authorization stays inside the existing local read-only data boundary.
+- Publication, signing, update deployment, telemetry, broader Codex access, and retained history remain gated.
+- Detailed comments are paired with descriptive names and focused code so commentary does not replace readable design.
 
 ### Follow-up
 
-Commit this tracker reconciliation, then finalize its hash in a later meaningful tracker update.
+Commit this development-start documentation, then begin Phase 0 dependency selection, threat review, and secure Electron scaffolding.
+
+---
+
+## Commit 014 - Commit history reconciled
+
+**Commit:** `ed54725` - `Reconcile commit tracker with latest documentation commits`
+**Timestamp:** August 14, 2026 at 1:11:35 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Finalize the commit-tracker records for the approved privacy-safe insights and GitHub release workflow using exact Git evidence.
+
+### Important changes
+
+- Added finalized records for Commit 012 and Commit 013.
+- Preserved their decisions, verification, fact checks, sanity checks, lessons, risks, and follow-up work.
+
+### Verification
+
+- Git records 105 insertions and 3 deletions in `commit_tracker.md`.
+- Commit hash, author, timestamp, subject, changed file, and statistics were read directly from Git.
+
+### Fact-check report
+
+- The commit changed only the tracker and did not alter the Electron specification or application behavior.
+- The recorded Commit 012 and Commit 013 metadata matches the repository history.
+
+### Sanity-check report
+
+- The change improved project history without implying that planned application or release work had already occurred.
+
+### Follow-up
+
+Record the next meaningful project change as current uncommitted work, then finalize this entry through the normal later reconciliation process.
 
 ---
 

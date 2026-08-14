@@ -27,14 +27,20 @@ This document records product and technical design decisions in chronological or
   - [Security architecture](#security-architecture)
   - [Linux compatibility position](#linux-compatibility-position)
   - [Alternatives and trade-offs](#alternatives-and-trade-offs)
-  - [Decision outcome](#decision-outcome-1)
+  - [Decision outcome](#decision-outcome-2)
   - [Reference links](#reference-links-2)
 - [006 - Reliable account-level insights added to v1](#006---reliable-account-level-insights-added-to-v1)
   - [Approved features](#approved-features)
   - [Reliability boundaries](#reliability-boundaries)
   - [Security and privacy effect](#security-and-privacy-effect)
   - [Updated Codex evidence](#updated-codex-evidence)
-  - [Decision outcome](#decision-outcome-2)
+  - [Decision outcome](#decision-outcome-3)
+- [007 - Phase 0 development and evidence standards authorized](#007---phase-0-development-and-evidence-standards-authorized)
+  - [Authorized work](#authorized-work)
+  - [Readability standard](#readability-standard)
+  - [Versioned test evidence](#versioned-test-evidence)
+  - [Boundaries that remain](#boundaries-that-remain)
+  - [Decision outcome](#decision-outcome-4)
 
 ## Decision status guide
 
@@ -212,7 +218,7 @@ The framework evaluation considered three paths:
 2. **Electron:** prioritize the largest visual ecosystem, faster web-style UI iteration, and future cross-platform reach.
 3. **Prototype first:** build disposable, non-functional Overview mockups in both stacks and compare appearance, accessibility, packaged size, idle memory, startup time, theming, and development complexity before approving implementation.
 
-The user selected Electron on August 13, 2026. The framework question is resolved in Decision 005. TokenTrail remains in planning only until the user separately authorizes implementation.
+The user selected Electron on August 13, 2026. The framework question is resolved in Decision 005, and the later Phase 0 implementation authorization is recorded in Decision 007.
 
 ---
 
@@ -313,7 +319,7 @@ The current Markdown files were searched for em dashes when this rule was added,
 ## 005 - Electron selected with a hardened read-only architecture
 
 **Recorded:** August 13, 2026 at 5:44 PM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Approved technical and product direction; implementation not yet authorized
+**Status:** Approved technical and product direction; Phase 0 implementation later authorized by Decision 007
 
 ### Context
 
@@ -394,7 +400,7 @@ Electron's costs remain real: larger artifacts, higher likely baseline memory th
 
 Electron is the approved TokenTrail framework. KDE/Kirigami is superseded as the implementation direction but preserved as an evaluated alternative. The new Electron product specification is the controlling technical plan once it is reviewed and accepted.
 
-This approval authorizes detailed planning documents. It does not authorize implementation, dependency installation, publishing, signing, update deployment, or access beyond the specified read-only boundary.
+At the time of Decision 005, this approval covered detailed planning but not implementation or dependency installation. Decision 007 later authorized Phase 0 implementation within the same read-only boundary. Publishing, signing, update deployment, and broader access remain unauthorized.
 
 ### Reference links
 
@@ -414,7 +420,7 @@ This approval authorizes detailed planning documents. It does not authorize impl
 ## 006 - Reliable account-level insights added to v1
 
 **Recorded:** August 13, 2026 at 6:08 PM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Approved product specification; implementation not yet authorized
+**Status:** Approved product specification; implementation later authorized by Decision 007
 
 ### Context
 
@@ -476,4 +482,41 @@ The same structures were checked in TypeScript bindings generated locally from `
 
 The nine account-level insights are required v1 features in `product_spec_electron.md`. Workspace messages, model catalogs, active-thread token monitoring, attention-center thread reads, forecasts, and retained personal analytics remain outside this approval.
 
-This decision changes documentation and v1 scope only. It does not authorize implementation or any broader access.
+At the time of Decision 006, this decision changed documentation and v1 scope only. Decision 007 later authorized implementation of that approved scope but did not authorize broader access.
+
+---
+
+## 007 - Phase 0 development and evidence standards authorized
+
+**Recorded:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved
+
+### Context
+
+After reviewing the product direction, Linux packaging plan, GitHub release workflow, and manual-first update approach, the user authorized TokenTrail development to begin. The user also required unusually detailed source commentary so a future reader can learn the code without reconstructing its intent, and required a durable test report for every version.
+
+### Authorized work
+
+- Begin Phase 0 of the controlling Electron specification.
+- Select and install exact supported dependency versions with a lockfile and documented reasoning.
+- Create the hardened Electron, TypeScript, React, Vite, and electron-builder foundation.
+- Implement and test only the approved local, read-only Codex boundary and supporting application features.
+- Add CI, packaging, and test infrastructure as their prerequisites become available.
+
+### Readability standard
+
+Authored source follows a teaching-style commenting standard. Where comments are supported, each executable statement is explained either directly or by a small adjacent block that covers its purpose, inputs, result, constraints, and failure behavior. Security, privacy, IPC, validation, calculations, precision, date handling, and platform behavior receive detailed rationale.
+
+Literal comments on machine-generated files, dependency lockfiles, data-only formats, external code, or syntax that does not permit comments are not required. Comments must add intent rather than repeat syntax, and clear names, focused functions, explicit types, and simple control flow remain mandatory. Incorrect comments are treated as code defects.
+
+### Versioned test evidence
+
+Every preview and stable version receives `tests/<version>/test_report.md`. The report records the exact commit and environment, commands, applicable test-layer results, packaging evidence, failures, skipped coverage, limitations, artifact checksums, and an evidence-based release recommendation. Missing or unexecuted checks remain explicit and are never converted into passing results.
+
+### Boundaries that remain
+
+This authorization does not approve publishing a release, signing artifacts, deploying updates, enabling telemetry, accessing prompts or tasks, adding write operations, retaining usage history, or expanding the Codex method allowlist. Those actions retain the approval and security gates in the controlling specification.
+
+### Decision outcome
+
+TokenTrail has moved from design and planning into Phase 0 development. The Electron product specification is now the controlling implementation standard, including its privacy, security, testing, commenting, and release boundaries.
