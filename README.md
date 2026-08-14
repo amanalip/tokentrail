@@ -52,10 +52,11 @@ Electron security and packaged tests may need to run outside a restricted contai
 - [Detailed implementation plan](implementation_plan.md)
 - [Design decision log](design_decisions.md)
 - [Commit tracker](commit_tracker.md)
+- [Architecture guide and reading order](docs/architecture/README.md)
 - [Threat model](docs/architecture/threat-model.md)
 - [Data flow](docs/architecture/data-flow.md)
 - [Data inventory](docs/architecture/data-inventory.md)
 - [Dependency rationale](docs/architecture/dependency-rationale.md)
 - [Codex protocol compatibility](docs/architecture/protocol-compatibility.md)
 
-The current screenshot-backed development evidence is recorded in [tests/0.2.0/test_report.md](tests/0.2.0/test_report.md). Each later executable version receives its own `tests/<version>/test_report.md`.
+The current screenshot-backed development evidence is recorded in [tests/test_reports/0.2.0/test_report.md](tests/test_reports/0.2.0/test_report.md). Each later executable version receives its own `tests/test_reports/<version>/test_report.md`.

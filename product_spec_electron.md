@@ -5,7 +5,7 @@
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
 
 This document defines the controlling Electron direction and implementation boundary for Token Trail. Phases 1 and 2 are complete locally: the hardened foundation now carries a tested, normalized, read-only Codex-to-Overview path. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
@@ -922,6 +922,8 @@ Expiry rules:
 
 The approved Tracked Trail mark remains the identity. The path stays inside the token and ends at a current-position target. Production work still requires a vector master, transparent icon exports, monochrome variants, and small-size verification.
 
+The identity must also reach native window chrome. Token Trail explicitly supplies its icon when creating the main `BrowserWindow`; it does not rely only on electron-builder metadata or Electron's development default. Where the desktop environment displays a title-bar, task-switcher, dock, or window-list icon, a running development, built, or packaged Token Trail window must not show Electron's lightning-bolt icon. Runtime-window evidence and packaged desktop-entry evidence are separate checks.
+
 | Role | Light theme | Dark theme |
 | --- | --- | --- |
 | App background | Cloud `#F7F9FC` | Midnight `#0B1020` |
@@ -943,6 +945,7 @@ Final warning, critical, focus, border, and muted colors require contrast testin
 - Shadows remain subtle and are never required to understand boundaries.
 - Type uses a bundled open-source variable font only if its license and Linux rendering pass review. Otherwise it uses the system UI stack. No font is downloaded at runtime.
 - Numeric metrics use tabular numerals where supported.
+- Large percentage metrics use a dedicated display token with explicit glyph spacing and line-height. Dense combinations such as `48%` and `88%` must not appear merged, while `100%` must remain unclipped at supported widths.
 - Icons use one reviewed set and always receive accessible labels when interactive.
 
 ### 9.3 Motion
@@ -1043,6 +1046,8 @@ Tauri is a credible alternative when artifact size and lower baseline memory dom
 Kirigami remains the best option for deep Plasma conventions and native KDE identity. Token Trail's approved priority is a distinct, visually rich dashboard that works across major Linux desktops. Electron offers more charting and web UI choices with one rendering engine. KDE behavior still remains a tested platform target rather than being treated as secondary.
 
 ## 12. Application architecture
+
+The maintained contributor entry point is [docs/architecture/README.md](docs/architecture/README.md). It links the implemented system overview, process lifecycle, Codex adapter, IPC/data contracts, renderer state model, runtime/CSP modes, testing architecture, data inventory, threat model, protocol compatibility, and dependency rationale. Architecture documentation is updated with the implementation boundary it describes; source code must not remain the only record of a material trust, lifecycle, state, or persistence decision.
 
 ### 12.1 Process and trust boundaries
 
@@ -1669,6 +1674,8 @@ Each category maps to a safe user message, a recommended action, and a non-sensi
 | Compatibility | Distribution, architecture, desktop environment, Wayland/X11, scaling |
 | Performance | Startup, idle CPU, memory, bundle size, chart rendering, repeated refresh |
 
+Native icon verification covers two independent layers: the icon explicitly assigned to the live `BrowserWindow`, and the icon installed through package/desktop metadata. Passing either layer alone is insufficient.
+
 ### 21.2 Required protocol fixtures
 
 - Full current response.
@@ -1723,12 +1730,12 @@ At minimum before stable release:
 
 ### 21.5 Versioned test reports
 
-- Every preview and stable version has a detailed Markdown report at `tests/<version>/test_report.md`, for example `tests/0.1.0/test_report.md`.
+- Every preview and stable version has a detailed Markdown report at `tests/test_reports/<version>/test_report.md`, for example `tests/test_reports/0.1.0/test_report.md`.
 - The report identifies the version, release tag when present, exact commit, test date, runner or machine, operating system, architecture, desktop environment, display server, relevant tool versions, and package format.
 - It records the exact commands executed and the evidence-backed result of unit, schema, integration, preload, component, end-to-end, security, accessibility, compatibility, performance, packaging, and packaged-smoke checks that apply to that version.
 - Failures, warnings, skipped checks, unavailable hardware, incomplete matrix coverage, known limitations, artifact names, and checksums remain visible. A check that did not run is never presented as passing.
 - The report ends with a clear release recommendation: ready, preview-only, or not ready, plus the reasons for that recommendation.
-- Each phase adds curated screenshots of the tested application states under `tests/<version>/screenshots/` and embeds them in the report with a caption naming the build, environment, and behavior shown.
+- Each phase adds curated screenshots of the tested application states under `tests/test_reports/<version>/screenshots/` and embeds them in the report with a caption naming the build, environment, and behavior shown.
 - Curated screenshots come from actual development or packaged test runs. Routine CI screenshots remain transient unless deliberately promoted into the report, so CI does not rewrite tracked evidence.
 - Screenshots must not contain account identifiers, private paths, prompts, responses, tokens, credentials, notifications, or unrelated desktop content.
 - Reports contain no credentials, account identifiers, private paths, prompts, responses, raw protocol payloads, or other sensitive diagnostic data.
@@ -1828,7 +1835,7 @@ The detailed task sequence, evidence requirements, and progress checklist are ma
 
 ### Phase 2: core read-only slice
 
-**Implementation status:** Complete locally with evidence in `tests/0.2.0/test_report.md`.
+**Implementation status:** Complete locally with evidence in `tests/test_reports/0.2.0/test_report.md`.
 
 - Correct every user-visible application and package label to `Token Trail` while retaining `tokentrail` only for machine-facing identifiers.
 - Connect to a fixture app-server.
@@ -1861,7 +1868,7 @@ The detailed task sequence, evidence requirements, and progress checklist are ma
 
 - Freeze the v1.0.0 candidate and run the complete automated, manual, security, accessibility, performance, package, and Linux compatibility matrix.
 - Complete a release-candidate soak period and remediate release-blocking findings.
-- Produce `tests/1.0.0/test_report.md` with a `ready` recommendation.
+- Produce `tests/test_reports/1.0.0/test_report.md` with a `ready` recommendation.
 - Obtain explicit publication approval, publish the immutable GitHub Release, then download and verify the public artifacts.
 
 ### Post-v1 follow-up tracking
@@ -1927,6 +1934,8 @@ Each follow-up keeps its privacy, security, consent, lifecycle, platform, and te
 - The defined distribution and desktop matrix passes install, launch, core workflow, theme, scaling, and uninstall checks.
 - Wayland behavior does not rely on forbidden positioning or focus assumptions.
 - Packages install correct icons, desktop metadata, and dependencies.
+- Development, built, and packaged windows display Token Trail's runtime icon instead of Electron's default wherever the desktop environment exposes a window icon.
+- Large primary percentages remain readable for `11%`, `47%`, `48%`, `88%`, and `100%` in light/dark themes, normal/200-percent zoom, and the narrow supported Overview layout.
 - Unsupported systems receive honest documentation rather than a universal compatibility claim.
 
 ### 25.6 Performance
@@ -2021,7 +2030,7 @@ Approved by the user in this planning discussion:
 - Creation of a separate, detailed Electron product specification.
 - A strong security emphasis and a visually rich, cross-Linux product goal.
 - Phase 1 implementation and project dependency installation within this specification, authorized on August 14, 2026.
-- Detailed versioned test reports at `tests/<version>/test_report.md`.
+- Detailed versioned test reports at `tests/test_reports/<version>/test_report.md`.
 - Teaching-style, detailed comments throughout authored code, subject to the documented generated-file and file-format exceptions.
 
 Still requiring separate approval or completion:

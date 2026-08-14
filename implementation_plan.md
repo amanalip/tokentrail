@@ -2,9 +2,9 @@
 
 **Status:** Approved plan; Phases 1 and 2 complete locally
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 2 complete with `tests/0.2.0/test_report.md`; Phase 3 is next
+**Current phase:** Phase 2 complete with `tests/test_reports/0.2.0/test_report.md`; Phase 3 is next
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -40,7 +40,7 @@ The approved v1 project scope is complete only when all six phases have passed t
 - AppImage, deb, rpm, and Pacman artifacts are built for each architecture that has passed the required verification. Unsupported or preview-quality combinations are labeled honestly.
 - Installation, upgrade, checksum verification, troubleshooting, and uninstall instructions are complete.
 - The release workflow produces immutable draft GitHub Releases from approved version tags, and ordinary branch pushes cannot publish an application update.
-- `tests/1.0.0/test_report.md` contains the full evidence record and a `ready` recommendation.
+- `tests/test_reports/1.0.0/test_report.md` contains the full evidence record and a `ready` recommendation.
 - Known limitations and incomplete environment coverage are visible in the test report and release notes.
 - The user separately approves publication, then the reviewed v1.0.0 draft is published without replacing its tag or assets afterward.
 
@@ -115,7 +115,7 @@ Phase 6 may be prepared and fully validated without publication. Its final publi
 | 3. Complete v1 product | All required screens, calculations, diagnostics, and preferences | Full feature tests and domain fixtures | Functional scope complete |
 | 4. Product quality | Accessible, polished, resilient, and measured Linux experience | Accessibility, performance, lifecycle, and desktop evidence | Product-quality scope complete |
 | 5. Packaging and release engineering | Reproducible installers, CI, release drafts, and user documentation | Package smoke tests, checksums, SBOM, CI run, draft prerelease | Release system ready |
-| 6. Release validation and publication | Fully tested v1.0.0 candidate and approved public release | Complete matrix, soak results, `tests/1.0.0/test_report.md`, immutable release | Approved v1 scope complete |
+| 6. Release validation and publication | Fully tested v1.0.0 candidate and approved public release | Complete matrix, soak results, `tests/test_reports/1.0.0/test_report.md`, immutable release | Approved v1 scope complete |
 
 Phases are sequential at the approval level. Work inside a phase may run in parallel only when its inputs are stable and the work does not bypass an earlier security or contract decision.
 
@@ -173,7 +173,7 @@ Create a minimal, measurable, hardened Electron application foundation. This pha
 - [x] Add navigation, popup, permission, custom-scheme, and CSP tests.
 - [x] Add a minimal fixture app-server harness without real account data.
 - [x] Establish V8 coverage reporting as evidence alongside behavior tests.
-- [x] Establish the versioned test-report structure through `tests/0.1.0/test_report.md` and require phase screenshots.
+- [x] Establish the versioned test-report structure through `tests/test_reports/0.1.0/test_report.md` and require phase screenshots.
 
 ### 5.7 Minimal shell and measurement
 
@@ -335,7 +335,19 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] Build Settings and Diagnostics with themes, refresh choices, redacted preview, export, clear-data confirmation, and support information.
 - [ ] Add contextual navigation from metrics and errors to the relevant explanation or corrective action.
 
-### 7.4 State and preference behavior
+### 7.4 Phase 3 identity and metric readability corrections
+
+- [ ] Set the main `BrowserWindow` icon explicitly to a Token Trail icon so development launches do not display Electron's default lightning-bolt icon in the title bar, task switcher, dock, or desktop shell.
+- [ ] Resolve the icon from an application-owned path that works in development, built-content tests, and packaged execution without reading the launch directory.
+- [ ] Keep electron-builder and Linux desktop metadata pointed at the same Token Trail identity while preserving the machine-safe executable name `tokentrail`.
+- [ ] Test the runtime window icon independently from package metadata because a correct installer icon does not prove the live development window uses it.
+- [ ] Capture window-chrome or desktop-shell evidence where the available compositor exposes the icon; record environments where automated capture cannot include native chrome.
+- [ ] Improve large-percentage typography so adjacent digits and the percent sign remain visually distinct, especially for dense shapes such as `48%` and `88%`.
+- [ ] Use explicit numeric typography tokens, tabular numerals where suitable, and reviewed letter spacing rather than relying on the font's default display-size kerning.
+- [ ] Test representative values `11%`, `47%`, `48%`, `88%`, and `100%` in light and dark themes, at normal scaling and 200 percent zoom, and at the narrowest supported Overview width.
+- [ ] Add visual-regression or screenshot evidence that detects merged, clipped, overlapping, or ambiguous primary metric glyphs.
+
+### 7.5 State and preference behavior
 
 - [ ] Use TanStack Query only for bounded asynchronous state where it improves freshness and retry clarity.
 - [ ] Keep sensitive or usage-derived values out of persisted preferences.
@@ -344,7 +356,7 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] Keep session observations only in memory and clear them on exit.
 - [ ] Handle local timezone changes without corrupting source timestamps or comparisons.
 
-### 7.5 Diagnostics
+### 7.6 Diagnostics
 
 - [ ] Construct diagnostic output from an explicit safe schema.
 - [ ] Provide a complete preview before export.
@@ -353,7 +365,18 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] Use a user-selected export destination and safe file-writing behavior.
 - [ ] Record only sanitized local health categories needed for troubleshooting.
 
-### 7.6 Phase 3 verification
+### 7.7 Architecture documentation expansion
+
+- [ ] Maintain `docs/architecture/README.md` as the entry point, current-system map, document ownership table, and recommended reading order.
+- [ ] Keep separate detailed documents for the Electron process model, Codex adapter/lifecycle, normalization and data contracts, IPC/preload boundary, renderer state model, development-versus-production runtime, and testing architecture.
+- [ ] Add Phase 3 documents for domain calculations, preferences/storage, diagnostics/redaction, navigation and route composition, and accessibility architecture as those systems are implemented.
+- [ ] Record packaging/release/update architecture in Phase 5 rather than describing unimplemented release behavior as current behavior.
+- [ ] Give each architecture document status, scope, invariants, failure behavior, security/privacy boundaries, test evidence, known limitations, and links to controlling decisions.
+- [ ] Update architecture documents in the same change as any material boundary or lifecycle modification; stale architecture text is a defect.
+- [ ] Include compact diagrams where process ownership, data transformation, event order, or failure recovery would otherwise be difficult to reconstruct.
+- [ ] Run local-link and terminology checks across the architecture set before Phase 3 closes.
+
+### 7.8 Phase 3 verification
 
 - [ ] Run every required fixture listed in product-spec section 21.2.
 - [ ] Test every formula at boundary, missing, zero, duplicate, invalid, reset, and oversized cases.
@@ -362,16 +385,21 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] Confirm no unavailable state becomes zero or an invented label.
 - [ ] Confirm clear-data removes only Token Trail-owned data.
 - [ ] Confirm diagnostics contain no seeded sensitive value.
+- [ ] Verify the native runtime window uses the Token Trail icon rather than Electron's default icon in every locally testable launch mode.
+- [ ] Review the primary percentage values `11%`, `47%`, `48%`, `88%`, and `100%` for readable glyph separation in the required theme, zoom, and width matrix.
+- [ ] Review the architecture index and linked topic documents against the implemented Phase 3 system; no current boundary may exist only in source code.
 
-### 7.7 Phase 3 deliverables
+### 7.9 Phase 3 deliverables
 
 - Complete required v1 route set.
 - Complete normalized domain and calculation library.
 - Validated preferences and redacted diagnostics.
 - Full fixture catalog and behavior-focused automated tests.
 - Updated Learn content and source/provenance explanations.
+- Correct runtime window identity and readable large-number typography with visual evidence.
+- Expanded, indexed architecture documentation covering the complete implemented system.
 
-### 7.8 Phase 3 exit criteria
+### 7.10 Phase 3 exit criteria
 
 - [ ] Every v1-required feature has a working implementation and automated coverage at the appropriate layer.
 - [ ] All product-correctness rules in section 25.1 pass against fixtures.
@@ -379,6 +407,9 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] All routes support normal, loading, partial, stale, unavailable, and error behavior where applicable.
 - [ ] No feature reads or stores data beyond the approved inventory.
 - [ ] Optional background features have not entered scope without an explicit decision.
+- [ ] Development, built, and packaged windows use Token Trail identity wherever the tested desktop environment exposes it.
+- [ ] Primary metric numerals remain distinct and unclipped across the representative-value visual matrix.
+- [ ] The architecture index gives a new contributor a complete path through every implemented trust boundary, process, state model, and test layer.
 
 ## 8. Phase 4 - Product quality
 
@@ -520,7 +551,7 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - Checksums, SBOM, artifact inventory, and signing-plan status.
 - Complete installation, upgrade, troubleshooting, and uninstall documentation.
 - Package smoke-test evidence and a draft prerelease.
-- Versioned prerelease test report under `tests/<version>/test_report.md`.
+- Versioned prerelease test report under `tests/test_reports/<version>/test_report.md`.
 
 ### 9.8 Phase 5 exit criteria
 
@@ -571,7 +602,7 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 
 ### 10.5 Final evidence and approval
 
-- [ ] Complete `tests/1.0.0/test_report.md` from actual local, CI, and manual evidence.
+- [ ] Complete `tests/test_reports/1.0.0/test_report.md` from actual local, CI, and manual evidence.
 - [ ] Confirm the report contains commit, tag, environments, commands, results, skipped coverage, checksums, limitations, and a `ready` recommendation.
 - [ ] Confirm the draft release contains exactly the reviewed artifacts, notes, metadata, checksums, and approved signatures.
 - [ ] Confirm release immutability is enabled and the published tag cannot be repointed or its assets replaced.
@@ -589,7 +620,7 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 
 ### 10.7 Phase 6 deliverables
 
-- Complete `tests/1.0.0/test_report.md`.
+- Complete `tests/test_reports/1.0.0/test_report.md`.
 - Final release notes, known limitations, installation documentation, checksums, SBOM, and approved signatures if available.
 - Immutable public v1.0.0 GitHub Release.
 - Final compatibility and support statement.
@@ -629,10 +660,10 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 
 ### 12.1 Location and lifecycle
 
-- Each tested application version uses `tests/<version>/test_report.md`.
-- Prerelease identifiers remain part of the folder name, such as `tests/1.0.0-preview.1/test_report.md`.
+- Each tested application version uses `tests/test_reports/<version>/test_report.md`.
+- Prerelease identifiers remain part of the folder name, such as `tests/test_reports/1.0.0-preview.1/test_report.md`.
 - The report begins when the version candidate is created and is updated as CI and manual evidence arrives.
-- Each implementation phase updates the active version report and adds curated screenshots under `tests/<version>/screenshots/` from the real tested application.
+- Each implementation phase updates the active version report and adds curated screenshots under `tests/test_reports/<version>/screenshots/` from the real tested application.
 - If a candidate changes code, it receives a new prerelease identifier or patch version. Evidence from an older commit is not silently reused.
 - Reports are committed before the corresponding release is published.
 
@@ -669,12 +700,14 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 ### 13.1 Development documentation
 
 - README with prerequisites, install, local development, quality commands, architecture summary, and project status.
+- Indexed architecture guide with system overview, process/lifecycle, adapter, IPC/contracts, renderer state, runtime/CSP, and testing documents.
 - Threat model and data-flow review.
 - Data inventory and retention table.
 - Dependency and license rationale.
 - Protocol compatibility and fixture guide.
 - Security architecture and IPC contract guide.
 - Testing guide and versioned report template.
+- Phase-specific domain, preferences, diagnostics, navigation, accessibility, packaging, release, installation, and upgrade architecture added when those systems become implemented rather than described as current prematurely.
 
 ### 13.2 User documentation
 
@@ -804,7 +837,7 @@ Rejected v1 areas do not automatically become follow-ups. Prompt analysis, task 
 - [ ] Security, privacy, accessibility, compatibility, and performance limitations are visible.
 - [ ] GitHub release workflow is least-privilege and tag-driven.
 - [ ] Release immutability is enabled.
-- [ ] `tests/1.0.0/test_report.md` recommends `ready`.
+- [ ] `tests/test_reports/1.0.0/test_report.md` recommends `ready`.
 - [ ] User publication approval is recorded.
 - [ ] Public v1.0.0 artifacts are downloaded and verified after publication.
 - [ ] Follow-up items remain deferred unless separately approved.

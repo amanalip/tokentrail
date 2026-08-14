@@ -515,7 +515,7 @@ Literal comments on machine-generated files, dependency lockfiles, data-only for
 
 ### Versioned test evidence
 
-Every preview and stable version receives `tests/<version>/test_report.md`. The report records the exact commit and environment, commands, applicable test-layer results, packaging evidence, failures, skipped coverage, limitations, artifact checksums, and an evidence-based release recommendation. Each phase also adds privacy-safe screenshots captured from actual application tests under `tests/<version>/screenshots/` and embeds them in the report. Missing or unexecuted checks remain explicit and are never converted into passing results.
+Every preview and stable version receives `tests/test_reports/<version>/test_report.md`. The report records the exact commit and environment, commands, applicable test-layer results, packaging evidence, failures, skipped coverage, limitations, artifact checksums, and an evidence-based release recommendation. Each phase also adds privacy-safe screenshots captured from actual application tests under `tests/test_reports/<version>/screenshots/` and embeds them in the report. Missing or unexecuted checks remain explicit and are never converted into passing results.
 
 ### Boundaries that remain
 

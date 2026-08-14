@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 018 - Phase 2 core read-only slice completed](#commit-018---phase-2-core-read-only-slice-completed)
 - [Commit 017 - Development CSP repair planned](#commit-017---development-csp-repair-planned)
 - [Commit 016 - Token Trail branding clarified](#commit-016---token-trail-branding-clarified)
 - [Commit 015 - Phase 1 secure Electron foundation completed](#commit-015---phase-1-secure-electron-foundation-completed)
@@ -89,9 +90,76 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 after commit `4fba55e`
-**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 after commit `f8d1b9b`
+**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+### Intent
+
+Record the user's Phase 3 native-window icon and primary-number readability requirements, expand the implemented-system architecture guide, and organize durable test evidence under `tests/test_reports/<version>/`.
+
+### Important changes
+
+- Added Phase 3 tasks and acceptance checks for the live `BrowserWindow` icon independently from installed package metadata.
+- Added a representative glyph matrix for `11%`, `47%`, `48%`, `88%`, and `100%` across themes, zoom, and compact layout.
+- Added an architecture index plus detailed system, lifecycle, adapter, IPC, renderer-state, runtime/CSP, and testing documents.
+- Moved the 0.1.0 and 0.2.0 reports, screenshots, and metrics into `tests/test_reports/<version>/` and updated every documented path convention.
+- Added `tests/README.md` so contributors can distinguish executable suites from durable version evidence immediately.
+
+### Decisions and assumptions
+
+- The default Electron lightning-bolt icon is a product-identity defect wherever a desktop exposes it.
+- Runtime-window identity and package/desktop-entry identity are separate layers and require separate evidence.
+- Current architecture documents describe implemented behavior; future subsystem documents arrive with their implementation.
+- Executable suites stay at `tests/<suite>/`; durable version evidence belongs at `tests/test_reports/<version>/`.
+
+### Verification
+
+- Git status and history were re-read before tracker reconciliation.
+- Local Markdown targets, stale old report paths, document structure, and whitespace are checked after the move.
+- Application tests are not rerun because this work changes Markdown and evidence locations only; no executable source changed.
+
+### Fact-check report
+
+- Git confirms Phase 2 was committed as `f8d1b9b` at 11:08:04 AM EDT.
+- The supplied screenshots visibly show Electron's default window icon and dense large-number spacing.
+- Both version directories now exist below `tests/test_reports/` with their reports, metrics, and screenshots intact.
+
+### Sanity-check report
+
+- The new UI requirements remain Phase 3 work and do not reopen or mislabel Phase 2 evidence.
+- Final vector assets and broad Linux desktop certification remain Phase 4.
+- Documentation expansion introduces no new runtime, data, network, or release capability.
+
+### User lessons
+
+- A packaged icon does not automatically set the live Electron window icon during development.
+- Numeric display quality must be tested with difficult digit combinations, not one convenient fixture value.
+- Architecture documents are now connected through a recommended reading order and ownership/update table.
+
+### Agent lessons
+
+- Test native window chrome and installed desktop metadata independently.
+- Treat typography as data-dependent: representative glyphs, width, theme, and zoom belong in acceptance evidence.
+- Re-read Git before updating a pending tracker entry because the user may have committed the prior work.
+- Directory conventions must be updated everywhere when evidence moves, including historical links and future examples.
+
+### Risks or limitations
+
+- Automated screenshots may omit compositor-owned window chrome; Phase 3 may need explicit manual icon evidence.
+- The new architecture documents require ongoing synchronization as Phase 3 adds routes, preferences, and diagnostics.
+
+### Follow-up
+
+Review and commit this documentation and evidence-layout change. Do not begin Phase 3 implementation or publish a release without the user's next instruction.
+
+---
+
+## Commit 018 - Phase 2 core read-only slice completed
+
+**Commit:** `f8d1b9b` - `Refactor token tracking workflows and supporting components`
+**Timestamp:** August 14, 2026 at 11:08:04 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -104,7 +172,7 @@ Implement and verify the complete Phase 2 read-only Codex-to-Overview slice, rep
 - Added the `Token Trail` package/window/HTML/accessibility identity and a new single-mark icon without the duplicate corner mark or embedded wordmark.
 - Separated exact-loopback development CSP from strict packaged CSP and added real CSS-load/HMR testing through the development orchestrator.
 - Expanded fixture, unit, integration, Electron, packaged, security, accessibility, performance, and screenshot evidence.
-- Added `tests/0.2.0/test_report.md` and updated the controlling plan, specification, architecture, decisions, README, and this tracker.
+- Added `tests/test_reports/0.2.0/test_report.md` and updated the controlling plan, specification, architecture, decisions, README, and this tracker.
 
 ### Decisions and assumptions
 
@@ -119,11 +187,11 @@ Implement and verify the complete Phase 2 read-only Codex-to-Overview slice, rep
 - 10 Electron end-to-end, 2 real-development, 3 security, 2 accessibility, 1 packaged, and 1 performance test pass.
 - Type checking, formatting during development, package creation, and npm audit pass; audit reported zero known vulnerabilities.
 - A privacy-safe probe confirms installed `codex-cli 0.146.1` supports initialization, account read, and rate-limit read.
-- Full command results, screenshots, performance, coverage, environment, and unavailable coverage are recorded in `tests/0.2.0/test_report.md`.
+- Full command results, screenshots, performance, coverage, environment, and unavailable coverage are recorded in `tests/test_reports/0.2.0/test_report.md`.
 
 ### Fact-check report
 
-- Git confirms the worktree base is `4fba55e`; current Phase 2 work is uncommitted and is not represented as a Git commit.
+- Git confirms commit `f8d1b9b`, author Aman Ali, timestamp August 14, 2026 at 11:08:04 AM EDT, 61 changed files, 4,578 insertions, and 423 deletions.
 - The real Codex probe disclosed only compatibility booleans/counts, and packaged tests used an empty isolated `PATH` and `HOME`.
 - The 0.2.0 fixtures are synthetic and contain no real account values. The report identifies the exact fixture and no-account origin of each screenshot.
 
@@ -160,7 +228,7 @@ Implement and verify the complete Phase 2 read-only Codex-to-Overview slice, rep
 
 ### Follow-up
 
-Review the Phase 2 implementation and `tests/0.2.0/test_report.md`, then commit when satisfied. Begin Phase 3 only on the user's instruction; do not publish a release.
+Phase 2 is committed. Review the 0.2.0 evidence before beginning Phase 3; do not publish a release.
 
 ---
 
@@ -291,7 +359,7 @@ Build and verify the hardened Electron foundation before introducing real Codex 
 - Implemented the sandboxed Electron window, restrictive `tokentrail://app/` protocol, CSP, denied navigation and permissions, empty frozen preload bridge, single-instance lifecycle, ASAR packaging, and production fuses.
 - Added closed Codex request and notification allowlists, protocol bounds, exact large-decimal handling, renderer-safe errors, and allowlist-built diagnostics with secret canaries.
 - Added unit, component, fixture, end-to-end, accessibility, security, packaged, coverage, and performance suites.
-- Added architecture, threat, data, dependency, and protocol records plus a screenshot-backed `tests/0.1.0/test_report.md`.
+- Added architecture, threat, data, dependency, and protocol records plus a screenshot-backed `tests/test_reports/0.1.0/test_report.md`.
 - Replaced the duplicate-mark logo asset and captured the tested packaged shell.
 
 ### Decisions and assumptions
