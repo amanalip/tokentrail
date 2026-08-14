@@ -85,12 +85,12 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 ## Current uncommitted work
 
 **First recorded:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:18 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Record the user's authorization to begin Phase 1 development and establish the source-commenting and versioned test-report standards before application code is created.
+Implement the reviewable Phase 1 Electron foundation after the user's authorization, including secure packaging, account-free testing, screenshot evidence, and the corrected TokenTrail logo.
 
 ### Important changes
 
@@ -102,27 +102,42 @@ Record the user's authorization to begin Phase 1 development and establish the s
 - Added a separately tracked post-v1 backlog for optional desktop behavior, updates, platforms, local data, customization, companion clients, and recurring maintenance.
 - Reconciled the product specification's delivery phases and README navigation with the implementation plan.
 - Added Design Decision 007 and reconciled the finalized metadata for Commit 014.
+- Added exact npm dependencies, a lockfile, strict TypeScript projects, separate Vite builds, linting, formatting, Vitest, Playwright, and electron-builder configuration.
+- Implemented the sandboxed Electron main window, restrictive local `tokentrail://app/` protocol, CSP, denied navigation and desktop permissions, empty frozen preload bridge, single-instance lifecycle, ASAR packaging, and production fuse posture.
+- Added centralized Codex request and notification allowlists, bounded protocol limits, exact large-decimal handling, and renderer-safe error categories.
+- Added unit, component, account-free fixture integration, Electron end-to-end, security, packaged-smoke, and packaged-performance suites.
+- Added the Phase 1 threat model, data-flow diagram, data inventory, dependency rationale, protocol compatibility record, and owned-stdio lifecycle decision.
+- Replaced the branding asset with a corrected logo that removes the unwanted duplicate top-left mark, optimized it to 768 pixels, rebuilt the package, and visually inspected a fresh screenshot from the tested app.
+- Created `tests/0.1.0/test_report.md`, embedded the packaged-app screenshot, and recorded results, environment, package inventory, fuses, performance, resolved findings, privacy review, and open gaps.
 
 ### Verification
 
-- Markdown structure, local links, contents anchors, phase traceability, repository status language, and whitespace must be checked before commit.
-- No application dependency, source file, workflow, package, release, or external system is changed by this documentation update.
+- `npm run verify` passed formatting, lint, strict type checks, 46 unit and component tests, and one child-process fixture integration test.
+- V8 coverage recorded 97.91 percent statements, 96.96 percent branches, 100 percent functions, and 97.82 percent lines.
+- Two development Electron end-to-end tests passed, including system/light/dark themes; two accessibility smoke tests and two Electron security tests passed; the final packaged smoke test passed and captured the curated screenshot; the packaged performance test passed evidence collection.
+- `npm audit` reported zero known vulnerabilities on August 14, 2026.
+- The final package loaded `tokentrail://app/`, exposed no Node globals, used a 704,181-byte ASAR with an explicit file set, and preserved the reviewed production fuses.
+- `git diff --check` passed before the final documentation update and must be repeated before commit.
 
 ### Fact-check report
 
-- The user explicitly authorized development to begin and explicitly requested detailed comments and version-specific test reports.
+- The user explicitly authorized development, requested detailed comments, required phase-by-phase screenshot-backed test reports, and requested removal of the logo's duplicate top-left mark.
 - Commit 014 is `ed54725`; it changed only `commit_tracker.md` with 105 insertions and 3 deletions.
-- Exact package versions and implementation results do not exist yet and are not claimed.
+- Exact package versions are locked in `package.json` and `package-lock.json`; dependency rationale records their licenses and selection findings.
+- The Phase 1 report identifies the working tree as based on `23d5c8c`; it does not invent a final commit hash before the maintainer commits.
+- Packaged performance measured 1,002.7 ms cold startup, 909.3 ms warm startup, 0.57 percent idle CPU, 717.7 MB summed RSS, and 276.2 MB proportional memory on KDE Wayland x64.
 
 ### Sanity-check report
 
-- Development authorization stays inside the existing local read-only data boundary.
-- Publication, signing, update deployment, telemetry, broader Codex access, and retained history remain gated.
-- Detailed comments are paired with descriptive names and focused code so commentary does not replace readable design.
+- Implementation stays inside the approved local read-only boundary and does not connect to a real Codex account.
+- Renderer isolation, navigation denial, a closed method allowlist, bounded test fixtures, and package fuses align with the threat model.
+- Publication, signing, update deployment, telemetry, broader Codex access, retained history, and GitHub release automation remain gated.
+- The provisional memory target is missed and remains visible as Phase 4 optimization or evidence-based architecture reconsideration work.
+- Authored source uses teaching-style rationale comments while generated, lock, image, and data-only files retain their documented exceptions.
 
 ### Follow-up
 
-Commit this development-start documentation, then begin Phase 1 dependency selection, threat review, and secure Electron scaffolding.
+Review and commit the completed Phase 1 foundation, then begin the Phase 2 owned-process Codex adapter and first read-only Overview slice.
 
 ---
 

@@ -1,0 +1,194 @@
+/* Define only local system fonts and a compact Phase 1 color vocabulary. */
+:root {
+  color-scheme: light dark;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --background: #0b0e14;
+  --surface: #121722;
+  --surface-border: #263043;
+  --text: #f5f7fb;
+  --muted: #aab4c5;
+  --accent: #7dd3fc;
+  --accent-soft: rgba(125, 211, 252, 0.12);
+}
+
+/* Apply the light token set when a future validated preference explicitly selects light mode. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --background: #f4f7fb;
+  --surface: #ffffff;
+  --surface-border: #d8e0eb;
+  --text: #142033;
+  --muted: #526176;
+  --accent: #0369a1;
+  --accent-soft: rgba(3, 105, 161, 0.08);
+}
+
+/* Lock native control colors to dark when a future validated preference explicitly selects dark mode. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Use border-box sizing so responsive width calculations include padding and borders. */
+* {
+  box-sizing: border-box;
+}
+
+/* Remove browser defaults and paint the full Electron viewport without animation or remote imagery. */
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+/* Center the initial shell while preserving natural document scrolling at high zoom. */
+body {
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(61, 90, 128, 0.24), transparent 38rem),
+    var(--background);
+}
+
+/* Keep the main content readable across compact and wide window sizes. */
+.shell {
+  width: min(54rem, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem);
+}
+
+/* Center the product introduction without hiding its semantic reading order. */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Keep the concept artwork small enough to function as identity rather than dashboard content. */
+.logo {
+  width: 8rem;
+  height: 8rem;
+  margin-bottom: 1rem;
+  border-radius: 1.75rem;
+}
+
+/* Give the product name a clear hierarchy with responsive sizing. */
+h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+/* Keep the supporting promise prominent but quieter than the name. */
+.tagline {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+}
+
+/* Present the milestone as a status label rather than as a simulated metric. */
+.status {
+  margin: 2rem 0 0;
+  padding: 0.45rem 0.8rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(125, 211, 252, 0.38);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Limit the implementation summary to a comfortable reading width. */
+.summary {
+  max-width: 36rem;
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+/* Separate the security boundary from the introduction with a clear local card. */
+.boundary {
+  margin-top: clamp(2.5rem, 7vw, 4.5rem);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border: 1px solid var(--surface-border);
+  border-radius: 1.25rem;
+}
+
+/* Keep the secondary heading compact inside the supporting card. */
+.boundary h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Lay out short guarantees responsively while retaining semantic list markup. */
+.boundary ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Give each guarantee a distinct readable region. */
+.boundary li {
+  padding: 0.9rem 1rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 0.8rem;
+  line-height: 1.45;
+}
+
+/* Stack the guarantee list when the window or zoom level leaves insufficient horizontal room. */
+@media (max-width: 34rem) {
+  .boundary ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Replace dark tokens with a calm light palette when the operating system requests light mode. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --background: #f4f7fb;
+    --surface: #ffffff;
+    --surface-border: #d8e0eb;
+    --text: #142033;
+    --muted: #526176;
+    --accent: #0369a1;
+    --accent-soft: rgba(3, 105, 161, 0.08);
+  }
+
+  :root:not([data-theme='dark']) body {
+    background:
+      radial-gradient(circle at 50% 10%, rgba(125, 211, 252, 0.24), transparent 38rem),
+      var(--background);
+  }
+
+  .boundary li {
+    background: rgba(20, 32, 51, 0.035);
+  }
+}
+
+/* Give explicit light mode the same calm background even when the operating system currently prefers dark. */
+:root[data-theme='light'] body {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(125, 211, 252, 0.24), transparent 38rem),
+    var(--background);
+}

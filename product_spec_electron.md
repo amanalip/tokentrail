@@ -1,7 +1,7 @@
 # TokenTrail Electron Product Specification
 
 **Status:** Approved controlling implementation specification
-**Product stage:** Phase 1 development authorized
+**Product stage:** Phase 1 foundation complete; Phase 2 is next
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
@@ -1715,6 +1715,9 @@ At minimum before stable release:
 - It records the exact commands executed and the evidence-backed result of unit, schema, integration, preload, component, end-to-end, security, accessibility, compatibility, performance, packaging, and packaged-smoke checks that apply to that version.
 - Failures, warnings, skipped checks, unavailable hardware, incomplete matrix coverage, known limitations, artifact names, and checksums remain visible. A check that did not run is never presented as passing.
 - The report ends with a clear release recommendation: ready, preview-only, or not ready, plus the reasons for that recommendation.
+- Each phase adds curated screenshots of the tested application states under `tests/<version>/screenshots/` and embeds them in the report with a caption naming the build, environment, and behavior shown.
+- Curated screenshots come from actual development or packaged test runs. Routine CI screenshots remain transient unless deliberately promoted into the report, so CI does not rewrite tracked evidence.
+- Screenshots must not contain account identifiers, private paths, prompts, responses, tokens, credentials, notifications, or unrelated desktop content.
 - Reports contain no credentials, account identifiers, private paths, prompts, responses, raw protocol payloads, or other sensitive diagnostic data.
 - The report is committed with the version candidate and updated from actual CI and manual evidence before its GitHub Release is published.
 

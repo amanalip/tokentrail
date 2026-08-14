@@ -1,0 +1,13 @@
+# Dependency, build, package, and test outputs are generated and must not be reformatted.
+node_modules/
+dist/
+release/
+coverage/
+playwright-report/
+test-results/
+
+# The historical license text is preserved verbatim.
+LICENSE
+
+# Product image assets are binary files.
+assets/

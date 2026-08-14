@@ -1,10 +1,10 @@
 # TokenTrail Implementation Plan
 
-**Status:** Approved planning structure; implementation tracking begins with Phase 1
+**Status:** Approved plan; Phase 1 complete
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 1, not started
+**Current phase:** Phase 2 is next; Phase 1 evidence is complete
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:27 AM EDT (`America/Toronto`, UTC-04:00)
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how TokenTrail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -127,61 +127,61 @@ Create a minimal, measurable, hardened Electron application foundation. This pha
 
 ### 5.2 Repository and tooling
 
-- [ ] Create the Node.js package manifest and select an explicit package-manager version.
-- [ ] Select and pin supported versions of Electron, TypeScript, React, Vite, electron-builder, Vitest, React Testing Library, Playwright, axe-core, Zod, TanStack Query, React Aria Components, and ECharts as they become needed.
-- [ ] Record dependency selection reasoning and licenses.
-- [ ] Create strict TypeScript configurations for shared, main, preload, renderer, tests, and build tooling.
-- [ ] Create separate Vite builds for main, preload, and renderer without an experimental Electron-specific Vite abstraction.
-- [ ] Add formatting, linting, type-checking, unit-test, integration-test, security-test, packaging, and packaged-smoke command entry points.
-- [ ] Add `.gitignore`, editor-neutral formatting rules, and deterministic line endings.
-- [ ] Ensure CI and local commands do not modify tracked files.
+- [x] Create the Node.js package manifest and select an explicit package-manager version.
+- [x] Select and pin supported versions of Electron, TypeScript, React, Vite, electron-builder, Vitest, React Testing Library, Playwright, and Zod needed by the foundation; defer axe-core, TanStack Query, React Aria Components, and ECharts until their feature phases.
+- [x] Record dependency selection reasoning and licenses.
+- [x] Create strict TypeScript configurations for shared, main, preload, renderer, tests, and build tooling.
+- [x] Create separate Vite builds for main, preload, and renderer without an experimental Electron-specific Vite abstraction.
+- [x] Add formatting, linting, type-checking, unit-test, integration-test, security-test, packaging, packaged-smoke, and performance command entry points.
+- [x] Add `.gitignore`, editor-neutral formatting rules, and deterministic line endings.
+- [x] Ensure verification commands do not modify tracked files; keep the explicit `format` command maintainer-initiated.
 
 ### 5.3 Secure process foundation
 
-- [ ] Create small main, preload, renderer, and shared entry points.
-- [ ] Create one BrowserWindow with renderer sandboxing, context isolation, and Node integration disabled.
-- [ ] Load only packaged local content through the approved application scheme.
-- [ ] Define the initial restrictive Content Security Policy.
-- [ ] Deny unapproved navigation, popup creation, permissions, downloads, webviews, iframes, and remote content.
-- [ ] Define the preload API as an empty or minimal frozen surface until a reviewed domain method is introduced.
-- [ ] Configure Electron fuses and ASAR loading posture for development and packaged verification.
-- [ ] Enforce single-instance behavior and safe shutdown structure.
-- [ ] Establish typed error categories that do not expose raw exceptions to the renderer.
+- [x] Create small main, preload, renderer, and shared entry points.
+- [x] Create one BrowserWindow with renderer sandboxing, context isolation, and Node integration disabled.
+- [x] Load only packaged local content through the approved application scheme.
+- [x] Define the initial restrictive Content Security Policy.
+- [x] Deny unapproved navigation, popup creation, permissions, downloads, webviews, iframes, and remote content.
+- [x] Define the preload API as an empty frozen surface until a reviewed domain method is introduced.
+- [x] Configure Electron fuses and ASAR loading posture for development and packaged verification.
+- [x] Enforce single-instance behavior and safe shutdown structure.
+- [x] Establish typed error categories that do not expose raw exceptions to the renderer.
 
 ### 5.4 Protocol and data-boundary research
 
-- [ ] Confirm the currently installed Codex app-server command, transport options, method names, and generated bindings.
-- [ ] Inventory only the approved v1 fields and mark each as reported, observed, calculated, or unavailable.
-- [ ] Decide the initial Codex connection lifecycle: owned child process, existing daemon, or a documented combination.
-- [ ] Create the deny-by-default method allowlist in one privileged module.
-- [ ] Define runtime size, nesting, string, array, number, and timeout limits before accepting protocol data.
-- [ ] Define safe decimal-string or `bigint` handling for values beyond JavaScript safe integer precision.
-- [ ] Record capability and version-mismatch behavior.
+- [x] Confirm the currently installed Codex app-server command, transport options, method names, and generated bindings.
+- [x] Inventory only the approved v1 fields and mark each as reported, observed, calculated, or unavailable.
+- [x] Select an owned stdio child process as the initial Codex connection lifecycle and document why daemon fallback is deferred.
+- [x] Create the deny-by-default request and notification method allowlists in one privileged module.
+- [x] Define runtime size, nesting, string, array, number, decimal, and timeout limits before accepting protocol data.
+- [x] Define bounded decimal-string to `bigint` handling for values beyond JavaScript safe integer precision.
+- [x] Record capability and version-mismatch behavior.
 
 ### 5.5 Threat and privacy design
 
-- [ ] Create a data-flow diagram covering renderer, preload, main, adapter, Codex app-server, settings, diagnostics, and future update checks.
-- [ ] Create a threat model covering malicious renderer content, IPC misuse, protocol injection, path traversal, subprocess ownership, dependency compromise, diagnostic leakage, and release compromise.
-- [ ] Create a data inventory naming source, purpose, trust boundary, in-memory lifetime, persistence, renderer exposure, and diagnostic treatment.
-- [ ] Define the allowlist-based diagnostic schema and canary-test strategy.
-- [ ] Confirm that usage snapshots and session deltas have no persistence path.
+- [x] Create a data-flow diagram covering renderer, preload, main, adapter, Codex app-server, settings, diagnostics, and future update checks.
+- [x] Create a threat model covering malicious renderer content, IPC misuse, protocol injection, path traversal, subprocess ownership, dependency compromise, diagnostic leakage, and release compromise.
+- [x] Create a data inventory naming source, purpose, trust boundary, in-memory lifetime, persistence, renderer exposure, and diagnostic treatment.
+- [x] Define the allowlist-based diagnostic schema and recursive canary-test strategy.
+- [x] Confirm that usage snapshots and session deltas have no persistence path.
 
 ### 5.6 Test foundation
 
-- [ ] Configure unit, fixture, integration, component, Electron end-to-end, security, accessibility, and packaged-smoke test locations.
-- [ ] Add tests that confirm the renderer has no `require`, raw `process`, Electron object, filesystem access, environment access, or generic IPC.
-- [ ] Add navigation, popup, permission, custom-scheme, and CSP tests.
-- [ ] Add a minimal fixture app-server harness without real account data.
-- [ ] Establish coverage reporting as evidence, not as a substitute for behavior tests.
-- [ ] Establish a versioned test-report template matching section 12.
+- [x] Configure unit, fixture, integration, component, Electron end-to-end, security, accessibility, performance, and packaged-smoke test locations.
+- [x] Add tests that confirm the renderer has no `require`, raw `process`, Electron object, filesystem access, environment access, or generic IPC.
+- [x] Add navigation, popup, permission, custom-scheme, and CSP tests.
+- [x] Add a minimal fixture app-server harness without real account data.
+- [x] Establish V8 coverage reporting as evidence alongside behavior tests.
+- [x] Establish the versioned test-report structure through `tests/0.1.0/test_report.md` and require phase screenshots.
 
 ### 5.7 Minimal shell and measurement
 
-- [ ] Render a local branded shell with a visible development status and no fabricated usage values.
-- [ ] Verify light, dark, and system theme plumbing at the shell level.
-- [ ] Produce a development package and launch it outside the Vite development server.
-- [ ] Measure cold launch, warm launch, idle CPU, idle memory, and initial bundle size on available KDE and GNOME environments.
-- [ ] Record gaps where a required environment or architecture is not available.
+- [x] Render a local branded shell with a visible development status and no fabricated usage values.
+- [x] Verify light, dark, and system theme plumbing at the shell level.
+- [x] Produce a development package and launch it outside the Vite development server.
+- [x] Measure cold launch, warm launch, idle CPU, idle memory, and initial bundle size on the available KDE Wayland environment; record GNOME as unavailable.
+- [x] Record unavailable GNOME, X11, arm64, clean-distribution, and installer evidence in the Phase 1 test report.
 
 ### 5.8 Phase 1 deliverables
 
@@ -194,13 +194,13 @@ Create a minimal, measurable, hardened Electron application foundation. This pha
 
 ### 5.9 Phase 1 exit criteria
 
-- [ ] Frozen installation, formatting check, lint, type check, unit tests, and security foundation tests pass.
-- [ ] The development and packaged shells launch without remote content.
-- [ ] The renderer cannot access privileged Electron or Node capabilities.
-- [ ] Unexpected navigation, windows, permissions, and downloads are blocked.
-- [ ] The Codex allowlist contains no mutation, task, prompt, repository, or filesystem method.
-- [ ] Threat, data-flow, dependency, and baseline performance evidence is reviewable.
-- [ ] No unresolved critical security finding remains.
+- [x] Frozen installation, formatting check, lint, type check, unit tests, fixture integration, and security foundation tests pass.
+- [x] The development and packaged shells launch without remote content.
+- [x] The renderer cannot access privileged Electron or Node capabilities.
+- [x] Unexpected navigation, windows, permissions, and downloads are blocked.
+- [x] The Codex allowlist contains no mutation, task, prompt, repository, or filesystem method.
+- [x] Threat, data-flow, dependency, and baseline performance evidence is reviewable.
+- [x] No unresolved critical security finding remains; the open provisional memory miss remains Phase 4 performance work.
 
 ## 6. Phase 2 - Core read-only slice
 
@@ -604,6 +604,7 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Each tested application version uses `tests/<version>/test_report.md`.
 - Prerelease identifiers remain part of the folder name, such as `tests/1.0.0-preview.1/test_report.md`.
 - The report begins when the version candidate is created and is updated as CI and manual evidence arrives.
+- Each implementation phase updates the active version report and adds curated screenshots under `tests/<version>/screenshots/` from the real tested application.
 - If a candidate changes code, it receives a new prerelease identifier or patch version. Evidence from an older commit is not silently reused.
 - Reports are committed before the corresponding release is published.
 
@@ -623,6 +624,7 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 12. Installation, upgrade, and uninstall results.
 13. Known limitations and deferred issue identifiers.
 14. Final release recommendation and approver state.
+15. Embedded phase-by-phase screenshots with build, environment, tested state, and privacy-safe captions.
 
 ### 12.3 Integrity rules
 
@@ -632,6 +634,7 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Secrets, account data, private paths, prompts, responses, raw protocol messages, and identifying diagnostics are excluded.
 - Manual checks name the tester role, environment, procedure, and observed outcome without collecting unnecessary identity data.
 - CI links support the report but do not replace durable summarized evidence in the repository.
+- Routine CI screenshots remain transient. A screenshot becomes durable evidence only after visual inspection confirms that it shows the intended build and contains no sensitive or unrelated desktop data.
 
 ## 13. Documentation deliverables
 

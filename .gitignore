@@ -1,0 +1,23 @@
+# Dependency installation is reproducible from package-lock.json, so the local package tree is never committed.
+node_modules/
+
+# Vite writes process-specific production bundles here.
+dist/
+
+# electron-builder writes unpacked applications and distributable packages here.
+release/
+
+# Test runners write transient reports, screenshots, videos, and coverage data to these folders.
+coverage/
+playwright-report/
+test-results/
+
+# Local development and package tools may create logs that do not belong in source control.
+*.log
+npm-debug.log*
+
+# Editors and desktop environments create machine-specific metadata that is unrelated to TokenTrail.
+.idea/
+.vscode/
+.DS_Store
+*~
