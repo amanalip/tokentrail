@@ -27,6 +27,8 @@ npm run dev
 
 The development command builds main and preload in watch mode, serves the renderer only on `127.0.0.1:5173`, and launches Electron after all three are ready.
 
+**Known Phase 1 limitation:** `npm run dev` currently renders React content without the authored CSS because Vite injects development styles inline while the strict CSP allows only self-hosted styles. The packaged build remains styled correctly. Phase 2 will repair development styling without weakening packaged CSP; until then, use `npm run package:dir` followed by `./release/linux-unpacked/tokentrail` for visual review.
+
 Core verification commands:
 
 ```bash

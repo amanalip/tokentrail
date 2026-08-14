@@ -47,6 +47,7 @@ This threat model records what the Phase 1 foundation protects before Codex data
 | T-016 | A denied Codex method is called | No transport exists in Phase 1; centralized allowlist is required before transport | Attempt every denied method through adapter and IPC |
 | T-017 | Test tooling weakens production fuses | Packaged tests attach through Chromium CDP because Node inspect is disabled | Confirm Node inspect remains disabled in every package |
 | T-018 | Published binary changes under an existing version | GitHub release immutability enabled and tag-driven drafts planned | Protected workflow, checksum, and public-download verification |
+| T-019 | Development-tool compatibility encourages weakening production CSP | Shared strict policy currently blocks Vite's inline development CSS; production remains strict while Phase 2 designs an explicit development path | Real `npm run dev` computed-style and hot-update test, paired screenshots, policy separation test, and packaged rejection of inline styles |
 
 ## Phase 1 assumptions
 

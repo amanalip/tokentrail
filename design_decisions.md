@@ -42,6 +42,7 @@ This document records product and technical design decisions in chronological or
   - [Boundaries that remain](#boundaries-that-remain)
   - [Decision outcome](#decision-outcome-4)
 - [008 - User-facing product name separated from repository identifier](#008---user-facing-product-name-separated-from-repository-identifier)
+- [009 - Development styling must not weaken production CSP](#009---development-styling-must-not-weaken-production-csp)
 
 ## Decision status guide
 
@@ -545,3 +546,39 @@ The repository and npm package use the machine-safe identifier `tokentrail`, and
 ### Decision outcome
 
 The product identity and repository identity are now explicitly separate. This turn changes documentation only. Phase 2 application code has not started.
+
+---
+
+## 009 - Development styling must not weaken production CSP
+
+**Recorded:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved constraint; Phase 2 implementation pending
+
+### Context
+
+The Phase 1 `npm run dev` shell loads React content and local images but displays browser-default typography, bullets, spacing, and layout. The renderer imports `styles.css`, while both the HTML meta policy and shared CSP allow `style-src 'self'` without inline styles. The installed Vite development transform uses a style-update path that creates a `<style>` element, assigns CSS text, and appends it to the document. CSP therefore rejects the development stylesheet.
+
+The packaged build looks correct because Vite extracts the same CSS into a self-hosted file, which `style-src 'self'` permits. This makes the defect mode-specific and explains why packaged smoke tests and screenshots passed.
+
+### Why Phase 1 missed it
+
+- Unit and component tests ran in jsdom, which did not reproduce Electron CSP enforcement or Vite development injection.
+- Electron end-to-end tests built production assets first and loaded them through `tokentrail://app/`; they did not run the real `npm run dev` orchestration.
+- Packaged tests correctly verified extracted CSS and production policy, but that evidence covered only packaged mode.
+- Accessibility smoke tests verified semantics and reflow, which can pass even when authored visual styles are absent.
+- The development readiness probe checked only that Vite returned HTTP success.
+- The only curated visual screenshot came from the packaged app, so there was no paired development screenshot to reveal the difference.
+
+### Decision
+
+- Production keeps its strict self-hosted style and script policy. The development problem cannot justify adding `unsafe-inline` to packaged CSP.
+- Development and production policy construction become explicit, separate, and directly tested.
+- Phase 2 first evaluates self-hosted development CSS or nonce-compatible injection.
+- A development-only inline-style exception is permitted only as a documented last resort, restricted to an unpackaged process and the exact validated loopback origin.
+- The real `npm run dev` path must be tested for representative computed styles and one CSS hot-update cycle.
+- Phase evidence includes matching development and packaged screenshots at the same state, viewport, and theme.
+- A packaged security test continues to prove inline styles remain rejected.
+
+### Decision outcome
+
+The bug and its test gap are now explicit Phase 2 work. This documentation change does not implement the fix, start Phase 2, or weaken any CSP.

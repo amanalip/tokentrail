@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 016 - Token Trail branding clarified](#commit-016---token-trail-branding-clarified)
 - [Commit 015 - Phase 1 secure Electron foundation completed](#commit-015---phase-1-secure-electron-foundation-completed)
 - [Commit 014 - Commit history reconciled](#commit-014---commit-history-reconciled)
 - [Commit 013 - GitHub release workflow documented](#commit-013---github-release-workflow-documented)
@@ -87,73 +88,140 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Document **Token Trail** as the user-facing application name, schedule the executable correction in Phase 2, and repair the commit tracker without starting Phase 2 code.
+Document the unstyled `npm run dev` defect, explain why Phase 1 missed it, and add a Phase 2 repair and recurrence-prevention plan without changing code or starting Phase 2.
 
 ### Important changes
 
-- Established **Token Trail** as the user-facing product name while retaining `tokentrail` for machine-facing repository and package identifiers.
-- Updated active product documents to use the spaced name and added a controlling naming rule to the README and Electron specification.
-- Added a detailed Phase 2 checklist covering the logo wordmark, renderer, window and HTML titles, onboarding, accessibility names, package and Linux metadata, tests, and replacement screenshots.
-- Amended the Phase 1 report so its real screenshot honestly records the existing `TokenTrail` missing-space defect.
-- Added Design Decision 008 without changing executable code.
-- Reconciled committed Phase 1 work as Commit 015 and made all tracker sections mandatory, including user and agent learning.
+- Added a detailed Phase 2 development-renderer and CSP section covering reproduction, policy separation, safe solution order, computed-style testing, CSS hot updates, packaged security, and paired screenshots.
+- Expanded the product specification with the exact Vite inline-style versus `style-src 'self'` causal chain and a production-security constraint.
+- Added Design Decision 009 and threat T-019 so development convenience cannot silently weaken packaged CSP.
+- Updated the Phase 1 report with the open development-rendering defect and corrected its development coverage limitation.
+- Added a README warning and safe packaged-preview command so contributors do not mistake the unstyled development view for intended design before Phase 2 repairs it.
+- Reconciled the committed naming documentation as Commit 016.
 
 ### Decisions and assumptions
 
-- The visible product name is **Token Trail** in headings, window titles, menus, onboarding, accessibility names, desktop metadata, documentation, screenshots, and release copy.
-- `tokentrail` remains valid for the repository, npm package, executable slug, protocol, filesystem-safe artifacts, and other machine-facing identifiers.
-- `TokenTrail` may remain inside conventional source-code identifiers, but source identifiers cannot be reused automatically as interface copy.
-- Existing Phase 1 executable code and its screenshot remain unchanged evidence; the report labels the defect instead of rewriting history.
-- Historical Git subjects and quoted old labels remain exact.
-- Phase 2 is planned but has not started.
+- Production CSP must remain strict. Development-tool compatibility is solved through a separately constructed, explicitly tested policy or self-hosted style path, never by silently adding `unsafe-inline` to the shared production policy.
+- A styled packaged screenshot proves packaged rendering only; it is not evidence that the Vite development path has equivalent styling.
+- Phase 2 evaluates self-hosted development CSS or nonce-compatible injection before considering a narrowly scoped development-only inline-style allowance.
+- Any development exception must require an unpackaged process and the exact validated `http://127.0.0.1:5173` origin and must be unreachable through `tokentrail://app/`.
+- Phase 2 remains planned but not started.
 
 ### Verification
 
 - `git diff --check` passed.
 - Twelve Markdown files were checked and every local file-link target exists.
-- Active documentation uses **Token Trail** except where `tokentrail` or `TokenTrail` is deliberately quoted as a machine identifier, source identifier, historical label, or known Phase 1 defect.
+- Source inspection confirms the renderer imports `styles.css`, both CSP definitions allow only `style-src 'self'`, and the installed Vite development transform contains a `document.createElement('style')` injection path.
 - Application tests were not rerun because this change edits Markdown only.
 
 ### Fact-check report
 
-- The user explicitly clarified that the application name is `Token Trail`; `tokentrail` is only the repository name.
-- Git confirms Phase 1 was committed as `75bb8f5` at 2:29:26 AM EDT with 74 changed files, 10,673 insertions, and 67 deletions.
-- The checked-in Phase 1 screenshot visibly displays `TokenTrail`, so the report retains that fact until Phase 2 produces corrected evidence.
+- The user's local screenshot shows React text and the local logo with browser-default layout and typography. That partial-render pattern matches CSS rejection rather than a React, image, or complete renderer-load failure.
+- `src/renderer/main.tsx` imports `styles.css`; `src/renderer/index.html` and the shared CSP constant both declare `style-src 'self'`; the installed Vite transform contains an inline style creation and append path. Together these establish the development CSS/CSP conflict.
+- Git confirms the branding documentation was committed as `fa82dd2` at 2:41:19 AM EDT with 12 changed files, 367 insertions, and 214 deletions.
 
 ### Sanity-check report
 
-- The naming update changes active documentation and future requirements without falsely claiming that the Phase 1 binary already displays the corrected name.
+- The repair is scoped to development parity and cannot justify weakening the packaged policy.
+- The Phase 1 packaged screenshot and security results remain valid for the packaged path, while the development-path coverage claim is corrected rather than overstated.
+- No executable file, CSP, test, dependency, package, or release artifact changes in this documentation turn.
 - Phase 2 remains planned but not started, as requested.
-- Repository and machine identifiers remain stable, so the documentation does not create an unnecessary migration or compatibility change.
 
 ### User lessons
 
-- Versioned reports embed screenshots captured from the app actually tested, so visible defects such as the missing space in `TokenTrail` remain inspectable rather than being hidden by later prose.
-- The repository identifier and the visible product name serve different purposes: `tokentrail` is machine-facing, while **Token Trail** is the application name.
-- Phase 2 naming work is documented but has not started.
+- When React content and images appear but the page uses serif fonts, ordinary bullets, and unstyled spacing, the renderer may be healthy while CSS alone is blocked.
+- Development and packaged Electron modes use different CSS delivery behavior, so both modes require their own visible and automated evidence.
+- The strict CSP is performing its intended security function; the defect is that the development asset strategy was not designed and tested against that policy.
+- The correct interim visual-review path is the packaged build, not weakening CSP locally without a reviewed environment boundary.
 
 ### Agent lessons
 
-- Never infer a user-facing product name by title-casing a repository, package, executable, or protocol identifier.
-- Treat **Token Trail** as controlled visible copy and `tokentrail` as a machine identifier; audit both separately in implementation and tests.
-- Screenshot evidence is also naming evidence. When a screenshot proves a defect, update the report honestly and replace the screenshot only after the corrected build is tested.
-- The commit tracker must preserve user and agent learning for current uncommitted work as well as finalized commits. Required sections are explicit, even when their content is `No new learning`.
-- Re-read Git state before updating the tracker because the user may commit between turns; committed work must not remain labeled as pending.
+- Phase 1 missed this defect because its component tests used jsdom without CSP enforcement, its Electron end-to-end helper built production assets before launch, its packaged tests used extracted self-hosted CSS, and its curated screenshot covered only the packaged build.
+- The CSP unit test correctly protected production by rejecting `unsafe-inline`, but it tested the policy string in isolation and did not test whether Vite's development CSS mechanism was compatible with that policy.
+- Accessibility structure tests can pass on an unstyled page because headings, landmarks, status text, and reflow are not proof that authored CSS loaded.
+- A development readiness probe that receives HTTP 200 proves only that Vite answers; it must also verify representative computed styles and one CSS hot-update cycle.
+- Every materially different runtime path must be present in the test-evidence matrix. Similar visible outcomes cannot be assumed from a packaged-only screenshot.
+- Rectification requires paired development and packaged checks: console-CSP capture before the fix, explicit CSP construction tests, computed-style assertions, hot-update verification, equal-state screenshots, and a final proof that packaged CSP still rejects inline styles.
+- Re-read Git state during documentation work because the user may commit between tool calls; the tracker must immediately move that work from pending to finalized history.
 
 ### Risks or limitations
 
-- The Phase 1 binary and screenshot still display `TokenTrail` without the required space; correction and replacement evidence are scheduled for Phase 2.
-- Historical tracker wording may retain `TokenTrail` when it quotes an exact old commit subject or records the terminology used at that time.
+- Until Phase 2 repairs it, `npm run dev` remains unsuitable for visual review even though the packaged shell is styled correctly.
+- A careless fix using a shared `style-src 'unsafe-inline'` would remove an important packaged security control; the plan explicitly forbids that shortcut.
 
 ### Follow-up
 
-Review and commit this documentation-only naming correction. Do not start Phase 2 until the user gives the next implementation instruction.
+Review and commit this documentation-only development-parity correction. Do not start Phase 2 until the user gives the next implementation instruction.
+
+---
+
+## Commit 016 - Token Trail branding clarified
+
+**Commit:** `fa82dd2` - `Clarify Token Trail branding and update commit tracker`
+**Timestamp:** August 14, 2026 at 2:41:19 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Separate the visible **Token Trail** product name from the `tokentrail` repository and machine identifiers, schedule the executable correction, and restore complete learning records.
+
+### Important changes
+
+- Updated active documentation to use **Token Trail** while preserving exact machine identifiers, source identifiers, and historical Git wording.
+- Added a detailed Phase 2 naming checklist for the logo wordmark, interface, titles, accessibility names, package metadata, tests, and screenshots.
+- Added Design Decision 008 and amended the Phase 1 report to record the visible missing-space defect honestly.
+- Reconciled Phase 1 as Commit 015 and made learning and other tracker sections mandatory for new entries.
+
+### Decisions and assumptions
+
+- People see **Token Trail**; repository, package, executable, protocol, artifact, and application identifiers may use `tokentrail`.
+- `TokenTrail` may appear in conventional source symbols but cannot become interface copy automatically.
+- Phase 1 screenshot evidence remains unchanged and records the tested defect until Phase 2 replaces it.
+- Phase 2 was planned but not started.
+
+### Verification
+
+- The commit changed Markdown only.
+- Documentation whitespace and local file-link targets were checked before commit.
+- Active prose used **Token Trail** except for deliberate machine, source, historical, and defect references.
+
+### Fact-check report
+
+- Git records commit `fa82dd2`, author Aman Ali, timestamp August 14, 2026 at 2:41:19 AM EDT, 12 changed files, 367 insertions, and 214 deletions.
+- The Phase 1 screenshot visibly contains the old `TokenTrail` heading and logo wordmark.
+
+### Sanity-check report
+
+- The change did not rename repository or protocol identifiers unnecessarily.
+- It did not claim that the tested Phase 1 binary already displays the corrected name.
+- It did not start Phase 2 or change executable behavior.
+
+### User lessons
+
+- Repository identity and product identity serve different purposes: `tokentrail` is machine-facing, while **Token Trail** is the visible application name.
+- Screenshot evidence can reveal naming defects and should remain honest until a corrected build is tested.
+
+### Agent lessons
+
+- Never derive visible product copy from repository, package, executable, or source identifiers.
+- Audit naming separately across text, logo wordmarks, accessibility names, window metadata, desktop metadata, tests, and screenshots.
+- Never omit learning sections; use `No new learning` when there is genuinely nothing new to record.
+- Reconcile Git after the user commits so finalized work is not left in the pending section.
+
+### Risks or limitations
+
+- The executable and screenshot still use `TokenTrail` until Phase 2 implements and verifies the correction.
+- Exact historical commit subjects and old quoted labels may retain the previous spelling.
+
+### Follow-up
+
+Implement and visually verify the naming correction at the start of Phase 2 after the user authorizes development to continue.
 
 ---
 
@@ -217,6 +285,7 @@ Build and verify the hardened Electron foundation before introducing real Codex 
 - Protocol methods, bounds, error categories, and diagnostic fields must be centralized and deny unknown values by default.
 - Teaching-style comments still require focused functions and precise names; comments cannot compensate for unclear design.
 - Phase evidence is incomplete until the final tested screenshot is visually inspected and embedded in the versioned report.
+- Packaged rendering evidence does not cover `npm run dev`; Vite's development-time CSS injection must be tested under the actual development CSP.
 
 ### Risks or limitations
 
@@ -224,6 +293,7 @@ Build and verify the hardened Electron foundation before introducing real Codex 
 - The provisional memory target is missed and remains Phase 4 work.
 - No real Codex connection, installer matrix, release workflow, signing, update behavior, or public artifact exists.
 - The committed Phase 1 build displays the unspaced `TokenTrail` label; Decision 008 schedules correction for Phase 2.
+- The committed `npm run dev` path blocks authored CSS because Vite injects development styles inline while CSP permits only self-hosted styles; the production package remains styled because it extracts CSS to a file.
 
 ### Follow-up
 

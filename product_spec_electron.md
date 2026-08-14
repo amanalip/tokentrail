@@ -5,7 +5,7 @@
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
 
 This document defines the controlling Electron direction and implementation boundary for Token Trail. Phase 1 is complete. Phase 2 is documented but has not started in this turn. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
@@ -1375,6 +1375,16 @@ frame-ancestors 'none';
 ```
 
 Development exceptions are restricted to local development and cannot be copied into production configuration. Inline scripts and `unsafe-eval` are prohibited in production. Inline style allowances, if a library requires them, need a documented nonce or a library change rather than a silent CSP weakening.
+
+The Phase 1 development server exposed a concrete parity defect: Vite transforms imported CSS into its development style-update path, which injects an inline `<style>` element, while the shared `style-src 'self'` policy rejects inline styles. React and local images can still load, so the failure appears as a dark browser-default page rather than a blank or crashed app. The packaged build does not reveal the defect because Vite extracts CSS into a self-hosted file that production CSP permits.
+
+Phase 2 must resolve this without weakening production:
+
+- development and packaged CSP construction are explicit and separately testable;
+- the preferred fix keeps development styles self-hosted or nonce-authorized;
+- any `unsafe-inline` style allowance is a documented last-resort development-only exception tied to the exact validated loopback origin and `app.isPackaged === false`;
+- production continues to reject inline styles, inline scripts, eval, remote code, and wildcard sources;
+- tests exercise the actual `npm run dev` orchestration, CSS hot updates, packaged CSP assertions, and equivalent computed styles or screenshots in both modes.
 
 ### 15.5 External links
 

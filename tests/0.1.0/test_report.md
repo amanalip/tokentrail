@@ -172,11 +172,13 @@ The memory miss is not waived. Phase 4 must profile and reduce avoidable use, te
 | First performance evidence run lost the process tree when optional PSS access failed | Preserved valid RSS snapshots and treated PSS as optional kernel evidence | Resolved |
 | Original logo contained an unwanted duplicate mark in its top-left corner | Replaced and optimized the logo, rebuilt the package, and recaptured evidence | Resolved |
 | Phase 1 user-facing copy displays `TokenTrail` instead of `Token Trail` | Added a controlling naming rule and detailed Phase 2 implementation and verification tasks | Open; scheduled for Phase 2 |
+| `npm run dev` renders React and the logo without authored CSS | Vite development CSS uses inline style injection that the shared `style-src 'self'` policy blocks; added separate development-parity and production-CSP tasks and tests | Open; scheduled for Phase 2 |
 | Provisional memory ceiling was missed | Kept visible as Phase 4 performance work | Open, not release-blocking for Phase 1 development |
 
 ## 10. Coverage gaps and deferred tests
 
 - Real Codex app-server connection, discovery lifecycle, runtime schemas, sparse updates, retries, and compatibility fallbacks begin in Phase 2.
+- The real `npm run dev` renderer is currently unstyled because its Vite CSS injection conflicts with the shared CSP; the packaged screenshot remains valid because production emits self-hosted CSS.
 - GNOME, X11, alternate scaling factors beyond the 200 percent smoke check, high contrast, reduced motion, and broader accessibility review remain future phase work.
 - arm64 and other processor architectures were not built or tested.
 - AppImage, deb, rpm, Pacman, install, upgrade, and uninstall testing belong to Phase 5.
@@ -190,6 +192,6 @@ Pass for Phase 1 scope. Test fixtures contain no real account data. The app does
 
 ## 12. Phase conclusion
 
-The secure local Electron foundation builds, launches, packages, and preserves its intended renderer boundary on the available KDE Wayland x64 environment. The corrected logo artwork and screenshot evidence are reviewable, and the screenshot-backed product-name defect is scheduled for Phase 2. Phase 1 is not a user release and cannot yet deliver the Token Trail product workflow.
+The secure local Electron foundation builds, launches, packages, and preserves its intended renderer boundary on the available KDE Wayland x64 environment. The corrected logo artwork and screenshot evidence are reviewable. The screenshot-backed product-name defect and the separately observed unstyled development path are scheduled for Phase 2. Phase 1 is not a user release and cannot yet deliver the Token Trail product workflow.
 
 Phase 1 is complete with unavailable desktop and architecture coverage recorded rather than implied. The owned Codex stdio lifecycle is selected, but its production implementation begins in Phase 2. Phase 2 must not widen the approved method or IPC surface without new runtime schemas and security tests.
