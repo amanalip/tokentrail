@@ -90,7 +90,7 @@ async function connectToPackagedChromium(
     // Fail immediately if the packaged application exited before exposing its local debugging endpoint.
     if (packagedProcess.exitCode !== null) {
       throw new Error(
-        `Packaged TokenTrail exited with code ${packagedProcess.exitCode}. ${readErrorOutput()}`,
+        `Packaged Token Trail exited with code ${packagedProcess.exitCode}. ${readErrorOutput()}`,
       );
     }
 
@@ -104,7 +104,7 @@ async function connectToPackagedChromium(
   }
 
   // Include bounded stderr text when the package never becomes testable.
-  throw new Error(`Timed out connecting to packaged TokenTrail. ${readErrorOutput()}`);
+  throw new Error(`Timed out connecting to packaged Token Trail. ${readErrorOutput()}`);
 }
 
 /**
@@ -138,7 +138,8 @@ export async function launchPackagedApplication(): Promise<PackagedApplicationHa
     ],
     {
       cwd: path.dirname(packagedExecutablePath),
-      env: process.env,
+      // Isolate packaged tests from a real Codex installation and account by searching only the empty test profile.
+      env: { ...process.env, PATH: userDataDirectory, HOME: userDataDirectory },
       stdio: ['ignore', 'ignore', 'pipe'],
     },
   );
@@ -162,7 +163,7 @@ export async function launchPackagedApplication(): Promise<PackagedApplicationHa
     // Fail clearly if Electron did not create its expected default context.
     if (browserContext === undefined) {
       await browser.close();
-      throw new Error('Packaged TokenTrail did not create a browser context.');
+      throw new Error('Packaged Token Trail did not create a browser context.');
     }
 
     // Reuse an existing page or wait for the application window to finish being created.
@@ -175,7 +176,7 @@ export async function launchPackagedApplication(): Promise<PackagedApplicationHa
     // Fail safely if Node did not assign a PID after a nominally successful spawn.
     if (processId === undefined) {
       await browser.close();
-      throw new Error('Packaged TokenTrail process did not receive a process identifier.');
+      throw new Error('Packaged Token Trail process did not receive a process identifier.');
     }
 
     // Record the bounded launch-to-page-attachment duration before returning control to a test.

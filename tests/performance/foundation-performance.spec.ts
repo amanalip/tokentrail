@@ -161,7 +161,7 @@ test('records packaged foundation performance', async ({ browserName }, testInfo
 
   // Confirm the cold renderer becomes usable before recording and closing the first launch.
   await expect(
-    coldApplication.page.getByRole('heading', { level: 1, name: 'TokenTrail' }),
+    coldApplication.page.getByRole('heading', { level: 1, name: 'Overview' }),
   ).toBeVisible();
 
   // Retain the first launch measurement before closing its exact process and disposable profile.
@@ -174,7 +174,7 @@ test('records packaged foundation performance', async ({ browserName }, testInfo
   try {
     // Confirm the local renderer is usable before beginning idle measurements.
     await expect(
-      packagedApplication.page.getByRole('heading', { level: 1, name: 'TokenTrail' }),
+      packagedApplication.page.getByRole('heading', { level: 1, name: 'Overview' }),
     ).toBeVisible();
 
     // Allow Chromium initialization work to settle before capturing the first idle snapshot.

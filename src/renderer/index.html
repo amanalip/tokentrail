@@ -4,17 +4,14 @@
     <!-- Declare UTF-8 before text so browser parsing is deterministic. -->
     <meta charset="UTF-8" />
 
-    <!-- Apply the same restrictive policy in development before packaged response headers are available. -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
-    />
+    <!-- Vite replaces this fail-closed marker with the environment-specific reviewed renderer policy. -->
+    <meta http-equiv="Content-Security-Policy" content="__TOKENTRAIL_CONTENT_SECURITY_POLICY__" />
 
     <!-- Keep the shell readable across desktop scaling and future responsive layouts. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Set the native title before React starts. -->
-    <title>TokenTrail</title>
+    <title>Token Trail</title>
   </head>
   <body>
     <!-- React mounts only into this application-owned root. -->

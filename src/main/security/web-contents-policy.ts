@@ -2,7 +2,7 @@
 import { app, session } from 'electron';
 
 /**
- * Install deny-by-default browser policies before any TokenTrail window is created. These handlers block
+ * Install deny-by-default browser policies before any Token Trail window is created. These handlers block
  * navigation, new windows, webviews, permissions, and downloads because v1 has no feature requiring them.
  */
 export function installWebContentsPolicy(): void {
@@ -18,7 +18,7 @@ export function installWebContentsPolicy(): void {
       redirectEvent.preventDefault();
     });
 
-    // Deny all window creation because TokenTrail v1 has one local application window.
+    // Deny all window creation because Token Trail v1 has one local application window.
     contents.setWindowOpenHandler(() => ({ action: 'deny' }));
 
     // Deny webview attachment before any supplied preferences or parameters can take effect.

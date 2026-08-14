@@ -17,7 +17,8 @@ test('launches the hardened unpacked Linux package', async () => {
     await expect.poll(() => page.url()).toBe('tokentrail://app/');
 
     // Confirm the packaged product shell is visible.
-    await expect(page.getByRole('heading', { level: 1, name: 'TokenTrail' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+    await expect(page).toHaveTitle('Token Trail');
 
     // Inspect only the presence of prohibited renderer globals.
     const privilegedGlobalTypes = await page.evaluate(() => {
@@ -39,6 +40,17 @@ test('launches the hardened unpacked Linux package', async () => {
       requireType: 'undefined',
       processType: 'undefined',
     });
+
+    // Attempt both a top-level remote navigation and a popup from the real packaged renderer.
+    const popupResult = await page.evaluate(() => {
+      const popup = window.open('https://example.invalid/');
+      window.location.assign('https://example.invalid/');
+      return popup === null;
+    });
+
+    // Require the popup denial and confirm the navigation guard preserves the packaged document.
+    expect(popupResult).toBe(true);
+    await expect.poll(() => page.url()).toBe('tokentrail://app/');
 
     // Capture curated phase evidence only when an explicit output path is supplied by the maintainer.
     const evidencePath = process.env['TOKENTRAIL_EVIDENCE_SCREENSHOT'];

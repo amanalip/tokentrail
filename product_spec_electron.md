@@ -1,13 +1,13 @@
 # Token Trail Electron Product Specification
 
 **Status:** Approved controlling implementation specification
-**Product stage:** Phase 1 foundation complete; Phase 2 planned but not started
+**Product stage:** Phase 2 core read-only slice complete locally
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
 
-This document defines the controlling Electron direction and implementation boundary for Token Trail. Phase 1 is complete. Phase 2 is documented but has not started in this turn. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
+This document defines the controlling Electron direction and implementation boundary for Token Trail. Phases 1 and 2 are complete locally: the hardened foundation now carries a tested, normalized, read-only Codex-to-Overview path. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
 **Naming rule:** The product name shown to people is **Token Trail**, with a space. The repository and machine-facing identifiers may remain `tokentrail`, while conventional source identifiers may use `TokenTrail`. Window titles, headings, menus, onboarding, logo wordmarks, accessibility names, desktop metadata, documentation, screenshots, and release copy must use **Token Trail**.
 
@@ -1378,13 +1378,13 @@ Development exceptions are restricted to local development and cannot be copied 
 
 The Phase 1 development server exposed a concrete parity defect: Vite transforms imported CSS into its development style-update path, which injects an inline `<style>` element, while the shared `style-src 'self'` policy rejects inline styles. React and local images can still load, so the failure appears as a dark browser-default page rather than a blank or crashed app. The packaged build does not reveal the defect because Vite extracts CSS into a self-hosted file that production CSP permits.
 
-Phase 2 must resolve this without weakening production:
+Phase 2 resolved this without weakening production:
 
-- development and packaged CSP construction are explicit and separately testable;
-- the preferred fix keeps development styles self-hosted or nonce-authorized;
-- any `unsafe-inline` style allowance is a documented last-resort development-only exception tied to the exact validated loopback origin and `app.isPackaged === false`;
+- development and packaged CSP construction are explicit and separately tested;
+- Vite's style-update implementation made self-hosted development CSS and practical nonce propagation unsuitable for reliable HMR, so only development permits inline styles;
+- the `unsafe-inline` style allowance is tied to the exact validated loopback origin and never appears in the packaged policy;
 - production continues to reject inline styles, inline scripts, eval, remote code, and wildcard sources;
-- tests exercise the actual `npm run dev` orchestration, CSS hot updates, packaged CSP assertions, and equivalent computed styles or screenshots in both modes.
+- tests exercise the actual `npm run dev` orchestration, CSS hot updates, packaged CSP assertions, and equivalent screenshots in both modes.
 
 ### 15.5 External links
 
@@ -1819,12 +1819,16 @@ The detailed task sequence, evidence requirements, and progress checklist are ma
 
 ### Phase 1: foundation
 
+**Implementation status:** Complete.
+
 - Confirm exact v1 fields against the current app-server bindings and behavior.
 - Produce a threat model and data-flow review.
 - Prototype the secure window, local protocol, preload contract, and deny-by-default adapter.
 - Benchmark a minimal packaged shell on KDE and GNOME.
 
 ### Phase 2: core read-only slice
+
+**Implementation status:** Complete locally with evidence in `tests/0.2.0/test_report.md`.
 
 - Correct every user-visible application and package label to `Token Trail` while retaining `tokentrail` only for machine-facing identifiers.
 - Connect to a fixture app-server.
@@ -2027,4 +2031,4 @@ Still requiring separate approval or completion:
 - Expanding beyond the read-only data boundary.
 - Adding local usage history, task analytics, background behavior, or cloud features.
 
-The next step is to begin Phase 1 with exact dependency selection, the secure Electron scaffold, threat and data-flow review, and compatibility prototypes. Open questions are resolved before the implementation phase or feature they affect.
+The next implementation step is Phase 3: complete the remaining approved v1 product routes, calculations, preferences, and diagnostics using the proven Phase 2 boundaries. Publication and release engineering remain separately gated.

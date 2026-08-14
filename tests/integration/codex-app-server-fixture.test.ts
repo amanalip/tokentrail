@@ -49,7 +49,15 @@ describe('Codex app-server fixture', () => {
     const initializationResponse = JSON.parse(initializationText ?? 'null') as unknown;
 
     // Confirm the response is deterministic fixture data rather than a real account response.
-    expect(initializationResponse).toEqual({ id: 1, result: { fixture: true } });
+    expect(initializationResponse).toEqual({
+      id: 1,
+      result: {
+        userAgent: 'tokentrail-fixture/0.2.0',
+        codexHome: '/fixture',
+        platformFamily: 'unix',
+        platformOs: 'linux',
+      },
+    });
 
     // Parse the complete empty rate-limit response from the second framed line.
     const rateLimitResponse = JSON.parse(rateLimitText ?? 'null') as unknown;
@@ -60,7 +68,7 @@ describe('Codex app-server fixture', () => {
       result: {
         rateLimits: null,
         rateLimitsByLimitId: null,
-        resetCredits: null,
+        rateLimitResetCredits: null,
       },
     });
   });

@@ -129,6 +129,18 @@ const electronBinary = path.join(
 // Use one fixed loopback URL that the main process validates before loading development content.
 const rendererUrl = 'http://127.0.0.1:5173';
 
+// Accept an optional test-only Chromium debugging port only when it is a valid unprivileged TCP port.
+const requestedDebuggingPort = process.env['TOKENTRAIL_TEST_DEBUG_PORT'];
+const debuggingPort =
+  requestedDebuggingPort !== undefined && /^\d{4,5}$/u.test(requestedDebuggingPort)
+    ? Number(requestedDebuggingPort)
+    : null;
+
+// Reject an out-of-range test port instead of forwarding arbitrary Chromium arguments.
+if (debuggingPort !== null && (debuggingPort < 1_024 || debuggingPort > 65_535)) {
+  throw new Error('TOKENTRAIL_TEST_DEBUG_PORT must be an unprivileged TCP port.');
+}
+
 // Start independent watched builds for privileged main and preload code.
 const mainBuilder = startChild(viteBinary, ['build', '--watch', '--config', 'vite.main.config.ts']);
 const preloadBuilder = startChild(viteBinary, [
@@ -163,7 +175,13 @@ try {
   ]);
 
   // Launch Electron with the one validated development origin and no renderer-visible environment bridge.
-  const electronProcess = startChild(electronBinary, ['.'], {
+  const electronArguments =
+    debuggingPort === null
+      ? ['.']
+      : [`--remote-debugging-port=${debuggingPort}`, '--remote-debugging-address=127.0.0.1', '.'];
+
+  // Launch Electron with no extra switches outside the one validated test-only loopback debugging pair.
+  const electronProcess = startChild(electronBinary, electronArguments, {
     TOKENTRAIL_RENDERER_URL: rendererUrl,
   });
 

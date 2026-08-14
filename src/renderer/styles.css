@@ -1,6 +1,6 @@
-/* Define only local system fonts and a compact Phase 1 color vocabulary. */
+/* Define local design tokens without remote fonts or runtime dependencies. */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
   font-family:
     Inter,
     ui-sans-serif,
@@ -11,38 +11,47 @@
     sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --background: #0b0e14;
-  --surface: #121722;
-  --surface-border: #263043;
+  --background: #090d14;
+  --sidebar: #0d121c;
+  --surface: #121925;
+  --surface-raised: #172131;
+  --border: #273348;
+  --border-soft: #1d293a;
   --text: #f5f7fb;
-  --muted: #aab4c5;
-  --accent: #7dd3fc;
-  --accent-soft: rgba(125, 211, 252, 0.12);
+  --muted: #9aa8bb;
+  --muted-strong: #bdc7d5;
+  --violet: #9b8cff;
+  --mint: #54e5c1;
+  --warning: #f4bf69;
+  --focus: #8cc8ff;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 }
 
-/* Apply the light token set when a future validated preference explicitly selects light mode. */
+/* Supply a calm explicit light palette. */
 :root[data-theme='light'] {
   color-scheme: light;
   --background: #f4f7fb;
+  --sidebar: #ffffff;
   --surface: #ffffff;
-  --surface-border: #d8e0eb;
+  --surface-raised: #f8faff;
+  --border: #d8e0eb;
+  --border-soft: #e7ecf3;
   --text: #142033;
-  --muted: #526176;
-  --accent: #0369a1;
-  --accent-soft: rgba(3, 105, 161, 0.08);
+  --muted: #5d6b7d;
+  --muted-strong: #445267;
+  --violet: #6554df;
+  --mint: #0a9f7e;
+  --warning: #9a5c05;
+  --focus: #1267a5;
+  --shadow: 0 24px 70px rgba(28, 43, 66, 0.12);
 }
 
-/* Lock native control colors to dark when a future validated preference explicitly selects dark mode. */
-:root[data-theme='dark'] {
-  color-scheme: dark;
-}
-
-/* Use border-box sizing so responsive width calculations include padding and borders. */
+/* Include borders and padding in responsive sizes. */
 * {
   box-sizing: border-box;
 }
 
-/* Remove browser defaults and paint the full Electron viewport without animation or remote imagery. */
+/* Fill the Electron viewport and remove browser margins. */
 html,
 body,
 #root {
@@ -51,144 +60,627 @@ body,
   margin: 0;
 }
 
-/* Center the initial shell while preserving natural document scrolling at high zoom. */
+/* Paint the complete application background. */
 body {
   min-height: 100vh;
   color: var(--text);
-  background:
-    radial-gradient(circle at 50% 10%, rgba(61, 90, 128, 0.24), transparent 38rem),
-    var(--background);
+  background: var(--background);
 }
 
-/* Keep the main content readable across compact and wide window sizes. */
-.shell {
-  width: min(54rem, 100%);
+/* Preserve inherited typography on native controls. */
+button {
+  font: inherit;
+}
+
+/* Keep keyboard focus highly visible. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Create the desktop navigation rail and content canvas. */
+.app-shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
   min-height: 100vh;
-  margin: 0 auto;
-  padding: clamp(2rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem);
 }
 
-/* Center the product introduction without hiding its semantic reading order. */
-.intro {
+/* Keep primary navigation stable while long content scrolls. */
+.sidebar {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 1.25rem 1rem;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border-soft);
+}
+
+/* Present icon and live product text as one home link. */
+.brand {
+  display: flex;
+  gap: 0.75rem;
   align-items: center;
-  text-align: center;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  text-decoration: none;
 }
 
-/* Keep the concept artwork small enough to function as identity rather than dashboard content. */
-.logo {
-  width: 8rem;
-  height: 8rem;
-  margin-bottom: 1rem;
-  border-radius: 1.75rem;
+/* Keep the single icon-only mark crisp. */
+.brand img {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 8px 24px rgba(84, 229, 193, 0.08);
 }
 
-/* Give the product name a clear hierarchy with responsive sizing. */
-h1 {
-  margin: 0;
-  font-size: clamp(2.5rem, 7vw, 4.5rem);
-  line-height: 1;
-  letter-spacing: -0.055em;
+/* Separate navigation from product identity. */
+.sidebar nav {
+  margin-top: 2.5rem;
 }
 
-/* Keep the supporting promise prominent but quieter than the name. */
-.tagline {
-  margin: 1rem 0 0;
+/* Style the implemented Overview route. */
+.nav-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 0.9rem;
+  color: var(--muted-strong);
+  border-radius: 0.7rem;
+  text-decoration: none;
+}
+
+/* Identify the current route with both shape and color. */
+.nav-item--active {
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(155, 140, 255, 0.15), rgba(84, 229, 193, 0.07));
+  border: 1px solid rgba(155, 140, 255, 0.22);
+}
+
+/* Explain intentionally deferred routes without fake controls. */
+.nav-caption {
+  display: block;
+  margin: 0.8rem 0.9rem;
   color: var(--muted);
-  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
-}
-
-/* Present the milestone as a status label rather than as a simulated metric. */
-.status {
-  margin: 2rem 0 0;
-  padding: 0.45rem 0.8rem;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border: 1px solid rgba(125, 211, 252, 0.38);
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Limit the implementation summary to a comfortable reading width. */
-.summary {
-  max-width: 36rem;
-  margin: 1.25rem 0 0;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.65;
-}
-
-/* Separate the security boundary from the introduction with a clear local card. */
-.boundary {
-  margin-top: clamp(2.5rem, 7vw, 4.5rem);
-  padding: clamp(1.25rem, 4vw, 2rem);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  border: 1px solid var(--surface-border);
-  border-radius: 1.25rem;
-}
-
-/* Keep the secondary heading compact inside the supporting card. */
-.boundary h2 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-/* Lay out short guarantees responsively while retaining semantic list markup. */
-.boundary ul {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
-  margin: 1.25rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Give each guarantee a distinct readable region. */
-.boundary li {
-  padding: 0.9rem 1rem;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.025);
-  border-radius: 0.8rem;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 
-/* Stack the guarantee list when the window or zoom level leaves insufficient horizontal room. */
+/* Anchor the privacy boundary at the rail bottom. */
+.privacy-note {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-top: auto;
+  padding: 0.85rem;
+  color: var(--muted);
+  background: rgba(84, 229, 193, 0.055);
+  border: 1px solid rgba(84, 229, 193, 0.12);
+  border-radius: 0.8rem;
+}
+
+/* Keep privacy copy compact. */
+.privacy-note p {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+/* Bound wide-screen line length while allowing responsive cards. */
+.overview {
+  width: min(78rem, 100%);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+/* Align page identity and refresh controls. */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+/* Use one consistent supporting label. */
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--mint);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Establish a clear page heading. */
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+/* Keep supporting headings compact. */
+h2,
+h3 {
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+/* Group state and refresh controls. */
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Display connection feedback as text plus a dot. */
+.connection {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+}
+
+/* Paint the default attention-state dot. */
+.connection > span {
+  width: 0.55rem;
+  height: 0.55rem;
+  background: var(--warning);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(244, 191, 105, 0.1);
+}
+
+/* Use success color for current data. */
+.connection--ready > span,
+.connection--partial > span {
+  background: var(--mint);
+  box-shadow: 0 0 0 4px rgba(84, 229, 193, 0.1);
+}
+
+/* Give refresh actions a visible boundary and target size. */
+.refresh-button,
+.stale-banner button {
+  min-height: 2.6rem;
+  padding: 0.65rem 0.95rem;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  cursor: pointer;
+}
+
+/* Communicate an active request without hiding its control. */
+.refresh-button:disabled,
+.stale-banner button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+/* Share a coherent card surface across states and data. */
+.state-panel,
+.primary-card,
+.quota-card,
+.explanation {
+  background: linear-gradient(145deg, var(--surface-raised), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  box-shadow: var(--shadow);
+}
+
+/* Center state explanations with readable spacing. */
+.state-panel {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  min-height: 11rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+/* Keep state copy readable. */
+.state-panel p {
+  max-width: 46rem;
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Add a warning boundary without relying on color alone. */
+.state-panel--warning {
+  border-color: rgba(244, 191, 105, 0.35);
+}
+
+/* Size the local state glyph. */
+.state-icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  color: var(--warning);
+  background: rgba(244, 191, 105, 0.1);
+  border-radius: 0.8rem;
+  font-weight: 800;
+}
+
+/* Render a CSS-only loading indicator. */
+.spinner {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 3px solid var(--border);
+  border-top-color: var(--mint);
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+
+/* Rotate only the decorative indicator. */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Present stale and partial state prominently. */
+.stale-banner,
+.partial-banner {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  color: var(--warning);
+  background: rgba(244, 191, 105, 0.08);
+  border: 1px solid rgba(244, 191, 105, 0.25);
+  border-radius: 0.8rem;
+}
+
+/* Stack stale timestamps below the warning. */
+.stale-banner div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+/* Keep stale supporting copy neutral. */
+.stale-banner span {
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+}
+
+/* Use a simpler presentation for partial data. */
+.partial-banner {
+  justify-content: flex-start;
+  color: var(--muted-strong);
+}
+
+/* Give the primary quota the strongest hierarchy. */
+.primary-card {
+  padding: clamp(1.3rem, 4vw, 2rem);
+  background:
+    radial-gradient(circle at 85% 10%, rgba(84, 229, 193, 0.11), transparent 24rem),
+    linear-gradient(145deg, var(--surface-raised), var(--surface));
+}
+
+/* Align identity and metadata in card headers. */
+.primary-card__top,
+.quota-card__header,
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* Explain deterministic selection quietly. */
+.selection-note {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* Render bounded metadata labels. */
+.pill {
+  display: inline-flex;
+  padding: 0.38rem 0.65rem;
+  color: var(--mint);
+  background: rgba(84, 229, 193, 0.08);
+  border: 1px solid rgba(84, 229, 193, 0.2);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+/* Distinguish explicitly reported reached state. */
+.pill--warning {
+  color: var(--warning);
+  background: rgba(244, 191, 105, 0.08);
+  border-color: rgba(244, 191, 105, 0.25);
+}
+
+/* Give the hero value room beside its bar. */
+.primary-metric {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.32fr) minmax(15rem, 1fr);
+  gap: 2rem;
+  align-items: end;
+  margin-top: 2.2rem;
+}
+
+/* Stack hero number and unit. */
+.remaining-value {
+  display: grid;
+}
+
+/* Make the primary value readable at a glance. */
+.remaining-value strong {
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+/* Keep the hero unit quieter. */
+.remaining-value span {
+  margin-top: 0.55rem;
+  color: var(--muted);
+}
+
+/* Paint the bounded quota track. */
+.progress-track {
+  height: 0.8rem;
+  overflow: hidden;
+  background: rgba(154, 168, 187, 0.14);
+  border-radius: 999px;
+}
+
+/* Paint the clamped visual value. */
+.progress-track > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--violet), var(--mint));
+  border-radius: inherit;
+}
+
+/* Reduce supporting bars. */
+.progress-track--small {
+  height: 0.5rem;
+}
+
+/* Keep bar explanations compact. */
+.progress-group p,
+.window-row p {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Present four primary metric facts. */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: 2rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* Separate definition pairs. */
+.metric-line {
+  padding: 0 1rem;
+  border-left: 1px solid var(--border-soft);
+}
+
+/* Remove the first redundant separator. */
+.metric-line:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+/* Keep definition labels quiet. */
+.metric-line dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+/* Stack metric value and provenance. */
+.metric-line dd {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.45rem 0 0;
+}
+
+/* Make provenance visible but secondary. */
+.metric-line small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+/* Separate the complete bucket list. */
+.all-quotas {
+  margin-top: 2rem;
+}
+
+/* Style the reported count. */
+.section-heading > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+/* Display every reported bucket. */
+.quota-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Give supporting cards clear spacing. */
+.quota-card {
+  padding: 1.2rem;
+}
+
+/* Separate supported windows. */
+.window-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+/* Divide multiple windows without nested cards. */
+.window-row + .window-row {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* Align window identity and value. */
+.window-row__summary {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+/* Style the fixed local slot label. */
+.window-kind {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: capitalize;
+}
+
+/* Explain an empty supported bucket. */
+.empty-detail {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Keep the measurement distinction persistent. */
+.explanation {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-top: 2rem;
+  padding: 1.2rem;
+  box-shadow: none;
+}
+
+/* Draw a compact local information glyph. */
+.explanation__icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  color: var(--violet);
+  border: 1px solid var(--violet);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* Keep explanatory heading subordinate. */
+.explanation h2 {
+  font-size: 0.95rem;
+}
+
+/* Use comfortable explanatory line length. */
+.explanation p {
+  max-width: 52rem;
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+/* Collapse the rail into a top row on narrow windows. */
+@media (max-width: 52rem) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    min-height: auto;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .sidebar nav {
+    margin: 0 0 0 auto;
+  }
+  .nav-caption,
+  .privacy-note {
+    display: none;
+  }
+  .primary-metric,
+  .quota-grid {
+    grid-template-columns: 1fr;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .metric-line,
+  .metric-line:first-child {
+    padding: 0;
+    border: 0;
+  }
+}
+
+/* Stack controls and metrics at high zoom. */
 @media (max-width: 34rem) {
-  .boundary ul {
+  .overview {
+    padding: 1.1rem;
+  }
+  .header-actions,
+  .page-header,
+  .stale-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .metric-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Replace dark tokens with a calm light palette when the operating system requests light mode. */
+/* Follow system light preference when no explicit dark theme is set. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
+    color-scheme: light;
     --background: #f4f7fb;
+    --sidebar: #ffffff;
     --surface: #ffffff;
-    --surface-border: #d8e0eb;
+    --surface-raised: #f8faff;
+    --border: #d8e0eb;
+    --border-soft: #e7ecf3;
     --text: #142033;
-    --muted: #526176;
-    --accent: #0369a1;
-    --accent-soft: rgba(3, 105, 161, 0.08);
-  }
-
-  :root:not([data-theme='dark']) body {
-    background:
-      radial-gradient(circle at 50% 10%, rgba(125, 211, 252, 0.24), transparent 38rem),
-      var(--background);
-  }
-
-  .boundary li {
-    background: rgba(20, 32, 51, 0.035);
+    --muted: #5d6b7d;
+    --muted-strong: #445267;
+    --violet: #6554df;
+    --mint: #0a9f7e;
+    --warning: #9a5c05;
+    --focus: #1267a5;
+    --shadow: 0 24px 70px rgba(28, 43, 66, 0.12);
   }
 }
 
-/* Give explicit light mode the same calm background even when the operating system currently prefers dark. */
-:root[data-theme='light'] body {
-  background:
-    radial-gradient(circle at 50% 10%, rgba(125, 211, 252, 0.24), transparent 38rem),
-    var(--background);
+/* Remove decorative motion when requested. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-top-color: var(--border);
+    border-right-color: var(--mint);
+  }
 }

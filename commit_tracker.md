@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 017 - Development CSP repair planned](#commit-017---development-csp-repair-planned)
 - [Commit 016 - Token Trail branding clarified](#commit-016---token-trail-branding-clarified)
 - [Commit 015 - Phase 1 secure Electron foundation completed](#commit-015---phase-1-secure-electron-foundation-completed)
 - [Commit 014 - Commit history reconciled](#commit-014---commit-history-reconciled)
@@ -88,76 +89,125 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 after commit `4fba55e`
+**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Document the unstyled `npm run dev` defect, explain why Phase 1 missed it, and add a Phase 2 repair and recurrence-prevention plan without changing code or starting Phase 2.
+Implement and verify the complete Phase 2 read-only Codex-to-Overview slice, repair development styling without weakening production, correct visible product identity, and create the screenshot-backed 0.2.0 evidence record.
 
 ### Important changes
 
-- Added a detailed Phase 2 development-renderer and CSP section covering reproduction, policy separation, safe solution order, computed-style testing, CSS hot updates, packaged security, and paired screenshots.
-- Expanded the product specification with the exact Vite inline-style versus `style-src 'self'` causal chain and a production-security constraint.
-- Added Design Decision 009 and threat T-019 so development convenience cannot silently weaken packaged CSP.
-- Updated the Phase 1 report with the open development-rendering defect and corrected its development coverage limitation.
-- Added a README warning and safe packaged-preview command so contributors do not mistake the unstyled development view for intended design before Phase 2 repairs it.
-- Reconciled the committed naming documentation as Commit 016.
+- Added the owned Codex stdio client, runtime limits/schemas, normalization, in-memory controller, exact IPC authorization, and frozen three-method preload bridge.
+- Replaced the Phase 1 placeholder with a responsive accessible Overview covering complete, partial, stale, signed-out, unsupported, unavailable, and error states.
+- Added the `Token Trail` package/window/HTML/accessibility identity and a new single-mark icon without the duplicate corner mark or embedded wordmark.
+- Separated exact-loopback development CSP from strict packaged CSP and added real CSS-load/HMR testing through the development orchestrator.
+- Expanded fixture, unit, integration, Electron, packaged, security, accessibility, performance, and screenshot evidence.
+- Added `tests/0.2.0/test_report.md` and updated the controlling plan, specification, architecture, decisions, README, and this tracker.
 
 ### Decisions and assumptions
 
-- Production CSP must remain strict. Development-tool compatibility is solved through a separately constructed, explicitly tested policy or self-hosted style path, never by silently adding `unsafe-inline` to the shared production policy.
-- A styled packaged screenshot proves packaged rendering only; it is not evidence that the Vite development path has equivalent styling.
-- Phase 2 evaluates self-hosted development CSS or nonce-compatible injection before considering a narrowly scoped development-only inline-style allowance.
-- Any development exception must require an unpackaged process and the exact validated `http://127.0.0.1:5173` origin and must be unreachable through `tokentrail://app/`.
-- Phase 2 remains planned but not started.
+- Raw app-server values stop in main. Renderer data is a closed, provenance-aware DTO and is held in memory only.
+- Missing and invalid values are unavailable, never zero. Sparse notifications trigger a safe full read instead of an uncertain merge.
+- Development alone permits the Vite inline-style/HMR mechanisms. Packaged CSP remains strict and independently tested.
+- Automatic polling stays disabled pending evidence. Phase 3 extends the proven boundary; it does not bypass it.
 
 ### Verification
 
-- `git diff --check` passed.
-- Twelve Markdown files were checked and every local file-link target exists.
-- Source inspection confirms the renderer imports `styles.css`, both CSP definitions allow only `style-src 'self'`, and the installed Vite development transform contains a `document.createElement('style')` injection path.
-- Application tests were not rerun because this change edits Markdown only.
+- 77 unit/component tests and 13 real-process integration tests pass.
+- 10 Electron end-to-end, 2 real-development, 3 security, 2 accessibility, 1 packaged, and 1 performance test pass.
+- Type checking, formatting during development, package creation, and npm audit pass; audit reported zero known vulnerabilities.
+- A privacy-safe probe confirms installed `codex-cli 0.146.1` supports initialization, account read, and rate-limit read.
+- Full command results, screenshots, performance, coverage, environment, and unavailable coverage are recorded in `tests/0.2.0/test_report.md`.
 
 ### Fact-check report
 
-- The user's local screenshot shows React text and the local logo with browser-default layout and typography. That partial-render pattern matches CSS rejection rather than a React, image, or complete renderer-load failure.
-- `src/renderer/main.tsx` imports `styles.css`; `src/renderer/index.html` and the shared CSP constant both declare `style-src 'self'`; the installed Vite transform contains an inline style creation and append path. Together these establish the development CSS/CSP conflict.
-- Git confirms the branding documentation was committed as `fa82dd2` at 2:41:19 AM EDT with 12 changed files, 367 insertions, and 214 deletions.
+- Git confirms the worktree base is `4fba55e`; current Phase 2 work is uncommitted and is not represented as a Git commit.
+- The real Codex probe disclosed only compatibility booleans/counts, and packaged tests used an empty isolated `PATH` and `HOME`.
+- The 0.2.0 fixtures are synthetic and contain no real account values. The report identifies the exact fixture and no-account origin of each screenshot.
 
 ### Sanity-check report
 
-- The repair is scoped to development parity and cannot justify weakening the packaged policy.
-- The Phase 1 packaged screenshot and security results remain valid for the packaged path, while the development-path coverage claim is corrected rather than overstated.
-- No executable file, CSP, test, dependency, package, or release artifact changes in this documentation turn.
-- Phase 2 remains planned but not started, as requested.
+- No write, prompt, task, repository, filesystem, credential, telemetry, update, or release capability was added.
+- `Token Trail` is visible; `tokentrail` remains machine-facing; `TokenTrail` remains only in conventional source symbols.
+- The package is a local test artifact only. No GitHub Release, signing action, update deployment, or publication occurred.
+- Phase 2 is complete locally; Phase 3 and later follow-up work remain clearly separate.
 
 ### User lessons
 
-- When React content and images appear but the page uses serif fonts, ordinary bullets, and unstyled spacing, the renderer may be healthy while CSS alone is blocked.
-- Development and packaged Electron modes use different CSS delivery behavior, so both modes require their own visible and automated evidence.
-- The strict CSP is performing its intended security function; the defect is that the development asset strategy was not designed and tested against that policy.
-- The correct interim visual-review path is the packaged build, not weakening CSP locally without a reviewed environment boundary.
+- Electron development, built-content, and packaged-executable paths are materially different and each needs direct evidence.
+- The Overview now reads local Codex account/quota state through a privacy boundary rather than reading a website or GitHub-hosted page.
+- A GitHub release is still a later packaging/publication mechanism; completing Phase 2 does not publish or update anyone's installation.
+- Synthetic screenshot fixtures make the interface reviewable without exposing the user's real account.
 
 ### Agent lessons
 
-- Phase 1 missed this defect because its component tests used jsdom without CSP enforcement, its Electron end-to-end helper built production assets before launch, its packaged tests used extracted self-hosted CSS, and its curated screenshot covered only the packaged build.
-- The CSP unit test correctly protected production by rejecting `unsafe-inline`, but it tested the policy string in isolation and did not test whether Vite's development CSS mechanism was compatible with that policy.
-- Accessibility structure tests can pass on an unstyled page because headings, landmarks, status text, and reflow are not proof that authored CSS loaded.
-- A development readiness probe that receives HTTP 200 proves only that Vite answers; it must also verify representative computed styles and one CSS hot-update cycle.
-- Every materially different runtime path must be present in the test-evidence matrix. Similar visible outcomes cannot be assumed from a packaged-only screenshot.
-- Rectification requires paired development and packaged checks: console-CSP capture before the fix, explicit CSP construction tests, computed-style assertions, hot-update verification, equal-state screenshots, and a final proof that packaged CSP still rejects inline styles.
-- Re-read Git state during documentation work because the user may commit between tool calls; the tracker must immediately move that work from pending to finalized history.
+- JSON has no `undefined` value. Optional request parameters must be omitted from the envelope, not sent through a generic JSON-value validator; the expanded fixture exposed and now protects this distinction.
+- Starting tests through an npm wrapper obscured ownership of the real development children and once left the exact orchestrator on port 5173. Starting `scripts/dev.mjs` directly gives the harness one owned process whose cleanup terminates its children.
+- A CSP string test and a successful HTTP readiness check cannot prove authored development CSS loaded. Computed styles and a real HMR edit are required.
+- Packaged tests must isolate executable discovery and the home directory so a test cannot accidentally read the maintainer's Codex account.
+- Experimental protocol schemas must strip known sensitive fields and unknown future fields before normalization. Missing data is not evidence of zero.
+- A circuit breaker must provide a recovery opportunity after cooldown; otherwise a restart-limit check can permanently prevent its own recovery.
+- Coverage percentages fell when the process adapter entered the unit coverage denominator because its transport behavior lives in a separate integration project. Coverage is reported honestly alongside behavior-layer results rather than optimized cosmetically.
+- Re-read Git before tracker edits: the prior documentation was committed while work paused and must be recorded as Commit 017.
 
 ### Risks or limitations
 
-- Until Phase 2 repairs it, `npm run dev` remains unsuitable for visual review even though the packaged shell is styled correctly.
-- A careless fix using a shared `style-src 'unsafe-inline'` would remove an important packaged security control; the plan explicitly forbids that shortcut.
+- Packaged proportional memory is 303.8 MB and resident memory is 757.1 MB across seven processes; Phase 4 must profile and set the final budget.
+- GNOME, X11, arm64, installer formats, screen reader, lifecycle soak, and release CI remain untested here and are scheduled later.
+- Aggregate usage is approved but unused until Phase 3. No automatic periodic refresh is enabled.
 
 ### Follow-up
 
-Review and commit this documentation-only development-parity correction. Do not start Phase 2 until the user gives the next implementation instruction.
+Review the Phase 2 implementation and `tests/0.2.0/test_report.md`, then commit when satisfied. Begin Phase 3 only on the user's instruction; do not publish a release.
+
+---
+
+## Commit 017 - Development CSP repair planned
+
+**Commit:** `4fba55e` - `Document development CSS/CSP limitation and Phase 2 remediation plan`
+**Timestamp:** August 14, 2026 at 2:53:43 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Record the unstyled development defect, its Phase 1 test gap, and a secure Phase 2 repair plan before executable work resumed.
+
+### Important changes
+
+- Added the development CSP parity plan to the specification and implementation plan.
+- Added Decision 009 and threat T-019.
+- Corrected the Phase 1 test report and README so packaged styling was not mistaken for development styling.
+- Reconciled the preceding branding documentation in the tracker.
+
+### Decisions and assumptions
+
+Production CSP stays strict. Any Vite compatibility behavior must be development-only, exact-loopback, explicit, and covered by real development and packaged tests.
+
+### Verification
+
+The commit changed 7 files with 180 insertions and 42 deletions. Documentation whitespace, local links, and the Vite/CSP causal chain were checked before commit; application tests were not required for that documentation-only change.
+
+### Fact check and sanity check
+
+Git confirms hash, subject, author, timestamp, and statistics. The change did not start Phase 2, modify executable policy, publish, or weaken production.
+
+### User learning
+
+Packaged and development styling use different delivery mechanisms and require separate evidence.
+
+### Agent learning
+
+HTTP readiness, semantic accessibility, and packaged screenshots do not prove development CSS compatibility. Test each materially different runtime path.
+
+### Risks or limitations
+
+The executable defect remained open until the next uncommitted Phase 2 implementation.
+
+### Follow-up
+
+Implement the planned repair without weakening production; this is now included in the current Phase 2 work above.
 
 ---
 

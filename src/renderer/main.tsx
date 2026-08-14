@@ -15,7 +15,7 @@ const rootElement = document.getElementById('root');
 
 // Fail clearly if packaging or HTML editing removes the required root instead of silently showing a blank window.
 if (rootElement === null) {
-  throw new Error('TokenTrail renderer root was not found.');
+  throw new Error('Token Trail renderer root was not found.');
 }
 
 // Create the React root only after the required element has been validated.

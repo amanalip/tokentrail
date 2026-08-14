@@ -9,7 +9,7 @@ import {
   isApprovedCodexRequestMethod,
 } from './approved-methods';
 
-// Group checks around TokenTrail's closed Codex protocol surface.
+// Group checks around Token Trail's closed Codex protocol surface.
 describe('Codex method allowlists', () => {
   // Confirm every reviewed request remains available without permitting another method by accident.
   it('accepts only the reviewed outbound request methods', () => {
@@ -34,7 +34,13 @@ describe('Codex method allowlists', () => {
   it.each([
     'account/login/start',
     'account/logout',
-    'account/resetCredits/consume',
+    'account/rateLimitResetCredit/consume',
+    'account/sendAddCreditsNudgeEmail',
+    'account/workspaceMessages/read',
+    'feedback/upload',
+    'process/spawn',
+    'config/value/write',
+    'plugin/install',
     'thread/start',
     'turn/start',
     'fs/readFile',

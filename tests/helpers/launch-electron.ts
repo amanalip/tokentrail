@@ -20,13 +20,22 @@ const require = createRequire(import.meta.url);
 const electronExecutablePath = require('electron') as string;
 
 /**
- * Launch the built TokenTrail application without a development URL so tests exercise the secure custom protocol.
+ * Launch the built Token Trail application without a development URL so tests exercise the secure custom protocol.
  */
-export async function launchBuiltApplication(): Promise<ElectronApplication> {
+export async function launchBuiltApplication(
+  fixtureScenario?: string,
+): Promise<ElectronApplication> {
   // Launch one isolated Electron process from the repository package entry.
   return electron.launch({
     executablePath: electronExecutablePath,
     args: ['.'],
     cwd: repositoryRoot,
+    // Activate only the main process's exact unpackaged checked-in fixture hook when requested.
+    env: {
+      ...process.env,
+      ...(fixtureScenario === undefined
+        ? {}
+        : { TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario }),
+    },
   });
 }

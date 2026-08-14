@@ -1,5 +1,5 @@
 // Keep development navigation bound to one loopback origin that is never accepted in packaged mode.
-const ALLOWED_DEVELOPMENT_ORIGIN = 'http://127.0.0.1:5173';
+export const DEVELOPMENT_RENDERER_ORIGIN = 'http://127.0.0.1:5173';
 
 /**
  * Validate the optional development URL without accepting alternate hosts, ports, credentials, query strings,
@@ -17,7 +17,7 @@ export function validateDevelopmentUrl(candidate: string | undefined): string | 
 
     // Require the exact approved origin and root path with no extra URL state.
     if (
-      parsedUrl.origin !== ALLOWED_DEVELOPMENT_ORIGIN ||
+      parsedUrl.origin !== DEVELOPMENT_RENDERER_ORIGIN ||
       parsedUrl.pathname !== '/' ||
       parsedUrl.search !== '' ||
       parsedUrl.hash !== '' ||

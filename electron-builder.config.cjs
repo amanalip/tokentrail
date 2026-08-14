@@ -7,7 +7,7 @@
 module.exports = {
   // Give the desktop application a stable Linux-facing identity.
   appId: 'com.tokentrail.app',
-  productName: 'TokenTrail',
+  productName: 'Token Trail',
 
   // Store generated packages outside source and use the approved branding directory for product assets.
   directories: {
@@ -24,7 +24,7 @@ module.exports = {
   // Package bundled production output and metadata while excluding dependencies already bundled by Vite.
   files: ['dist/**/*', 'package.json', 'LICENSE', '!node_modules/**/*'],
 
-  // Remove execution modes and environment-controlled debug paths that TokenTrail does not need.
+  // Remove execution modes and environment-controlled debug paths that Token Trail does not need.
   electronFuses: {
     runAsNode: false,
     enableCookieEncryption: true,
@@ -41,7 +41,7 @@ module.exports = {
     target: ['AppImage'],
     category: 'Utility',
     executableName: 'tokentrail',
-    icon: 'assets/branding/tokentrail-logo-dark.png',
+    icon: 'assets/branding/tokentrail-icon-v2-dark.png',
     artifactName: '${productName}-${version}-${os}-${arch}.${ext}',
   },
 };

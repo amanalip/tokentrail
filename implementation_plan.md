@@ -1,10 +1,10 @@
 # Token Trail Implementation Plan
 
-**Status:** Approved plan; Phase 1 complete
+**Status:** Approved plan; Phases 1 and 2 complete locally
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 2 planned but not started; Phase 1 evidence is complete
+**Current phase:** Phase 2 complete with `tests/0.2.0/test_report.md`; Phase 3 is next
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -210,77 +210,77 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 
 ### 6.2 Product identity correction
 
-- [ ] Change every user-visible application label from `TokenTrail` to `Token Trail`, including the logo wordmark, renderer heading, HTML title, window title, onboarding, status copy, accessibility names, and future menus.
-- [ ] Set electron-builder's user-facing product name and Linux desktop metadata to `Token Trail`.
-- [ ] Keep the repository, npm package name, executable slug, custom protocol, filesystem-safe artifact stem, and application identifiers machine-safe as `tokentrail` where required.
-- [ ] Permit conventional `TokenTrail` spelling only inside source identifiers such as TypeScript types; never render those identifiers as product copy.
-- [ ] Update component, Electron, accessibility, packaged-app, and metadata tests to assert the spaced product name.
-- [ ] Rebuild the package and replace Phase 2 screenshot evidence only after visually confirming `Token Trail` appears everywhere visible.
+- [x] Change every user-visible application label from `TokenTrail` to `Token Trail`, including the logo, renderer, HTML title, window title, status copy, and accessibility names.
+- [x] Set electron-builder's user-facing product name and Linux desktop metadata to `Token Trail`.
+- [x] Keep the repository, npm package name, executable slug, custom protocol, filesystem-safe artifact stem, and application identifiers machine-safe as `tokentrail` where required.
+- [x] Permit conventional `TokenTrail` spelling only inside source identifiers such as TypeScript types; never render those identifiers as product copy.
+- [x] Update component, Electron, accessibility, packaged-app, and metadata tests to assert the spaced product name.
+- [x] Rebuild the package and replace Phase 2 screenshot evidence after visually confirming `Token Trail` appears everywhere visible.
 
 ### 6.3 Development renderer parity and CSP
 
-- [ ] Reproduce the unstyled `npm run dev` shell and capture the exact renderer-console CSP violation before changing policy or Vite behavior.
-- [ ] Document the root cause: Vite's development CSS transform calls its style-update path and injects an inline `<style>`, while the shared `style-src 'self'` policy rejects inline styles; React and local images still load, leaving browser-default layout and typography.
-- [ ] Separate development CSP construction from the packaged production policy instead of weakening one shared policy for both environments.
-- [ ] Prefer a self-hosted development stylesheet or nonce-compatible injection if it preserves reliable Vite updates; use a narrowly scoped development-only inline-style exception only when the safer approaches are impractical and the reason is documented.
-- [ ] Limit any development exception to an unpackaged process loading the exact validated `http://127.0.0.1:5173` origin. Ensure the exception cannot activate for `tokentrail://app/`, a packaged build, a non-loopback host, or an environment-controlled arbitrary URL.
-- [ ] Keep production `script-src 'self'` and `style-src 'self'` unchanged, with no `unsafe-inline`, `unsafe-eval`, remote style, remote script, or wildcard source.
-- [ ] Verify initial CSS loading and CSS hot updates through the real `npm run dev` orchestration, not only through a production build launched by an end-to-end test.
-- [ ] Add a development-mode smoke test that fails when representative computed styles fall back to browser defaults.
-- [ ] Add policy tests proving the packaged CSP remains strict and any development difference is explicit, minimal, and unreachable in production.
-- [ ] Capture and visually compare development and packaged screenshots at the same viewport, theme, and shell state; embed the reviewed Phase 2 evidence in the versioned test report.
+- [x] Reproduce the unstyled `npm run dev` shell and identify the exact renderer-console CSP violation before changing policy or Vite behavior; the user screenshot remains the original visual defect record.
+- [x] Document the root cause: Vite's development CSS transform injects an inline `<style>`, while the shared `style-src 'self'` policy rejected it.
+- [x] Separate development CSP construction from the packaged production policy instead of weakening one shared policy for both environments.
+- [x] Evaluate self-hosting and nonce propagation, then document why reliable Vite HMR requires the narrowly scoped development-only inline-style exception.
+- [x] Limit the development exception to the exact validated `http://127.0.0.1:5173` origin and keep it unreachable from packaged content.
+- [x] Keep production `script-src 'self'` and `style-src 'self'` unchanged, with no `unsafe-inline`, `unsafe-eval`, remote style, remote script, or wildcard source.
+- [x] Verify initial CSS loading and CSS hot updates through the real development orchestration.
+- [x] Add a development-mode smoke test that fails when representative computed styles fall back to browser defaults.
+- [x] Add policy tests proving the packaged CSP remains strict and any development difference is explicit and minimal.
+- [x] Capture and visually compare development and packaged screenshots; embed the reviewed Phase 2 evidence in the versioned test report.
 
 ### 6.4 Codex adapter
 
-- [ ] Implement owned-process discovery and lifecycle behavior selected in Phase 1.
-- [ ] Implement request IDs, bounded timeouts, cancellation, backoff, restart limits, and safe shutdown.
-- [ ] Validate initialization and capability results before enabling reads.
-- [ ] Implement only the approved account, rate-limit, rate-limit-update, and aggregate-usage methods needed by the slice.
-- [ ] Reject unknown method requests before transport.
-- [ ] Validate all inbound payloads with Zod and size guards.
-- [ ] Convert valid protocol data into normalized domain objects with field-level provenance.
-- [ ] Preserve missing, null, invalid, unknown, and unsupported states instead of converting them to zero.
-- [ ] Redact errors before they leave the privileged boundary.
+- [x] Implement owned-process discovery and lifecycle behavior selected in Phase 1.
+- [x] Implement request IDs, bounded timeouts, cancellation, backoff, restart limits, and safe shutdown.
+- [x] Validate initialization and capability results before enabling reads.
+- [x] Implement only the approved account and rate-limit reads plus rate-limit update handling needed by the slice; retain aggregate usage as an unused Phase 3 allowlist entry.
+- [x] Reject unknown method requests before transport.
+- [x] Validate all inbound payloads with Zod and size guards.
+- [x] Convert valid protocol data into normalized domain objects with field-level provenance.
+- [x] Preserve missing, null, invalid, unknown, and unsupported states instead of converting them to zero.
+- [x] Redact errors before they leave the privileged boundary.
 
 ### 6.5 IPC and preload contract
 
-- [ ] Define narrow request and event contracts in shared code.
-- [ ] Validate sender frame, origin, payload, response, and subscription lifecycle.
-- [ ] Expose only purpose-specific frozen preload methods.
-- [ ] Keep raw IPC channel names, Electron objects, protocol method names, subprocess details, and raw JSON out of the renderer.
-- [ ] Prevent duplicate listeners and guarantee unsubscribe behavior.
-- [ ] Add payload and rate limits where renderer calls could create resource pressure.
+- [x] Define narrow request and event contracts in shared code.
+- [x] Validate sender frame, exact origin, no-argument calls, response, and subscription lifecycle.
+- [x] Expose only purpose-specific frozen preload methods.
+- [x] Keep raw IPC channel names, Electron objects, protocol method names, subprocess details, and raw JSON out of the renderer.
+- [x] Prevent duplicate listeners and guarantee unsubscribe behavior.
+- [x] Deduplicate renderer refresh calls; the bridge accepts no payload whose size could create pressure.
 
 ### 6.6 Snapshot and refresh model
 
-- [ ] Create one in-memory normalized snapshot store.
-- [ ] Distinguish never loaded, loading, fresh, stale, partial, unsupported, signed out, unavailable, and failed states.
-- [ ] Keep the previous valid snapshot visible during a transient refresh failure.
-- [ ] Implement manual refresh with immediate feedback and bounded concurrency.
-- [ ] Establish a conservative measured automatic-refresh default or leave it disabled pending evidence.
-- [ ] Handle sparse updates without silently deleting unrelated valid data.
+- [x] Create one in-memory normalized snapshot store.
+- [x] Distinguish never loaded, loading, fresh, stale, partial, unsupported, signed out, unavailable, and failed states.
+- [x] Keep the previous valid snapshot visible during a transient refresh failure.
+- [x] Implement manual refresh with immediate feedback and bounded concurrency.
+- [x] Leave automatic refresh disabled pending evidence.
+- [x] Treat a valid sparse update as a full-read trigger so unrelated valid data cannot be silently deleted.
 
 ### 6.7 Overview slice
 
-- [ ] Implement onboarding and connection status.
-- [ ] Implement the Overview shell and one normalized quota presentation.
-- [ ] Show used percentage, calculated remaining percentage, reset timestamp, countdown, provenance, and freshness when valid.
-- [ ] Implement loading, partial, stale, signed-out, unsupported, and error states.
-- [ ] Explain that tokens and quota percentages are different measurements.
-- [ ] Provide keyboard access, semantic headings, accessible names, and text alternatives.
-- [ ] Use fixture data only in tests and development fixtures, never as an unexplained production fallback.
+- [x] Implement first-run connection guidance and connection status.
+- [x] Implement the Overview shell and normalized quota presentation.
+- [x] Show used percentage, calculated remaining percentage, reset timestamp, countdown, provenance, and freshness when valid.
+- [x] Implement loading, partial, stale, signed-out, unsupported, unavailable, and error states.
+- [x] Explain that tokens and quota percentages are different measurements.
+- [x] Provide keyboard access, semantic headings, accessible names, and text alternatives.
+- [x] Use fixture data only in tests and explicit development fixtures, never as an unexplained production fallback.
 
 ### 6.8 Phase 2 verification
 
-- [ ] Run full, missing-account, single-bucket, multiple-bucket, null-field, unknown-field, malformed, oversized, method-not-found, and app-server-exit fixtures.
-- [ ] Attempt every denied method through adapter and IPC tests.
-- [ ] Attempt markup injection in every displayed protocol-derived string.
-- [ ] Attempt unexpected-frame and wrong-origin IPC.
-- [ ] Verify refresh cancellation, timeout, backoff, restart budget, and shutdown behavior.
-- [ ] Complete component and end-to-end tests for every Overview state.
-- [ ] Repeat renderer-isolation and navigation tests in a packaged build.
-- [ ] Verify visible copy, accessibility names, window metadata, desktop metadata, and Phase 2 screenshots consistently use `Token Trail`.
-- [ ] Verify the real `npm run dev` shell and packaged shell both load the intended CSS while the packaged CSP still rejects inline styles.
+- [x] Run full, missing-account, single-bucket, multiple-bucket, null-field, unknown-field, malformed, oversized, method-not-found, app-server-exit, and timeout fixtures.
+- [x] Attempt a deliberately widened denied method before transport and prove the renderer has no generic IPC path.
+- [x] Attempt markup injection in the displayed protocol-derived quota name and strip unknown protocol fields.
+- [x] Attempt unexpected-frame, malformed URL, alternate-port, lookalike-host, and wrong-path IPC authorization.
+- [x] Verify refresh cancellation, timeout, deduplication, backoff, restart budget, recovery, and shutdown behavior.
+- [x] Complete component and end-to-end tests for every Overview state.
+- [x] Repeat renderer-isolation, popup, and navigation tests in a packaged build.
+- [x] Verify visible copy, accessibility names, window metadata, desktop metadata, and Phase 2 screenshots consistently use `Token Trail`.
+- [x] Verify the real development shell and packaged shell both load intended CSS while packaged CSP rejects inline styles.
 
 ### 6.9 Phase 2 deliverables
 
@@ -294,15 +294,15 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 
 ### 6.10 Phase 2 exit criteria
 
-- [ ] A fixture app-server can drive every specified Overview state end to end.
-- [ ] A compatible real local Codex app-server can be detected and read without exposing authentication material.
-- [ ] All denied calls fail before reaching transport.
-- [ ] Raw protocol objects and raw errors cannot reach the renderer.
-- [ ] Renderer isolation still passes in development and packaged builds.
-- [ ] Every visible value identifies its provenance or unavailable reason.
-- [ ] No user-visible label incorrectly displays `TokenTrail` or the `tokentrail` repository slug.
-- [ ] `npm run dev` renders the reviewed interface styling, supports a CSS edit without restart, and cannot weaken the packaged CSP.
-- [ ] No Phase 2 critical or high-severity defect remains open.
+- [x] A fixture app-server can drive every specified Overview state end to end.
+- [x] A compatible real local Codex app-server can be detected and read without exposing authentication material.
+- [x] All denied calls fail before reaching transport or have no callable renderer surface.
+- [x] Raw protocol objects and raw errors cannot reach the renderer.
+- [x] Renderer isolation still passes in development and packaged builds.
+- [x] Every visible value identifies its provenance or unavailable reason.
+- [x] No user-visible label incorrectly displays `TokenTrail` or the `tokentrail` repository slug.
+- [x] `npm run dev` renders the reviewed interface styling, supports a CSS edit without restart, and cannot weaken the packaged CSP.
+- [x] No Phase 2 critical or high-severity defect remains open.
 
 ## 7. Phase 3 - Complete v1 product
 

@@ -1,20 +1,21 @@
 # Token Trail Data Flow
 
-**Status:** Phase 1 foundation baseline
-**Last updated:** August 14, 2026
+**Status:** Phase 2 vertical slice implemented
+**Last updated:** August 14, 2026 at 11:01 AM EDT
 
-## Phase 1 flow
+## Current Phase 2 flow
 
 ```mermaid
 flowchart LR
-    A["Packaged app.asar"] -->|"tokentrail://app/ GET"| B["Main protocol handler"]
-    B -->|"validated local response + CSP"| C["Sandboxed renderer"]
-    D["Isolated preload"] -->|"empty frozen tokenTrail bridge"| C
-    E["Electron main"] -->|"creates hardened BrowserWindow"| C
-    C -. "denied" .-> F["Node, Electron, filesystem, permissions, downloads, remote navigation"]
+    C["Codex app-server"] -->|"bounded stdio JSON"| A["Allowlisted Codex adapter"]
+    A -->|"Zod validation and normalization"| S["In-memory Overview snapshot"]
+    S -->|"fixed authenticated IPC"| P["Frozen isolated preload"]
+    P -->|"safe Overview DTOs"| R["Sandboxed React Overview"]
+    R -->|"named no-argument refresh"| P
+    R -. "denied" .-> D["Node, Electron, filesystem, raw IPC, raw Codex JSON, remote navigation"]
 ```
 
-The Phase 1 application displays only bundled branding and static foundation text. It has no Codex transport, account snapshot, preference storage, diagnostic export, telemetry, or update request.
+The Phase 2 application reads only approved account and rate-limit state, holds normalized snapshots in memory, and displays them read-only. It still has no preference persistence, diagnostic export, telemetry, or update request.
 
 ## Planned approved v1 flow
 

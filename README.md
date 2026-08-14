@@ -1,6 +1,6 @@
 # Token Trail
 
-> **Project status:** Phase 1 foundation complete; Phase 2 planned but not started
+> **Project status:** Phase 2 core read-only Overview complete locally
 
 ## Contents
 
@@ -14,7 +14,7 @@ Token Trail is a privacy-first desktop dashboard intended to help people underst
 
 The user-facing product name is **Token Trail**. The repository, npm package, executable slug, custom protocol, and code identifiers may use the machine-safe form `tokentrail` or `TokenTrail`; those identifiers must never replace the spaced product name in visible interface copy.
 
-The approved Electron application has completed its Phase 1 secure foundation. Phase 2 will implement the first read-only Codex-to-Overview slice. Publication, signing, update deployment, telemetry, and broader Codex access remain separately gated.
+The approved Electron application now has a tested Phase 2 read-only Codex-to-Overview slice. Publication, signing, update deployment, telemetry, and broader Codex access remain separately gated.
 
 ## Development
 
@@ -27,7 +27,7 @@ npm run dev
 
 The development command builds main and preload in watch mode, serves the renderer only on `127.0.0.1:5173`, and launches Electron after all three are ready.
 
-**Known Phase 1 limitation:** `npm run dev` currently renders React content without the authored CSS because Vite injects development styles inline while the strict CSP allows only self-hosted styles. The packaged build remains styled correctly. Phase 2 will repair development styling without weakening packaged CSP; until then, use `npm run package:dir` followed by `./release/linux-unpacked/tokentrail` for visual review.
+Development uses an explicitly separate loopback-only CSP so Vite CSS and hot updates work. Packaged production keeps the stricter self-hosted style policy.
 
 Core verification commands:
 
@@ -35,6 +35,7 @@ Core verification commands:
 npm run verify
 npm run test:coverage
 npm run test:integration
+npm run test:development
 npm run test:accessibility
 npm run test:e2e
 npm run test:security
@@ -57,4 +58,4 @@ Electron security and packaged tests may need to run outside a restricted contai
 - [Dependency rationale](docs/architecture/dependency-rationale.md)
 - [Codex protocol compatibility](docs/architecture/protocol-compatibility.md)
 
-The current screenshot-backed development evidence is recorded in [tests/0.1.0/test_report.md](tests/0.1.0/test_report.md). Later executable versions receive their own `tests/<version>/test_report.md`.
+The current screenshot-backed development evidence is recorded in [tests/0.2.0/test_report.md](tests/0.2.0/test_report.md). Each later executable version receives its own `tests/<version>/test_report.md`.

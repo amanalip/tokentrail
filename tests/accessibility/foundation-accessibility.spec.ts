@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test';
 import { launchBuiltApplication } from '../helpers/launch-electron';
 
 // Confirm the minimal shell exposes a coherent semantic structure before interactive features are added.
-test('provides the Phase 1 landmark and heading structure', async () => {
+test('provides the Phase 2 landmark, navigation, and heading structure', async () => {
   // Launch one built Electron application through the production custom protocol.
   const electronApplication = await launchBuiltApplication();
 
@@ -13,18 +13,18 @@ test('provides the Phase 1 landmark and heading structure', async () => {
     // Resolve the application renderer after its local document loads.
     const page = await electronApplication.firstWindow();
 
-    // Confirm one main landmark contains the product's unique level-one heading.
+    // Confirm one main landmark contains the unique Overview level-one heading.
     await expect(page.getByRole('main')).toHaveCount(1);
-    await expect(page.getByRole('heading', { level: 1, name: 'TokenTrail' })).toHaveCount(1);
+    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toHaveCount(1);
 
-    // Confirm the supporting boundary has a correctly nested level-two heading.
-    await expect(page.getByRole('heading', { level: 2, name: 'Current boundary' })).toHaveCount(1);
+    // Confirm primary navigation has an accessible product-specific label.
+    await expect(page.getByRole('navigation', { name: 'Token Trail sections' })).toHaveCount(1);
 
-    // Confirm the accurate development milestone is exposed as live status text.
-    await expect(page.getByRole('status')).toHaveText('Phase 1 foundation');
+    // Confirm connection behavior is exposed as live status text.
+    await expect(page.getByRole('status').first()).toBeVisible();
 
-    // Confirm the decorative logo contributes no duplicate accessible product name.
-    await expect(page.locator('img.logo')).toHaveAttribute('alt', '');
+    // Confirm the decorative icon contributes no duplicate accessible product name.
+    await expect(page.locator('.brand img')).toHaveAttribute('alt', '');
   } finally {
     // Close the exact test-owned Electron process after semantic checks.
     await electronApplication.close();

@@ -1,5 +1,5 @@
 /**
- * List the only request methods TokenTrail may send to Codex. Keeping literal values in one frozen structure
+ * List the only request methods Token Trail may send to Codex. Keeping literal values in one frozen structure
  * prevents renderer data, protocol data, or an arbitrary string from selecting a privileged operation.
  */
 export const APPROVED_CODEX_REQUEST_METHODS = Object.freeze([
@@ -17,7 +17,7 @@ export const APPROVED_CODEX_REQUEST_METHODS = Object.freeze([
 export type ApprovedCodexRequestMethod = (typeof APPROVED_CODEX_REQUEST_METHODS)[number];
 
 /**
- * List the only unsolicited Codex notification TokenTrail may consume. Notifications are separated from requests
+ * List the only unsolicited Codex notification Token Trail may consume. Notifications are separated from requests
  * because receiving an update must never make that method available to the outbound transport.
  */
 export const APPROVED_CODEX_NOTIFICATION_METHODS = Object.freeze([

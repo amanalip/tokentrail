@@ -43,6 +43,7 @@ This document records product and technical design decisions in chronological or
   - [Decision outcome](#decision-outcome-4)
 - [008 - User-facing product name separated from repository identifier](#008---user-facing-product-name-separated-from-repository-identifier)
 - [009 - Development styling must not weaken production CSP](#009---development-styling-must-not-weaken-production-csp)
+- [010 - Phase 2 renderer boundary uses normalized snapshots](#010---phase-2-renderer-boundary-uses-normalized-snapshots)
 
 ## Decision status guide
 
@@ -529,7 +530,7 @@ Token Trail has moved from design and planning into Phase 1 development. The Ele
 ## 008 - User-facing product name separated from repository identifier
 
 **Recorded:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Approved; documentation updated and Phase 2 implementation pending
+**Status:** Approved and implemented in Phase 2
 
 ### Context
 
@@ -545,14 +546,14 @@ The repository and npm package use the machine-safe identifier `tokentrail`, and
 
 ### Decision outcome
 
-The product identity and repository identity are now explicitly separate. This turn changes documentation only. Phase 2 application code has not started.
+The product identity and repository identity are explicitly separate. Phase 2 applies the spaced name throughout visible copy and package metadata and uses a single-mark icon without an embedded wordmark.
 
 ---
 
 ## 009 - Development styling must not weaken production CSP
 
 **Recorded:** August 14, 2026 at 2:48 AM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Approved constraint; Phase 2 implementation pending
+**Status:** Approved and implemented in Phase 2
 
 ### Context
 
@@ -581,4 +582,29 @@ The packaged build looks correct because Vite extracts the same CSS into a self-
 
 ### Decision outcome
 
-The bug and its test gap are now explicit Phase 2 work. This documentation change does not implement the fix, start Phase 2, or weaken any CSP.
+Phase 2 implemented separate policies. Vite's development style-update mechanism requires inline style injection for reliable HMR, so only the exact loopback development document receives `style-src 'unsafe-inline'` and its exact HMR WebSocket. Packaged production retains `style-src 'self'` and rejects inline elements and attributes. Real development computed-style/HMR tests, policy tests, and paired screenshots now cover the prior gap.
+
+---
+
+## 010 - Phase 2 renderer boundary uses normalized snapshots
+
+**Recorded:** August 14, 2026 at 11:01 AM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Implemented
+
+### Context
+
+Codex app-server responses are experimental, may add unknown fields, and can contain identifying account data. Passing raw objects through Electron IPC would couple the renderer to protocol churn and expand the impact of renderer compromise.
+
+### Decision
+
+- Main owns the shell-free app-server child and enforces closed request and notification allowlists before transport.
+- Size and structural guards run before narrow Zod schemas; those schemas strip email and every unapproved field.
+- A normalizer produces a closed provenance-aware Overview snapshot. Missing, invalid, and null values remain unavailable rather than becoming zero.
+- Preload exposes only `getOverviewSnapshot`, `refreshOverview`, and `onOverviewChanged`; it exposes no IPC channel, protocol method, raw error, or arbitrary payload.
+- IPC accepts only the exact top-level packaged or development root document.
+- Sparse update notifications trigger a complete approved read rather than a potentially destructive partial merge.
+- Snapshots remain in memory. Automatic periodic refresh remains disabled pending evidence.
+
+### Decision outcome
+
+The Phase 2 vertical slice proves this boundary with fixture transport, normalization, controller, IPC authorization, component, development, built Electron, and packaged-executable tests. Phase 3 must extend the same pattern rather than bypass it for new routes.

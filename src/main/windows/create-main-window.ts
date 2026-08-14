@@ -14,7 +14,7 @@ import { WINDOW_SECURITY_PREFERENCES } from '../security/window-security-prefere
 const preloadPath = path.resolve(__dirname, '..', 'preload', 'index.cjs');
 
 /**
- * Create TokenTrail's one main window with an explicit least-privilege preference set. The caller supplies a
+ * Create Token Trail's one main window with an explicit least-privilege preference set. The caller supplies a
  * validated loopback development URL or `null`; packaged content remains the default and production path.
  */
 export function createMainWindow(developmentUrl: string | null): BrowserWindow {
@@ -26,7 +26,7 @@ export function createMainWindow(developmentUrl: string | null): BrowserWindow {
     minHeight: 560,
     show: false,
     backgroundColor: '#10131a',
-    title: 'TokenTrail',
+    title: 'Token Trail',
     autoHideMenuBar: true,
     webPreferences: {
       ...WINDOW_SECURITY_PREFERENCES,

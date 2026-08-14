@@ -5,20 +5,21 @@ import { expect, test } from '@playwright/test';
 import { launchBuiltApplication } from '../helpers/launch-electron';
 
 // Confirm a production build reaches the local shell through the custom application protocol.
-test('launches the packaged-content foundation shell', async () => {
+test('launches the packaged-content Phase 2 Overview shell', async () => {
   // Start one Electron application from the completed Vite bundles.
   const electronApplication = await launchBuiltApplication();
 
   try {
-    // Wait for the first and only TokenTrail window.
+    // Wait for the first and only Token Trail window.
     const page = await electronApplication.firstWindow();
 
     // Confirm navigation uses the fixed secure local scheme rather than file or remote HTTP content.
     await expect.poll(() => page.url()).toBe('tokentrail://app/');
 
-    // Confirm the visible product identity and honest milestone reached the real Electron renderer.
-    await expect(page.getByRole('heading', { level: 1, name: 'TokenTrail' })).toBeVisible();
-    await expect(page.getByRole('status')).toHaveText('Phase 1 foundation');
+    // Confirm the visible product identity and Overview reached the real Electron renderer.
+    await expect(page.getByRole('link', { name: 'Token Trail Overview' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+    await expect(page).toHaveTitle('Token Trail');
   } finally {
     // Close the owned Electron process even when an assertion fails.
     await electronApplication.close();
@@ -43,7 +44,7 @@ test('supports system, light, and dark shell themes', async () => {
     // Leave the data attribute absent and simulate a dark operating-system preference.
     await page.evaluate(() => document.documentElement.removeAttribute('data-theme'));
     await page.emulateMedia({ colorScheme: 'dark' });
-    await expect.poll(readBackgroundToken).toBe('#0b0e14');
+    await expect.poll(readBackgroundToken).toBe('#090d14');
 
     // Confirm system mode follows the corresponding light operating-system preference.
     await page.emulateMedia({ colorScheme: 'light' });
@@ -51,7 +52,7 @@ test('supports system, light, and dark shell themes', async () => {
 
     // Confirm explicit dark overrides a light operating-system preference.
     await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
-    await expect.poll(readBackgroundToken).toBe('#0b0e14');
+    await expect.poll(readBackgroundToken).toBe('#090d14');
 
     // Confirm explicit light overrides a dark operating-system preference.
     await page.emulateMedia({ colorScheme: 'dark' });

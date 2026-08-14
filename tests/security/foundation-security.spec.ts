@@ -32,12 +32,12 @@ test('keeps privileged globals out of the renderer', async () => {
       };
     });
 
-    // Confirm no privileged global exists and the reviewed bridge remains empty and frozen.
+    // Confirm no privileged global exists and the reviewed bridge contains only named Overview capabilities.
     expect(capabilityState).toEqual({
       requireType: 'undefined',
       processType: 'undefined',
       ipcRendererType: 'undefined',
-      bridgeKeys: [],
+      bridgeKeys: ['getOverviewSnapshot', 'refreshOverview', 'onOverviewChanged'],
       bridgeFrozen: true,
     });
   } finally {
@@ -74,6 +74,53 @@ test('denies navigation and new windows', async () => {
     expect(electronApplication.windows()).toHaveLength(1);
   } finally {
     // Close the application process even if navigation behavior regresses.
+    await electronApplication.close();
+  }
+});
+
+// Confirm the built custom-protocol renderer keeps production style policy strict after the dev-only fix.
+test('rejects inline styles in the production renderer policy', async () => {
+  // Launch the built application rather than the Vite development server.
+  const electronApplication = await launchBuiltApplication();
+
+  try {
+    // Resolve the secure custom-protocol page.
+    const page = await electronApplication.firstWindow();
+
+    // Read the current body background before attempting inline style injection.
+    const originalBackground = await page.evaluate(
+      () => getComputedStyle(document.body).backgroundColor,
+    );
+
+    // Attempt both a style element and a style attribute inside the untrusted renderer world.
+    const result = await page.evaluate(() => {
+      // Create an inline style element that production CSP must reject.
+      const styleElement = document.createElement('style');
+      styleElement.textContent = 'body { background-color: rgb(255, 0, 255) !important; }';
+      document.head.append(styleElement);
+
+      // Attempt a direct style attribute that the same policy must reject.
+      document.body.setAttribute('style', 'background-color: rgb(255, 0, 255) !important');
+
+      // Return only policy and computed-style evidence.
+      return {
+        metaPolicy:
+          document
+            .querySelector('meta[http-equiv="Content-Security-Policy"]')
+            ?.getAttribute('content') ?? '',
+        computedBackground: getComputedStyle(document.body).backgroundColor,
+      };
+    });
+
+    // Confirm the built HTML itself contains no development inline-style exception.
+    expect(result.metaPolicy).toContain("style-src 'self'");
+    expect(result.metaPolicy).not.toContain("'unsafe-inline'");
+    expect(result.metaPolicy).not.toContain('ws://127.0.0.1:5173');
+
+    // Confirm neither inline injection changed the rendered background.
+    expect(result.computedBackground).toBe(originalBackground);
+  } finally {
+    // Close the exact security-test application.
     await electronApplication.close();
   }
 });

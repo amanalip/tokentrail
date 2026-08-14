@@ -1,6 +1,6 @@
 {
   "name": "tokentrail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A privacy-first desktop dashboard for understanding local Codex usage.",
   "license": "GPL-3.0-only",
   "author": "Aman Ali",
@@ -28,6 +28,7 @@
     "test:watch": "vitest",
     "test:accessibility": "npm run build && playwright test tests/accessibility",
     "test:e2e": "npm run build && playwright test tests/e2e",
+    "test:development": "playwright test tests/development",
     "test:security": "npm run build && playwright test tests/security",
     "test:packaged": "npm run package:dir && playwright test tests/packaged",
     "test:performance": "npm run package:dir && playwright test tests/performance",
