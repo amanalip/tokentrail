@@ -10,6 +10,8 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 013 - GitHub release workflow documented](#commit-013---github-release-workflow-documented)
+- [Commit 012 - Privacy-safe v1 insights approved](#commit-012---privacy-safe-v1-insights-approved)
 - [Commit 011 - Electron product specification and security plan approved](#commit-011---electron-product-specification-and-security-plan-approved)
 - [Commit 010 - Linked references and verification reports added](#commit-010---linked-references-and-verification-reports-added)
 - [Commit 009 - Markdown contents navigation added](#commit-009---markdown-contents-navigation-added)
@@ -81,9 +83,109 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ## Current uncommitted work
 
-**First recorded:** August 13, 2026 at 6:08:02 PM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 13, 2026 at 6:13:52 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 at 1:10:30 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 1:10:30 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+### Intent
+
+Reconcile the commit tracker with the two latest documentation commits using exact Git metadata.
+
+### Important changes
+
+- Added the finalized tracker record for Commit 012.
+- Added the finalized tracker record for Commit 013.
+
+### Verification
+
+- Commit hashes, authors, timestamps, subjects, changed files, and statistics were read directly from Git.
+- `git diff --check` is required before this tracker update is committed.
+
+### Fact-check report
+
+- Commit 012 is `a13e6b8`; it changed three documentation files with 541 insertions and 79 deletions.
+- Commit 013 is `f7e97a2`; it changed only `product_spec_electron.md` with 14 insertions and 4 deletions.
+
+### Sanity-check report
+
+- This reconciliation records already committed planning changes and introduces no application code, publication, or release action.
+
+### Follow-up
+
+Commit this tracker reconciliation, then finalize its hash in a later meaningful tracker update.
+
+---
+
+## Commit 013 - GitHub release workflow documented
+
+**Commit:** `f7e97a2` - `Document GitHub release workflow and update phases`
+**Timestamp:** August 14, 2026 at 1:08:12 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Define how approved TokenTrail versions become reviewable Linux release artifacts without allowing ordinary pushes to publish application updates.
+
+### Important changes
+
+- Selected standard GitHub-hosted Actions runners for release builds and GitHub Releases for public distribution.
+- Required an approved version commit and matching immutable tag such as `v0.1.0` to begin a release.
+- Required frozen dependency installation, quality and security checks, architecture-specific builds, checksums, and draft releases.
+- Added maintainer review before publication and separated stable releases from prereleases.
+- Clarified that v1 uses manual GitHub Release downloads and does not install updates automatically.
+
+### Decisions and assumptions
+
+- Normal branch pushes do not publish application updates.
+- User-facing installers are GitHub Release assets rather than committed repository files or temporary Actions artifacts.
+- Release workflows use least privilege, reviewed pinned Actions, and a protected release environment.
+- GitHub release immutability is enabled at the repository level, so a published tag and its assets are replaced only by publishing a new version.
+
+### Verification
+
+- Git records 14 insertions and 4 deletions in `product_spec_electron.md`.
+- Commit hash, author, timestamp, subject, changed file, and statistics were read directly from Git.
+- The documentation diff passed `git diff --check` before the commit.
+
+### Fact-check report
+
+- The repository was confirmed public through an unauthenticated GitHub request.
+- GitHub documentation confirmed that standard hosted runners are free for public repositories and that GitHub Releases supports downloadable binary assets.
+- No workflow file or installer existed in this commit; the change remained a release plan.
+
+### Sanity-check report
+
+- The workflow is consistent with the specification's manual-first update policy and release-integrity requirements.
+- Draft review plus immutable published releases prevents silently replacing an installer under an existing version.
+- The change does not resolve the separate signing-identity decision or authorize implementation.
+
+### User lessons
+
+- A version tag initiates the future packaging workflow; an ordinary code push does not update installed applications.
+- GitHub Actions will build the artifacts, while GitHub Releases will present them for download.
+- Published immutable releases require fixes to use a new version such as `v0.1.1`.
+
+### Agent lessons
+
+- Release documentation must distinguish temporary CI artifacts from durable user-facing release assets.
+- Repository release settings, workflow permissions, and human publication review are part of the packaging design.
+
+### Risks or limitations
+
+- The Electron application and release workflow are not implemented yet.
+- Linux signing identity, exact runner matrix, update-check behavior, and packaged smoke testing remain future work.
+
+### Follow-up
+
+After the Electron scaffold exists, implement and test the packaging workflow under separate authorization.
+
+---
+
+## Commit 012 - Privacy-safe v1 insights approved
+
+**Commit:** `a13e6b8` - `Document approved TokenTrail insights and product requirements`
+**Timestamp:** August 13, 2026 at 6:16:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -181,7 +283,7 @@ These additions make TokenTrail more useful without weakening its privacy-first 
 
 ### Follow-up
 
-Run final verification. After the user commits this documentation, replace the pending entry with exact Git metadata. Implementation still requires separate authorization.
+Implement the approved insights only under separate authorization, with the documented schema, privacy, completeness, and security tests.
 
 ---
 
