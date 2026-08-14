@@ -4,7 +4,7 @@
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
 **Current phase:** Phase 2 complete with `tests/test_reports/0.2.0/test_report.md`; Phase 3 is next
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -369,7 +369,12 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 
 - [ ] Maintain `docs/architecture/README.md` as the entry point, current-system map, document ownership table, and recommended reading order.
 - [ ] Keep separate detailed documents for the Electron process model, Codex adapter/lifecycle, normalization and data contracts, IPC/preload boundary, renderer state model, development-versus-production runtime, and testing architecture.
-- [ ] Add Phase 3 documents for domain calculations, preferences/storage, diagnostics/redaction, navigation and route composition, and accessibility architecture as those systems are implemented.
+- [ ] Create `docs/architecture/calculations-and-precision.md` with the implemented arithmetic, coverage, date, bigint/decimal, unavailable-state, and formula-test contracts.
+- [ ] Create `docs/architecture/preferences-and-storage.md` with the implemented schema, defaults, migrations, corruption behavior, persistence exclusions, and clear-data ownership.
+- [ ] Create `docs/architecture/diagnostics-and-redaction.md` with the implemented safe schema, canary strategy, preview/export flow, filesystem boundary, and prohibited fields.
+- [ ] Create `docs/architecture/navigation-and-route-composition.md` with the implemented route tree, data dependencies, loading boundaries, focus behavior, and contextual navigation.
+- [ ] Create `docs/architecture/accessibility-architecture.md` with the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts.
+- [ ] Keep those five documents marked planned or implementation-in-progress until their corresponding Phase 3 systems and tests exist; never present intended behavior as current evidence.
 - [ ] Record packaging/release/update architecture in Phase 5 rather than describing unimplemented release behavior as current behavior.
 - [ ] Give each architecture document status, scope, invariants, failure behavior, security/privacy boundaries, test evidence, known limitations, and links to controlling decisions.
 - [ ] Update architecture documents in the same change as any material boundary or lifecycle modification; stale architecture text is a defect.
@@ -525,7 +530,14 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] Document manual update behavior and clearly state that v1 does not silently install updates.
 - [ ] Add release-note structure for highlights, security, fixes, known limitations, installation links, checksums, and upgrade notes.
 
-### 9.5 Package verification
+### 9.5 Packaging, release, and upgrade architecture documentation
+
+- [ ] Create `docs/architecture/packaging-architecture.md` alongside implemented electron-builder targets, covering inputs, ASAR/fuses, artifact naming, architecture separation, metadata, icons, dependencies, and package verification.
+- [ ] Create `docs/architecture/github-release-pipeline.md` alongside the implemented Actions workflow, covering triggers, permissions, protected environments, pinned actions, build jobs, provenance, draft creation, immutability, and publication approval.
+- [ ] Create `docs/architecture/installation-and-upgrade-model.md` alongside verified packages, covering format selection, install locations, checksums/signatures, upgrade behavior, settings compatibility, rollback limits, uninstall ownership, and manual v1 updates.
+- [ ] Mark each document planned until its workflow exists, then update it from actual workflow files, packages, and verification evidence before Phase 5 closes.
+
+### 9.6 Package verification
 
 - [ ] Install, launch, exercise the core workflow, close, reopen, upgrade, and uninstall every package format in a clean suitable environment.
 - [ ] Verify icons, desktop entry, WM class, dependencies, menus, and removed files.
@@ -534,7 +546,7 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] Verify x64 and arm64 on real hardware or clearly document the approved equivalent and quality label.
 - [ ] Confirm that package installation does not create tray or autostart files when those features are not included.
 
-### 9.6 Release security review
+### 9.7 Release security review
 
 - [ ] Review direct and transitive dependencies, licenses, advisories, install scripts, and unused packages.
 - [ ] Produce and inspect the SBOM.
@@ -544,7 +556,7 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] Resolve every critical and high-severity finding before a release candidate.
 - [ ] Obtain external security review where available and record scope and remediation.
 
-### 9.7 Phase 5 deliverables
+### 9.8 Phase 5 deliverables
 
 - AppImage, deb, rpm, and Pacman release-candidate artifacts.
 - Protected CI and tag-driven draft release workflows.
@@ -552,8 +564,9 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - Complete installation, upgrade, troubleshooting, and uninstall documentation.
 - Package smoke-test evidence and a draft prerelease.
 - Versioned prerelease test report under `tests/test_reports/<version>/test_report.md`.
+- Implemented packaging, GitHub release pipeline, and installation/upgrade architecture documents.
 
-### 9.8 Phase 5 exit criteria
+### 9.9 Phase 5 exit criteria
 
 - [ ] A version tag produces only a draft release with correctly named artifacts.
 - [ ] Every claimed package and architecture has build and smoke-test evidence.
@@ -562,6 +575,7 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 - [ ] CI permissions, pinned Actions, protected environment, and untrusted-fork behavior pass review.
 - [ ] No critical or high release-security finding remains.
 - [ ] The prerelease test report recommends `preview-only` or better and names all missing stable-release evidence.
+- [ ] The three Phase 5 architecture documents match the actual workflows and tested package behavior and are no longer marked merely planned.
 
 ## 10. Phase 6 - Release validation and publication
 

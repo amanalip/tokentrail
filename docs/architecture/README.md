@@ -1,29 +1,39 @@
 # Token Trail Architecture Guide
 
-**Status:** Phase 2 implemented-system index; Phase 3 expansion scheduled  
-**Last updated:** August 14, 2026 at 11:16 AM EDT
+**Status:** Phase 2 implemented-system index; later documents scheduled by phase
+**Last updated:** August 14, 2026 at 11:28 AM EDT
 
 This directory explains how Token Trail works as a complete system. The product specification defines required behavior, the implementation plan defines delivery order, and these documents explain the implemented technical boundaries and why they exist.
 
 ## Recommended reading order
 
 1. [System overview](system-overview.md) — components, ownership, and one complete refresh.
-2. [Process and lifecycle](process-and-lifecycle.md) — Electron processes, the owned Codex child, startup, and shutdown.
-3. [Codex adapter](codex-adapter.md) — discovery, transport, allowlists, validation, normalization, and recovery.
-4. [IPC and data contracts](ipc-and-data-contracts.md) — what may cross into the renderer and how senders are authorized.
-5. [Renderer state model](renderer-state-model.md) — Overview states, refresh behavior, provenance, and presentation rules.
-6. [Runtime modes and CSP](runtime-modes-and-csp.md) — development, built-content, and packaged differences.
-7. [Testing architecture](testing-architecture.md) — which test layer proves each boundary.
-8. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
+2. [Repository and build system](repository-and-build-system.md) — source ownership, TypeScript projects, build graph, and packaging boundary.
+3. [Process and lifecycle](process-and-lifecycle.md) — Electron processes, the owned Codex child, startup, and shutdown.
+4. [Security boundaries](security-boundaries.md) — how renderer, IPC, protocol, content, data, and build controls compose.
+5. [Configuration and environments](configuration-and-environments.md) — reviewed modes, environment inputs, precedence, and fail-closed behavior.
+6. [Codex adapter](codex-adapter.md) — discovery, transport, allowlists, validation, normalization, and recovery.
+7. [Domain model and provenance](domain-model-and-provenance.md) — trusted vocabulary, availability, origin labels, and extension rules.
+8. [IPC and data contracts](ipc-and-data-contracts.md) — what may cross into the renderer and how senders are authorized.
+9. [Error taxonomy and recovery](error-taxonomy-and-recovery.md) — safe categories, UI states, retry, cancellation, and diagnostics boundary.
+10. [Renderer state model](renderer-state-model.md) — Overview states, refresh behavior, provenance, and presentation rules.
+11. [Runtime modes and CSP](runtime-modes-and-csp.md) — development, built-content, and packaged differences.
+12. [Testing architecture](testing-architecture.md) — which test layer proves each boundary.
+13. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
 
 ## Document ownership and status
 
 | Document | Current scope | Update trigger |
 | --- | --- | --- |
 | `system-overview.md` | Phase 2 complete system | New process, store, route, or external boundary |
+| `repository-and-build-system.md` | Current repository and build graph | Source layout, compiler, bundler, package, or dependency-policy change |
 | `process-and-lifecycle.md` | Main/preload/renderer/Codex ownership | Startup, shutdown, retry, or window lifecycle change |
+| `security-boundaries.md` | Composed Phase 2 trust controls | Capability, origin, IPC, protocol, data, or build-boundary change |
+| `configuration-and-environments.md` | Current runtime modes and inputs | Environment, argument, preference, secret, or deployment configuration change |
 | `codex-adapter.md` | Approved account and quota transport | Protocol method, schema, limit, or compatibility change |
+| `domain-model-and-provenance.md` | Overview domain vocabulary | Domain type, availability, provenance, calculation source, or privacy change |
 | `ipc-and-data-contracts.md` | Overview snapshot bridge | IPC method, event, origin, or DTO change |
+| `error-taxonomy-and-recovery.md` | Safe categories and retry behavior | Error category, state mapping, timeout, backoff, or diagnostics change |
 | `renderer-state-model.md` | Overview UI states | State, provenance, refresh, or presentation change |
 | `runtime-modes-and-csp.md` | Development, built, packaged modes | Vite, CSP, protocol, packaging, or harness change |
 | `testing-architecture.md` | Phase 2 evidence layers | Test command, fixture, environment, or gate change |
@@ -39,14 +49,14 @@ Phase 2 implements a local, read-only Overview. Electron main owns the Codex chi
 
 Token Trail currently persists no account, quota, or usage snapshot. It performs no telemetry and no application-initiated update request. Aggregate usage and the remaining product routes begin in Phase 3. Packaging formats and GitHub release automation remain Phase 5.
 
-## Phase 3 documentation backlog
+## Planned documents by implementation phase
 
 The following documents are created alongside their implementations, not speculatively presented as current architecture:
 
-- domain calculations and precision;
-- preferences and storage;
-- diagnostics and redaction;
-- navigation and route composition;
-- accessibility architecture.
+- `calculations-and-precision.md`;
+- `preferences-and-storage.md`;
+- `diagnostics-and-redaction.md`;
+- `navigation-and-route-composition.md`;
+- `accessibility-architecture.md`.
 
-Phase 5 adds packaging, release, installation, upgrade, and update-boundary documents. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.
+Phase 5 creates `packaging-architecture.md`, `github-release-pipeline.md`, and `installation-and-upgrade-model.md` alongside the implemented workflows. Until then these filenames are planned work, not descriptions of current capabilities. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.

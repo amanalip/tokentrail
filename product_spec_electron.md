@@ -5,7 +5,7 @@
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
 
 This document defines the controlling Electron direction and implementation boundary for Token Trail. Phases 1 and 2 are complete locally: the hardened foundation now carries a tested, normalized, read-only Codex-to-Overview path. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
@@ -1047,7 +1047,9 @@ Kirigami remains the best option for deep Plasma conventions and native KDE iden
 
 ## 12. Application architecture
 
-The maintained contributor entry point is [docs/architecture/README.md](docs/architecture/README.md). It links the implemented system overview, process lifecycle, Codex adapter, IPC/data contracts, renderer state model, runtime/CSP modes, testing architecture, data inventory, threat model, protocol compatibility, and dependency rationale. Architecture documentation is updated with the implementation boundary it describes; source code must not remain the only record of a material trust, lifecycle, state, or persistence decision.
+The maintained contributor entry point is [docs/architecture/README.md](docs/architecture/README.md). It links the implemented system overview, repository/build system, process lifecycle, security boundaries, configuration/environments, Codex adapter, domain/provenance model, IPC/data contracts, error/recovery model, renderer state model, runtime/CSP modes, testing architecture, data inventory, threat model, protocol compatibility, and dependency rationale. Architecture documentation is updated with the implementation boundary it describes; source code must not remain the only record of a material trust, lifecycle, state, build, configuration, error, or persistence decision.
+
+Future documents follow implementation timing. Phase 3 creates calculation/precision, preference/storage, diagnostics/redaction, navigation/route, and accessibility architecture when those systems exist. Phase 5 creates packaging, GitHub release-pipeline, and installation/upgrade architecture with the actual workflows and tested packages. Until implementation begins, these remain planned filenames rather than documents that imply unbuilt behavior is current.
 
 ### 12.1 Process and trust boundaries
 

@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 019 - Phase 3 requirements and test evidence reorganized](#commit-019---phase-3-requirements-and-test-evidence-reorganized)
 - [Commit 018 - Phase 2 core read-only slice completed](#commit-018---phase-2-core-read-only-slice-completed)
 - [Commit 017 - Development CSP repair planned](#commit-017---development-csp-repair-planned)
 - [Commit 016 - Token Trail branding clarified](#commit-016---token-trail-branding-clarified)
@@ -90,9 +91,71 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 after commit `f8d1b9b`
-**Last updated:** August 14, 2026 at 11:16 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 after commit `b614cdd`
+**Last updated:** August 14, 2026 at 11:28 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+### Intent
+
+Complete the currently implemented architecture picture without describing future systems as built, and schedule exact Phase 3 and Phase 5 architecture documents alongside their implementations.
+
+### Important changes
+
+- Added detailed implemented-system documents for repository/build, error/recovery, domain/provenance, security boundaries, and configuration/environments.
+- Expanded the architecture reading order and ownership/update-trigger table to include all five documents.
+- Added exact Phase 3 filenames for calculations, preferences, diagnostics, navigation, and accessibility architecture.
+- Added exact Phase 5 filenames for packaging, GitHub release pipeline, and installation/upgrade architecture.
+- Updated the specification and implementation plan to require future documents to remain planned until backed by actual systems and tests.
+
+### Decisions and assumptions
+
+- Current architecture documents may explain only implemented behavior and explicit present limitations.
+- Planned documents are created during their owning phase, then promoted from planned to implemented only after code/workflow and evidence exist.
+- Topic documents complement rather than replace the data inventory, threat model, compatibility record, and design-decision log.
+
+### Verification
+
+- Local Markdown links, expected architecture files, old status wording, heading numbering, and whitespace are checked.
+- Application tests are not rerun because this change modifies documentation only.
+
+### Fact-check report
+
+- Repository source and Phase 2 tests were used to describe current build, lifecycle, categories, domain DTOs, trust boundaries, configuration inputs, and known limitations.
+- No packaging workflow, update client, preference store, diagnostic export, or Phase 3 route is described as currently implemented.
+
+### Sanity-check report
+
+- The five new documents fill current-system gaps without duplicating future Phase 3 or Phase 5 implementation detail.
+- Future document creation is tied to existing phase gates, so documentation work cannot silently expand product capability.
+- No code, test evidence, report location, privacy boundary, or release state changes in this work.
+
+### User lessons
+
+- The architecture set now covers how the repository builds, how errors recover, what the trusted domain means, how security controls compose, and which environment inputs are accepted.
+- Future architecture can be tracked in detail without presenting planned behavior as fact.
+
+### Agent lessons
+
+- A complete architecture picture needs cross-cutting documents in addition to component documents.
+- Every future-looking architecture file needs an owning phase and an evidence-based transition from planned to implemented.
+- Keep errors, configuration, and build systems documented explicitly; they are architecture, not incidental implementation detail.
+
+### Risks or limitations
+
+- The architecture set will become stale if Phase 3 changes are implemented without completing their paired documents.
+- Phase 5 document detail remains intentionally absent until real workflows and packages exist.
+
+### Follow-up
+
+Review and commit this architecture expansion. Create the five Phase 3 documents and three Phase 5 documents only during their scheduled implementation work.
+
+---
+
+## Commit 019 - Phase 3 requirements and test evidence reorganized
+
+**Commit:** `b614cdd` - `Document Phase 3 requirements and reorganize test evidence`
+**Timestamp:** August 14, 2026 at 11:24:53 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -121,7 +184,7 @@ Record the user's Phase 3 native-window icon and primary-number readability requ
 
 ### Fact-check report
 
-- Git confirms Phase 2 was committed as `f8d1b9b` at 11:08:04 AM EDT.
+- Git confirms commit `b614cdd`, author Aman Ali, timestamp August 14, 2026 at 11:24:53 AM EDT, 23 changed files, 571 insertions, and 32 deletions.
 - The supplied screenshots visibly show Electron's default window icon and dense large-number spacing.
 - Both version directories now exist below `tests/test_reports/` with their reports, metrics, and screenshots intact.
 
@@ -151,7 +214,7 @@ Record the user's Phase 3 native-window icon and primary-number readability requ
 
 ### Follow-up
 
-Review and commit this documentation and evidence-layout change. Do not begin Phase 3 implementation or publish a release without the user's next instruction.
+The requirements and evidence layout are committed. Use them during Phase 3; do not publish a release.
 
 ---
 
