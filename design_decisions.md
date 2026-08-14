@@ -35,7 +35,7 @@ This document records product and technical design decisions in chronological or
   - [Security and privacy effect](#security-and-privacy-effect)
   - [Updated Codex evidence](#updated-codex-evidence)
   - [Decision outcome](#decision-outcome-3)
-- [007 - Phase 0 development and evidence standards authorized](#007---phase-0-development-and-evidence-standards-authorized)
+- [007 - Phase 1 development and evidence standards authorized](#007---phase-1-development-and-evidence-standards-authorized)
   - [Authorized work](#authorized-work)
   - [Readability standard](#readability-standard)
   - [Versioned test evidence](#versioned-test-evidence)
@@ -218,7 +218,7 @@ The framework evaluation considered three paths:
 2. **Electron:** prioritize the largest visual ecosystem, faster web-style UI iteration, and future cross-platform reach.
 3. **Prototype first:** build disposable, non-functional Overview mockups in both stacks and compare appearance, accessibility, packaged size, idle memory, startup time, theming, and development complexity before approving implementation.
 
-The user selected Electron on August 13, 2026. The framework question is resolved in Decision 005, and the later Phase 0 implementation authorization is recorded in Decision 007.
+The user selected Electron on August 13, 2026. The framework question is resolved in Decision 005, and the later Phase 1 implementation authorization is recorded in Decision 007.
 
 ---
 
@@ -319,7 +319,7 @@ The current Markdown files were searched for em dashes when this rule was added,
 ## 005 - Electron selected with a hardened read-only architecture
 
 **Recorded:** August 13, 2026 at 5:44 PM EDT (`America/Toronto`, UTC-04:00)
-**Status:** Approved technical and product direction; Phase 0 implementation later authorized by Decision 007
+**Status:** Approved technical and product direction; Phase 1 implementation later authorized by Decision 007
 
 ### Context
 
@@ -400,7 +400,7 @@ Electron's costs remain real: larger artifacts, higher likely baseline memory th
 
 Electron is the approved TokenTrail framework. KDE/Kirigami is superseded as the implementation direction but preserved as an evaluated alternative. The new Electron product specification is the controlling technical plan once it is reviewed and accepted.
 
-At the time of Decision 005, this approval covered detailed planning but not implementation or dependency installation. Decision 007 later authorized Phase 0 implementation within the same read-only boundary. Publishing, signing, update deployment, and broader access remain unauthorized.
+At the time of Decision 005, this approval covered detailed planning but not implementation or dependency installation. Decision 007 later authorized Phase 1 implementation within the same read-only boundary. Publishing, signing, update deployment, and broader access remain unauthorized.
 
 ### Reference links
 
@@ -486,7 +486,7 @@ At the time of Decision 006, this decision changed documentation and v1 scope on
 
 ---
 
-## 007 - Phase 0 development and evidence standards authorized
+## 007 - Phase 1 development and evidence standards authorized
 
 **Recorded:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
 **Status:** Approved
@@ -497,7 +497,8 @@ After reviewing the product direction, Linux packaging plan, GitHub release work
 
 ### Authorized work
 
-- Begin Phase 0 of the controlling Electron specification.
+- Begin Phase 1 of the controlling Electron specification.
+- Maintain the approved six-phase delivery sequence in `implementation_plan.md`, ending with a separately approved v1.0.0 publication.
 - Select and install exact supported dependency versions with a lockfile and documented reasoning.
 - Create the hardened Electron, TypeScript, React, Vite, and electron-builder foundation.
 - Implement and test only the approved local, read-only Codex boundary and supporting application features.
@@ -519,4 +520,4 @@ This authorization does not approve publishing a release, signing artifacts, dep
 
 ### Decision outcome
 
-TokenTrail has moved from design and planning into Phase 0 development. The Electron product specification is now the controlling implementation standard, including its privacy, security, testing, commenting, and release boundaries.
+TokenTrail has moved from design and planning into Phase 1 development. The Electron product specification is now the controlling implementation standard, including its privacy, security, testing, commenting, and release boundaries.

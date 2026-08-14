@@ -90,19 +90,22 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ### Intent
 
-Record the user's authorization to begin Phase 0 development and establish the source-commenting and versioned test-report standards before application code is created.
+Record the user's authorization to begin Phase 1 development and establish the source-commenting and versioned test-report standards before application code is created.
 
 ### Important changes
 
-- Changed the repository and Electron specification status from planning to Phase 0 development.
+- Changed the repository and Electron specification status from planning to Phase 1 development.
 - Authorized dependency selection and installation within the approved read-only Electron scope.
 - Required teaching-style explanations for authored executable code while documenting narrow generated-file and format exceptions.
 - Required an evidence-based `tests/<version>/test_report.md` for every preview and stable version.
+- Added a detailed six-phase implementation plan with tasks, deliverables, verification, exit criteria, release gates, test-report rules, documentation work, open-question scheduling, risks, and final handoff checks.
+- Added a separately tracked post-v1 backlog for optional desktop behavior, updates, platforms, local data, customization, companion clients, and recurring maintenance.
+- Reconciled the product specification's delivery phases and README navigation with the implementation plan.
 - Added Design Decision 007 and reconciled the finalized metadata for Commit 014.
 
 ### Verification
 
-- Markdown structure, local links, contents anchors, repository status language, and whitespace must be checked before commit.
+- Markdown structure, local links, contents anchors, phase traceability, repository status language, and whitespace must be checked before commit.
 - No application dependency, source file, workflow, package, release, or external system is changed by this documentation update.
 
 ### Fact-check report
@@ -119,7 +122,7 @@ Record the user's authorization to begin Phase 0 development and establish the s
 
 ### Follow-up
 
-Commit this development-start documentation, then begin Phase 0 dependency selection, threat review, and secure Electron scaffolding.
+Commit this development-start documentation, then begin Phase 1 dependency selection, threat review, and secure Electron scaffolding.
 
 ---
 
@@ -402,7 +405,7 @@ This commit established the controlling Electron plan and a reviewable security 
 
 ### Follow-up
 
-Use the specification as the controlling plan, update it when approved scope changes, and begin Phase 0 only after the user explicitly authorizes implementation.
+Use the specification as the controlling plan, update it when approved scope changes, and begin the foundation phase, now Phase 1, only after the user explicitly authorizes implementation.
 
 ---
 ## Commit 010 - Linked references and verification reports added

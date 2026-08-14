@@ -1,13 +1,13 @@
 # TokenTrail Electron Product Specification
 
 **Status:** Approved controlling implementation specification
-**Product stage:** Phase 0 development authorized
+**Product stage:** Phase 1 development authorized
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
 **Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
 
-This document defines the controlling Electron direction and implementation boundary for TokenTrail. Phase 0 development and dependency installation within this specification are authorized. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
+This document defines the controlling Electron direction and implementation boundary for TokenTrail. Phase 1 development and dependency installation within this specification are authorized. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
 
 The inherited KDE proposal remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as a historical alternative. The approved framework decision and its reasoning are recorded in [design_decisions.md](design_decisions.md).
 
@@ -1799,44 +1799,62 @@ The implementation should provide single-purpose commands for formatting check, 
 
 ## 24. Delivery phases
 
-### Phase 0: foundations
+The detailed task sequence, evidence requirements, and progress checklist are maintained in [implementation_plan.md](implementation_plan.md). The six phases below define the approved v1 delivery boundary.
+
+### Phase 1: foundation
 
 - Confirm exact v1 fields against the current app-server bindings and behavior.
 - Produce a threat model and data-flow review.
 - Prototype the secure window, local protocol, preload contract, and deny-by-default adapter.
 - Benchmark a minimal packaged shell on KDE and GNOME.
 
-### Phase 1: vertical read-only slice
+### Phase 2: core read-only slice
 
 - Connect to a fixture app-server.
 - Normalize one quota snapshot.
 - Render the Overview normal, loading, partial, stale, and error states.
 - Prove renderer isolation and navigation blocking.
 
-### Phase 2: complete v1 data experience
+### Phase 3: complete v1 product
 
 - Quota Windows, Usage, Credits, Learn, Settings, and Diagnostics.
 - Provenance and accessible table equivalents.
 - Real Codex compatibility fixtures and graceful fallback.
+- Complete every approved v1 calculation, preference, redaction, and unavailable-state rule.
 
-### Phase 3: Linux product quality
+### Phase 4: product quality
 
-- Theme polish, responsive layouts, icon production, accessibility review.
-- AppImage, deb, rpm, and Pacman packaging.
-- Wayland, X11, KDE, GNOME, scaling, suspend, and lifecycle tests.
+- Theme polish, responsive layouts, production assets, and accessibility review.
+- Performance, resilience, suspend, lifecycle, Wayland, X11, KDE, GNOME, and scaling tests.
+- Finalize the measured support matrix and record unavailable environments honestly.
 
-### Phase 4: release security
+### Phase 5: packaging and release engineering
 
-- Dependency and license review.
-- Security test suite, fuse posture, ASAR integrity, SBOM, checksums, and signing plan.
-- External security review and remediation.
-- Manual release candidate soak period.
+- Build and smoke-test AppImage, deb, rpm, and Pacman packages.
+- Implement protected tag-driven GitHub Actions and draft GitHub Releases.
+- Complete dependency and license review, fuse posture, ASAR integrity, SBOM, checksums, and signing plan.
+- Verify detailed installation, architecture-selection, upgrade, troubleshooting, and uninstall instructions.
+- Produce a versioned prerelease test report.
 
-### Phase 5: optional background features
+### Phase 6: release validation and publication
 
-- Tray, notifications, and start-at-login only if consent, lifecycle, and cross-desktop tests pass.
+- Freeze the v1.0.0 candidate and run the complete automated, manual, security, accessibility, performance, package, and Linux compatibility matrix.
+- Complete a release-candidate soak period and remediate release-blocking findings.
+- Produce `tests/1.0.0/test_report.md` with a `ready` recommendation.
+- Obtain explicit publication approval, publish the immutable GitHub Release, then download and verify the public artifacts.
 
-Implementation begins only after separate user authorization.
+### Post-v1 follow-up tracking
+
+The six phases end the approved v1 scope. Optional background features are deferred by default and do not block v1 completion. The maintained follow-up tracker in `implementation_plan.md` covers:
+
+- tray, notifications, start at login, and compact mode;
+- manual, consent-based, automatic, and staged update capabilities;
+- Windows, macOS, Flatpak, Snap, and optional tar distribution;
+- opt-in local history, trends, forecasts, backups, and import or export;
+- layout customization, additional languages, right-to-left support, and separate companion clients;
+- recurring Electron security, Codex compatibility, Linux matrix, dependency, and patch-release maintenance.
+
+Each follow-up keeps its privacy, security, consent, lifecycle, platform, and testing gate. It enters an implementation phase only after separate prioritization and approval.
 
 ## 25. Acceptance criteria
 
@@ -1981,7 +1999,7 @@ Approved by the user in this planning discussion:
 - Electron as TokenTrail's application framework.
 - Creation of a separate, detailed Electron product specification.
 - A strong security emphasis and a visually rich, cross-Linux product goal.
-- Phase 0 implementation and project dependency installation within this specification, authorized on August 14, 2026.
+- Phase 1 implementation and project dependency installation within this specification, authorized on August 14, 2026.
 - Detailed versioned test reports at `tests/<version>/test_report.md`.
 - Teaching-style, detailed comments throughout authored code, subject to the documented generated-file and file-format exceptions.
 
@@ -1992,4 +2010,4 @@ Still requiring separate approval or completion:
 - Expanding beyond the read-only data boundary.
 - Adding local usage history, task analytics, background behavior, or cloud features.
 
-The next step is to begin Phase 0 with exact dependency selection, the secure Electron scaffold, threat and data-flow review, and compatibility prototypes. Open questions are resolved before the implementation phase or feature they affect.
+The next step is to begin Phase 1 with exact dependency selection, the secure Electron scaffold, threat and data-flow review, and compatibility prototypes. Open questions are resolved before the implementation phase or feature they affect.
