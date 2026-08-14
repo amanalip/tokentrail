@@ -1,4 +1,4 @@
-# TokenTrail Data Inventory
+# Token Trail Data Inventory
 
 **Status:** Phase 1 foundation baseline
 **Last updated:** August 14, 2026
@@ -15,8 +15,8 @@
 | Reset-credit details | Codex app-server | Not accessed | Read-only expiry visibility | Memory only | Safe selected fields | IDs excluded |
 | Current-session baseline | Locally observed | Not implemented | Changes since process start | Process memory only | Calculated DTO | Always excluded |
 | Refresh time | Locally observed | Not implemented | Freshness display | Process memory | Timestamp DTO | Coarsened safe state only |
-| Sanitized health event | TokenTrail | Not implemented | Local troubleshooting | Bounded local retention if approved | User-facing category | Allowlisted category only |
-| Diagnostic preview | TokenTrail | Not implemented | User review before export | Memory until dismissed | Safe allowlisted object | It is the diagnostic output |
+| Sanitized health event | Token Trail | Not implemented | Local troubleshooting | Bounded local retention if approved | User-facing category | Allowlisted category only |
+| Diagnostic preview | Token Trail | Not implemented | User review before export | Memory until dismissed | Safe allowlisted object | It is the diagnostic output |
 | Diagnostic file | User-selected export | Not implemented | User-controlled support sharing | Until user deletes | Not re-read automatically | Contains allowlisted safe object |
 
 ## Always excluded

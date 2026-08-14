@@ -1,4 +1,4 @@
-# TokenTrail Dependency Rationale
+# Token Trail Dependency Rationale
 
 **Status:** Phase 1 selected and locked
 **Last updated:** August 14, 2026
@@ -37,7 +37,7 @@ Supporting type, React transform, testing-library, globals, hook-lint, and Elect
 
 - npm resolved 503 packages after adding the matching V8 coverage provider and removing the unused jest-dom matcher dependency.
 - `npm audit` reported zero known vulnerabilities on August 14, 2026.
-- npm blocked the transitive `electron-winstaller` install script. TokenTrail does not build Windows packages in Phase 1, so the script remains unapproved.
+- npm blocked the transitive `electron-winstaller` install script. Token Trail does not build Windows packages in Phase 1, so the script remains unapproved.
 - The first install attempt rejected TypeScript 7.0.2 because `typescript-eslint` supports TypeScript below 6.1. The project selected 6.0.3 instead of bypassing peer checks.
 - Phase 1 contains no native runtime module, so electron-builder native rebuilding is disabled.
 

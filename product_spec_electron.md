@@ -1,13 +1,15 @@
-# TokenTrail Electron Product Specification
+# Token Trail Electron Product Specification
 
 **Status:** Approved controlling implementation specification
-**Product stage:** Phase 1 foundation complete; Phase 2 is next
+**Product stage:** Phase 1 foundation complete; Phase 2 planned but not started
 **Primary release:** Linux desktop
 **Framework:** Hardened Electron application
 **Tagline:** Understand your Codex usage.
-**Last updated:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
 
-This document defines the controlling Electron direction and implementation boundary for TokenTrail. Phase 1 development and dependency installation within this specification are authorized. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
+This document defines the controlling Electron direction and implementation boundary for Token Trail. Phase 1 is complete. Phase 2 is documented but has not started in this turn. Publication, signing, update deployment, telemetry, and access beyond the listed read-only Codex methods remain separately gated.
+
+**Naming rule:** The product name shown to people is **Token Trail**, with a space. The repository and machine-facing identifiers may remain `tokentrail`, while conventional source identifiers may use `TokenTrail`. Window titles, headings, menus, onboarding, logo wordmarks, accessibility names, desktop metadata, documentation, screenshots, and release copy must use **Token Trail**.
 
 The inherited KDE proposal remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as a historical alternative. The approved framework decision and its reasoning are recorded in [design_decisions.md](design_decisions.md).
 
@@ -45,14 +47,14 @@ The inherited KDE proposal remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.m
 
 ## 1. Executive summary
 
-TokenTrail is a privacy-first desktop dashboard that helps a person understand locally available Codex usage information. It answers four practical questions:
+Token Trail is a privacy-first desktop dashboard that helps a person understand locally available Codex usage information. It answers four practical questions:
 
 1. How much of each reported quota window has been used?
 2. When will each reported window reset?
 3. What token activity and credit information is available?
-4. Which values came from Codex, which were observed locally, and which were calculated by TokenTrail?
+4. Which values came from Codex, which were observed locally, and which were calculated by Token Trail?
 
-Electron is the approved application framework because TokenTrail benefits from a highly visual, branded analytics interface and broad Linux desktop coverage. The choice does not mean the renderer receives desktop privileges. The renderer is treated like an untrusted web page, even though its files are bundled locally.
+Electron is the approved application framework because Token Trail benefits from a highly visual, branded analytics interface and broad Linux desktop coverage. The choice does not mean the renderer receives desktop privileges. The renderer is treated like an untrusted web page, even though its files are bundled locally.
 
 The v1 application is read-only. It does not send prompts, operate on tasks, change an account, consume credits, collect credentials, upload analytics, or retain usage history. Codex authentication remains owned by Codex.
 
@@ -65,15 +67,15 @@ The first public target is mainstream 64-bit Linux on x64 and arm64, covering KD
 Every metric carries one of four provenance states:
 
 - **Codex-reported:** received from the local Codex app-server.
-- **Locally observed:** produced by TokenTrail from local runtime state, such as the refresh time.
+- **Locally observed:** produced by Token Trail from local runtime state, such as the refresh time.
 - **Calculated:** deterministically calculated from named inputs.
 - **Unavailable:** missing, invalid, unsupported, or not safe to infer.
 
-TokenTrail does not rename a quota window “weekly” merely because one current account happens to report a similar duration. It displays the reported duration and uses a friendly label only when the duration supports it.
+Token Trail does not rename a quota window “weekly” merely because one current account happens to report a similar duration. It displays the reported duration and uses a friendly label only when the duration supports it.
 
 ### 2.2 Local and minimal by default
 
-The app requests only the account, rate-limit, and aggregate usage fields needed for visible features. It does not request task lists, prompts, responses, repository data, or file paths. Nothing is sent to the TokenTrail project.
+The app requests only the account, rate-limit, and aggregate usage fields needed for visible features. It does not request task lists, prompts, responses, repository data, or file paths. Nothing is sent to the Token Trail project.
 
 ### 2.3 Security is an architecture property
 
@@ -190,7 +192,7 @@ These features are optional because background processes, notifications, and aut
 - A “Next changes” timeline containing only valid future reset timestamps reported by Codex.
 - A quota attention list grouped by reported bucket and ordered by explicit bucket-level reached state, window percentage, and reset time without predicting exhaustion.
 - A combined capacity summary that keeps quota, spending controls, credit balance, and reset credits in their original units.
-- Changes observed since the current TokenTrail process opened, clearly labeled as an in-memory local observation.
+- Changes observed since the current Token Trail process opened, clearly labeled as an in-memory local observation.
 
 ### 5.2 Quota Windows
 
@@ -202,7 +204,7 @@ These features are optional because background processes, notifications, and aut
 - Show per-field provenance and raw-safe detail, not raw protocol payloads.
 - Provide a chronological reset timeline across all valid windows.
 - Provide deterministic bucket and window attention ordering without inventing severity or assigning a bucket-level reached state to one window.
-- Show the current-session percentage change for a window only after TokenTrail has observed two valid snapshots of that same identified window.
+- Show the current-session percentage change for a window only after Token Trail has observed two valid snapshots of that same identified window.
 
 ### 5.3 Usage
 
@@ -217,7 +219,7 @@ These features are optional because background processes, notifications, and aut
 - Latest complete 30-day period versus the preceding complete 30-day period when at least 60 consecutive dated buckets are supplied.
 - Descriptive statistics for the selected supplied range: total, daily average, active-day average, median, highest supplied day, and active-day count.
 - A data-coverage card that lists requested dates, supplied dates, missing dates, and which calculations are available.
-- Changes in aggregate token totals observed since TokenTrail opened, kept only in memory and never presented as account history.
+- Changes in aggregate token totals observed since Token Trail opened, kept only in memory and never presented as account history.
 
 ### 5.4 Credits and spending controls
 
@@ -237,7 +239,7 @@ The new v1 insights use only the already approved `account/rateLimits/read`, `ac
 - A derived value is calculated only from valid source fields named in its provenance detail.
 - Missing daily dates remain missing. They are never changed to zero.
 - A comparison requires complete coverage of both periods. Otherwise the comparison is unavailable and the coverage card explains why.
-- Current-session changes begin at the first valid snapshot observed after TokenTrail opens and disappear when the process exits.
+- Current-session changes begin at the first valid snapshot observed after Token Trail opens and disappear when the process exits.
 - Quota attention ordering is not an exhaustion forecast and does not claim that a user will be blocked.
 - A reached state appears only when Codex reports it and remains attached to the reported bucket unless the protocol explicitly identifies a narrower scope.
 - Combined capacity is a grouped explanation, not arithmetic across unlike units.
@@ -269,11 +271,11 @@ The new v1 insights use only the already approved `account/rateLimits/read`, `ac
 - Reduced motion: system, reduced, or full.
 - Optional notifications with per-event controls.
 - Optional tray and start-at-login controls if those features ship.
-- Clear TokenTrail data with confirmation.
+- Clear Token Trail data with confirmation.
 
 ### 5.8 Diagnostics
 
-- TokenTrail version and build identity.
+- Token Trail version and build identity.
 - Electron, Chromium, and Node versions in a non-sensitive technical section.
 - Operating system, architecture, session type when safely detectable, and theme mode.
 - Codex discovery state and reported CLI version.
@@ -288,7 +290,7 @@ The new v1 insights use only the already approved `account/rateLimits/read`, `ac
 ### 5.9 Optional background features
 
 - Tray tooltip with the selected quota's remaining percentage and reset time.
-- Tray menu: Open TokenTrail, Refresh, Pause automatic refresh, and Quit.
+- Tray menu: Open Token Trail, Refresh, Pause automatic refresh, and Quit.
 - Notification events: newly reached limit, reset observed, connection lost for a sustained period, or credit/spend warning.
 - Rate limiting and deduplication so repeated refreshes do not create notification spam.
 - Background behavior disabled by default in v1 unless onboarding explains it clearly.
@@ -308,16 +310,17 @@ The new v1 insights use only the already approved `account/rateLimits/read`, `ac
 | FR-007 | The app shall show local reset time and a countdown derived from the same timestamp. |
 | FR-008 | The app shall provide a textual equivalent for every chart. |
 | FR-009 | The app shall preview redacted diagnostics before saving them. |
-| FR-010 | The app shall work without a TokenTrail account or TokenTrail network service. |
+| FR-010 | The app shall work without a Token Trail account or Token Trail network service. |
 | FR-011 | The app shall display one reset-timeline item for each valid reported future reset and shall not estimate a missing reset. |
 | FR-012 | The app shall order quota attention deterministically, reserve reached-state language for a state reported by Codex, and shall not attribute a bucket-level reached state to one window. |
-| FR-013 | The app shall keep current-session deltas in memory only and clear them when the TokenTrail process exits. |
+| FR-013 | The app shall keep current-session deltas in memory only and clear them when the Token Trail process exits. |
 | FR-014 | The app shall compare two calendar periods only when every required date in both periods is supplied. |
 | FR-015 | The app shall distinguish a reported zero-activity date from a missing date in charts, tables, statistics, and accessible descriptions. |
 | FR-016 | The app shall label descriptive statistics with the exact supplied range and shall not present a range maximum as the lifetime peak date. |
 | FR-017 | The app shall explain source coverage and the availability of each derived calculation. |
 | FR-018 | The app shall derive reset-credit expiry notices only from valid reported expiry timestamps. |
 | FR-019 | The app shall not add or normalize quota percentages, currency or credit strings, spending controls, and reset-credit counts into one score. |
+| FR-020 | The app shall display the product name as `Token Trail`; the `tokentrail` slug is limited to machine-facing identifiers. |
 
 ### 6.2 Non-functional requirements
 
@@ -339,7 +342,7 @@ The new v1 insights use only the already approved `account/rateLimits/read`, `ac
 The primary navigation uses six destinations. Settings and Diagnostics share one destination with two tabs because both concern local application state rather than usage analysis.
 
 ```text
-TokenTrail
+Token Trail
 |
 +-- Overview
 +-- Quota Windows
@@ -368,7 +371,7 @@ ASCII layouts show hierarchy and behavior, not final pixel dimensions. Text must
 
 ```text
 +--------------------------------------------------------------------------------+
-| [TokenTrail mark] TokenTrail                    Updated 5:42 PM   [Refresh] [⋮] |
+| [Token Trail mark] Token Trail                    Updated 5:42 PM   [Refresh] [⋮] |
 +----------------------+---------------------------------------------------------+
 |                      |                                                         |
 |  ● Overview          |  Page title                                      [?]   |
@@ -388,7 +391,7 @@ ASCII layouts show hierarchy and behavior, not final pixel dimensions. Text must
 
 ```text
 +--------------------------------------------------+
-| [≡] TokenTrail              Updated now [Refresh]|
+| [≡] Token Trail              Updated now [Refresh]|
 +--------------------------------------------------+
 | Overview                                         |
 | What is my Codex usage status?                   |
@@ -410,12 +413,12 @@ At narrow widths the sidebar becomes a bottom navigation bar. Learn, Settings, a
 +------------------------------------------------------------------+
 |                         [Tracked Trail mark]                      |
 |                                                                  |
-|                     Welcome to TokenTrail                        |
+|                     Welcome to Token Trail                        |
 |         Understand locally available Codex usage clearly.        |
 |                                                                  |
-|  TokenTrail reads only account, quota, and aggregate usage data. |
+|  Token Trail reads only account, quota, and aggregate usage data. |
 |  It does not read prompts, responses, projects, or credentials.  |
-|  Nothing is sent to the TokenTrail project.                       |
+|  Nothing is sent to the Token Trail project.                       |
 |                                                                  |
 |  [Review privacy details]                         [Connect Codex] |
 +------------------------------------------------------------------+
@@ -429,14 +432,14 @@ At narrow widths the sidebar becomes a bottom navigation bar. Learn, Settings, a
 +------------------------------------------------------------------+
 | Codex connection                                                 |
 |                                                                  |
-|  [!] TokenTrail could not read Codex usage.                      |
+|  [!] Token Trail could not read Codex usage.                      |
 |                                                                  |
 |  Status: Codex is installed, but no supported account session    |
 |  is available. Sign in through Codex, then try again.             |
 |                                                                  |
 |  [Try again]   [Open troubleshooting]                             |
 |                                                                  |
-|  TokenTrail will not ask for or store your credentials.          |
+|  Token Trail will not ask for or store your credentials.          |
 +------------------------------------------------------------------+
 ```
 
@@ -510,7 +513,7 @@ Stale data keeps its original timestamp. A failed refresh never changes its age 
 +------------------------------------------------------+
 | 68% remaining                                       |
 |                                                      |
-| Provenance: Calculated by TokenTrail                 |
+| Provenance: Calculated by Token Trail                 |
 | Calculation: 100 minus reported used percentage     |
 | Input: 32% used                                     |
 | Validation: Input was within the expected range     |
@@ -584,7 +587,7 @@ Zero is shown only when Codex reports a dated bucket containing zero. A missing 
 | | Backend-provided description, safely rendered as plain text                | |
 | +----------------------------------------------------------------------------+ |
 |                                                                                |
-| TokenTrail cannot purchase, transfer, or redeem credits.                       |
+| Token Trail cannot purchase, transfer, or redeem credits.                       |
 +--------------------------------------------------------------------------------+
 ```
 
@@ -628,7 +631,7 @@ Search is local over packaged text. It does not send a query to a remote search 
 | Start at login                  [off]                                            |
 |                                                                                |
 | Local data                                                                    |
-| TokenTrail stores preferences, not usage history.              [Clear data]    |
+| Token Trail stores preferences, not usage history.              [Clear data]    |
 +--------------------------------------------------------------------------------+
 ```
 
@@ -647,7 +650,7 @@ Search is local over packaged text. It does not send a query to a remote search 
 | Last refresh            Success at 5:42:18 PM                                  |
 |                                                                                |
 | APPLICATION                                                                    |
-| TokenTrail              1.0.0                                                   |
+| Token Trail              1.0.0                                                   |
 | Platform                Linux x64, Wayland                                      |
 | Runtime                 Electron / Chromium versions                            |
 |                                                                                |
@@ -681,10 +684,10 @@ Search is local over packaged text. It does not send a query to a remote search 
 
 ```text
 +--------------------------------------------------------------+
-| Clear TokenTrail data?                                       |
+| Clear Token Trail data?                                       |
 |                                                              |
 | This removes preferences, cached compatibility information,  |
-| and TokenTrail logs. It does not modify Codex or your account.|
+| and Token Trail logs. It does not modify Codex or your account.|
 |                                                              |
 | [Cancel]                                   [Clear local data] |
 +--------------------------------------------------------------+
@@ -694,10 +697,10 @@ Search is local over packaged text. It does not send a query to a remote search 
 
 ```text
 +----------------------------------+
-| TokenTrail                       |
+| Token Trail                       |
 | 68% remaining, resets in 3h 17m |
 |----------------------------------|
-| Open TokenTrail                  |
+| Open Token Trail                  |
 | Refresh now                      |
 | Pause automatic refresh          |
 |----------------------------------|
@@ -771,7 +774,7 @@ The interface does not assign “safe,” “danger,” or “comfortable” lab
 
 ```text
 +--------------------------------------------------------------------------------+
-| Changes since TokenTrail opened                                    [What is this?]|
+| Changes since Token Trail opened                                    [What is this?]|
 | Observation started today at 5:42:18 PM   4 valid snapshots                    |
 |                                                                                |
 | Primary window used       28%  ->  32%       +4 percentage points              |
@@ -780,13 +783,13 @@ The interface does not assign “safe,” “danger,” or “comfortable” lab
 | Today                     121,990 -> 124,500       +2,510 tokens               |
 |                                                                                |
 | Local observation only. This is not retained account history.                  |
-| Values clear when TokenTrail exits.                                             |
+| Values clear when Token Trail exits.                                             |
 +--------------------------------------------------------------------------------+
 ```
 
 Rules:
 
-- The baseline is the first valid normalized snapshot observed by the current TokenTrail process.
+- The baseline is the first valid normalized snapshot observed by the current Token Trail process.
 - A delta appears only when the baseline and current value refer to the same stable metric identity and both values are valid.
 - Quota change is expressed in percentage points, not percent change.
 - A reset between observations starts a new baseline for that window when a changed reset timestamp or a defensible reset transition is observed. The app does not display a misleading negative “usage” delta across a reset.
@@ -862,7 +865,7 @@ Comparison rules:
 | Available: total, averages, median, heatmap, 7-day comparison                  |
 | Unavailable: 30-day comparison requires 60 consecutive dates                   |
 |                                                                                |
-| Coverage describes the data TokenTrail received. It does not inspect tasks.     |
+| Coverage describes the data Token Trail received. It does not inspect tasks.     |
 +--------------------------------------------------------------------------------+
 ```
 
@@ -911,7 +914,7 @@ Expiry rules:
 - “Expires within 7 days” means the valid expiry is greater than the current time and no more than 604,800 seconds away.
 - Expired, non-expiring, and unknown-expiry items are separate states.
 - The reported `availableCount` remains authoritative even when the service supplies fewer detail rows.
-- TokenTrail never calls the reset-credit consumption method.
+- Token Trail never calls the reset-credit consumption method.
 
 ## 9. Visual design system
 
@@ -953,7 +956,7 @@ Final warning, critical, focus, border, and muted colors require contrast testin
 ### 9.4 Charts
 
 - Apache ECharts is the selected chart engine.
-- TokenTrail imports only required chart types and components.
+- Token Trail imports only required chart types and components.
 - SVG is the initial renderer for the modest v1 data volume because it scales cleanly and can reduce memory when several small charts exist. Canvas remains an option if measured performance requires it.
 - Decal patterns, point markers, direct labels, and table equivalents prevent color-only interpretation.
 - Tooltips are reachable by keyboard or duplicated in a details panel.
@@ -983,7 +986,7 @@ Required practices:
 
 ### 10.2 React Aria Components
 
-React Aria Components supplies behavior for dialogs, popovers, tabs, selects, switches, tooltips, and other interactive controls. It is selected instead of a visually opinionated component kit because it provides accessibility behavior while allowing TokenTrail's own design language. Native HTML remains preferred when it fully meets the need.
+React Aria Components supplies behavior for dialogs, popovers, tabs, selects, switches, tooltips, and other interactive controls. It is selected instead of a visually opinionated component kit because it provides accessibility behavior while allowing Token Trail's own design language. Native HTML remains preferred when it fully meets the need.
 
 ### 10.3 Localization readiness
 
@@ -1005,7 +1008,7 @@ Versions are pinned during implementation to current supported releases and reco
 | UI | [React](https://react.dev/learn) | Mature component model, strong ecosystem, familiar testing tools, and good fit for dashboard composition | Vue and Svelte are capable, but selecting one ecosystem keeps contributor guidance and component choices focused; no framework would require more custom lifecycle and state work |
 | Build tool | [Vite](https://vite.dev/guide/) with separate main, preload, and renderer builds | Fast development feedback and focused production bundles without depending on Forge's experimental Vite plugin | Webpack is mature but heavier to configure; Forge Vite is convenient but officially marked experimental; Electron Vite adds another Electron-specific abstraction |
 | Packaging | [electron-builder](https://www.electron.build/) | Direct AppImage, deb, rpm, Pacman, signing, publishing, and Linux updater support in one pipeline | Electron Forge is the official tutorial choice and has useful security plugins, but its format and update path is less direct for this Linux matrix; custom packaging would create avoidable release risk |
-| Accessible controls | [React Aria Components](https://react-aria.adobe.com/) plus native HTML | Unstyled, accessibility-focused behavior that can carry TokenTrail's brand | Radix Primitives is strong but would duplicate much of the selected role; Material UI and Chakra impose more visual-system assumptions; fully custom controls increase keyboard and screen-reader risk |
+| Accessible controls | [React Aria Components](https://react-aria.adobe.com/) plus native HTML | Unstyled, accessibility-focused behavior that can carry Token Trail's brand | Radix Primitives is strong but would duplicate much of the selected role; Material UI and Chakra impose more visual-system assumptions; fully custom controls increase keyboard and screen-reader risk |
 | Charts | [Apache ECharts](https://echarts.apache.org/handbook/en/get-started/) | Broad chart types, SVG and Canvas renderers, tree-shakable imports, built-in ARIA descriptions, and decal support | Chart.js is smaller and good for standard charts but less flexible for future heatmaps; Recharts is React-friendly but SVG-oriented and less broad; D3 is powerful but would require more custom accessibility and interaction work; Plotly is heavier than v1 needs |
 | Runtime validation | [Zod](https://zod.dev/) | TypeScript-first schemas, zero dependencies, readable boundary validation, and static inference | Hand-written guards reduce dependencies but are easier to make inconsistent; Valibot is smaller but ecosystem familiarity is lower; generated TypeScript types alone do not validate untrusted runtime values |
 | Async renderer state | [TanStack Query](https://tanstack.com/query/latest/) | Models asynchronous reads, freshness, retries, and background refresh without inventing a custom cache | React effects and context can work at small scale but tend to duplicate loading and stale-state logic; Redux is unnecessary for read-mostly external state; Zustand remains an option only if complex client state appears |
@@ -1013,11 +1016,11 @@ Versions are pinned during implementation to current supported releases and reco
 | Component tests | [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) | Encourages tests through user-visible roles, names, and behavior | Enzyme-style implementation tests are more coupled to component internals |
 | End-to-end tests | [Playwright Electron support](https://playwright.dev/docs/api/class-electron) | Can launch Electron, inspect the main process, drive windows, and capture screenshots | Spectron is discontinued; WebdriverIO is viable but adds another runner; Playwright Electron support is experimental, so critical native-dialog and packaging tests also need direct integration tests |
 | Accessibility automation | [axe-core](https://github.com/dequelabs/axe-core) with manual testing | Local automated checks for common issues and integration with browser tests | Automated checks alone miss many issues; Lighthouse is web-page focused and less suited to the complete Electron lifecycle |
-| Icons | A pinned, tree-shaken open-source SVG icon set after license review | Consistent scalable icons without remote assets | Mixing sets creates visual drift; hand-drawing every utility icon wastes effort; the TokenTrail logo remains custom |
+| Icons | A pinned, tree-shaken open-source SVG icon set after license review | Consistent scalable icons without remote assets | Mixing sets creates visual drift; hand-drawing every utility icon wastes effort; the Token Trail logo remains custom |
 
-### 11.1 Why Electron can be hardened for TokenTrail
+### 11.1 Why Electron can be hardened for Token Trail
 
-Electron combines Chromium, Node.js, and desktop APIs, so its default capability is larger than TokenTrail needs. The hardened design removes capabilities from the renderer and concentrates the remaining privilege in small, reviewable modules:
+Electron combines Chromium, Node.js, and desktop APIs, so its default capability is larger than Token Trail needs. The hardened design removes capabilities from the renderer and concentrates the remaining privilege in small, reviewable modules:
 
 - local packaged renderer only;
 - renderer sandbox and context isolation;
@@ -1033,11 +1036,11 @@ This does not make Electron risk-free. It makes the attack surface explicit, tes
 
 ### 11.2 Why not Tauri for v1
 
-Tauri is a credible alternative when artifact size and lower baseline memory dominate. It would introduce Rust for the privileged core and use the operating system WebView rather than one bundled Chromium version. For TokenTrail, consistent visual rendering across varied Linux systems, faster TypeScript UI iteration, and one-language contracts currently outweigh the runtime-size advantage. This judgment should be revisited if measured Electron resource use misses the budgets in this document.
+Tauri is a credible alternative when artifact size and lower baseline memory dominate. It would introduce Rust for the privileged core and use the operating system WebView rather than one bundled Chromium version. For Token Trail, consistent visual rendering across varied Linux systems, faster TypeScript UI iteration, and one-language contracts currently outweigh the runtime-size advantage. This judgment should be revisited if measured Electron resource use misses the budgets in this document.
 
 ### 11.3 Why not a native KDE application
 
-Kirigami remains the best option for deep Plasma conventions and native KDE identity. TokenTrail's approved priority is a distinct, visually rich dashboard that works across major Linux desktops. Electron offers more charting and web UI choices with one rendering engine. KDE behavior still remains a tested platform target rather than being treated as secondary.
+Kirigami remains the best option for deep Plasma conventions and native KDE identity. Token Trail's approved priority is a distinct, visually rich dashboard that works across major Linux desktops. Electron offers more charting and web UI choices with one rendering engine. KDE behavior still remains a tested platform target rather than being treated as secondary.
 
 ## 12. Application architecture
 
@@ -1168,7 +1171,7 @@ Tests scan production code and fixtures to ensure denied method names do not app
 2. **Transport:** start a child process with an argument array, or connect to an approved local daemon endpoint.
 3. **Protocol:** correlate request IDs, responses, notifications, timeouts, and shutdown.
 4. **Runtime validation:** parse unknown JSON into version-specific safe types.
-5. **Normalization:** map supported variants into stable TokenTrail domain objects.
+5. **Normalization:** map supported variants into stable Token Trail domain objects.
 6. **Presentation:** expose only display-safe domain DTOs to the renderer.
 
 ### 13.5 Process launch requirements
@@ -1180,14 +1183,14 @@ Tests scan production code and fixtures to ensure denied method names do not app
 - Set message-size, startup, request, idle, and shutdown timeouts.
 - Bound buffered stdout and stderr.
 - Treat stderr as diagnostic text that may contain sensitive information and redact or discard it.
-- Kill only the child process TokenTrail started, using its verified handle.
+- Kill only the child process Token Trail started, using its verified handle.
 - Back off after repeated crashes and stop automatic restart loops.
 
 ### 13.6 Sparse updates and refresh behavior
 
 - A sparse rate-limit notification is merged only into a known compatible snapshot.
 - Missing nullable account metadata in an update is not assumed to mean deletion.
-- If merge rules are uncertain, TokenTrail performs a full allowed read.
+- If merge rules are uncertain, Token Trail performs a full allowed read.
 - Partial endpoint failure does not erase data from successful endpoints.
 - Refreshes are deduplicated so multiple UI requests share one in-flight operation.
 - Conservative polling begins at five minutes unless testing and upstream guidance justify another default.
@@ -1258,14 +1261,14 @@ JavaScript `number` cannot exactly represent every 64-bit integer. Protocol inte
 - Timeline inputs are valid future `resetsAt` values attached to a normalized identified window.
 - Entries are sorted by timestamp, then stable window identity.
 - Invalid and missing timestamps appear in a separate unknown-time group instead of entering the timeline.
-- A timestamp passing the current time does not prove that a reset occurred. TokenTrail waits for a new source snapshot.
+- A timestamp passing the current time does not prove that a reset occurred. Token Trail waits for a new source snapshot.
 - Attention ordering follows the exact sequence in Interface 8.19.
 - Reached state originates only from a supported Codex-reported reached field and stays at bucket scope unless the source explicitly provides a window association.
 - The order is recalculated from each valid snapshot and is never stored as account history.
 
 ### 14.7 Current-session deltas
 
-- A baseline snapshot exists only in memory for the lifetime of the TokenTrail process.
+- A baseline snapshot exists only in memory for the lifetime of the Token Trail process.
 - A metric delta requires stable identity, matching unit, and valid baseline and current values.
 - Percentage-point change is used for quota percentages.
 - Exact integer subtraction is used for token counters without converting unsafe integers to JavaScript `number`.
@@ -1307,7 +1310,7 @@ JavaScript `number` cannot exactly represent every 64-bit integer. Protocol inte
 
 ### 15.1 Security objectives
 
-TokenTrail must protect:
+Token Trail must protect:
 
 - Codex authentication ownership and session integrity;
 - local account and aggregate usage data;
@@ -1380,7 +1383,7 @@ Development exceptions are restricted to local development and cannot be copied 
 - URLs are parsed with the platform URL parser and matched by exact origin, not prefixes.
 - User or protocol data can never become an external URL.
 - The renderer asks to open a link ID, not a URL string.
-- Links open in the user's browser, never inside TokenTrail.
+- Links open in the user's browser, never inside Token Trail.
 
 ### 15.6 IPC security
 
@@ -1491,7 +1494,7 @@ Before the first public release, use a dedicated security review, including the 
 
 ### 16.3 Clearing data
 
-Clear TokenTrail data removes preferences, compatibility cache, window state, and TokenTrail logs. It does not remove Codex state or exported files the user saved elsewhere. The confirmation states this boundary.
+Clear Token Trail data removes preferences, compatibility cache, window state, and Token Trail logs. It does not remove Codex state or exported files the user saved elsewhere. The confirmation states this boundary.
 
 ### 16.4 Future history
 
@@ -1512,11 +1515,11 @@ Local history is not a hidden v1 cache. A later proposal must define:
 
 The initial support goal is current mainstream 64-bit desktop Linux on x64 and arm64, tested on representative Debian/Ubuntu, Fedora, and Arch-family systems. Coverage includes KDE Plasma and GNOME on Wayland, plus representative X11 and Cinnamon or Xfce sessions.
 
-Electron 38.2 and newer supports native Wayland out of the box. TokenTrail still tests both Wayland and X11 because window behavior, scaling, tray activation, and compositor rules differ.
+Electron 38.2 and newer supports native Wayland out of the box. Token Trail still tests both Wayland and X11 because window behavior, scaling, tray activation, and compositor rules differ.
 
 ### 17.2 KDE behavior
 
-Electron applications can run well on KDE. TokenTrail will:
+Electron applications can run well on KDE. Token Trail will:
 
 - follow system light or dark preference through Electron `nativeTheme` and CSS;
 - use StatusNotifierItem through Electron's tray behavior when tray support is enabled;
@@ -1813,6 +1816,7 @@ The detailed task sequence, evidence requirements, and progress checklist are ma
 
 ### Phase 2: core read-only slice
 
+- Correct every user-visible application and package label to `Token Trail` while retaining `tokentrail` only for machine-facing identifiers.
 - Connect to a fixture app-server.
 - Normalize one quota snapshot.
 - Render the Overview normal, loading, partial, stale, and error states.
@@ -1888,10 +1892,10 @@ Each follow-up keeps its privacy, security, consent, lifecycle, platform, and te
 
 ### 25.3 Privacy
 
-- A network capture during normal use shows no TokenTrail telemetry.
+- A network capture during normal use shows no Token Trail telemetry.
 - The only expected non-Codex network behavior is an explicitly enabled update check.
 - No usage snapshot remains on disk after exit in v1.
-- Clear data removes all TokenTrail-owned local settings, cache, and logs.
+- Clear data removes all Token Trail-owned local settings, cache, and logs.
 - Current-session baselines and deltas are absent from persisted preferences, logs, diagnostics, and files.
 - The added v1 insights use no Codex method beyond the already approved account, rate-limit, and aggregate usage reads.
 
@@ -1999,7 +2003,7 @@ The app-server method and schema observations in this specification were also ch
 
 Approved by the user in this planning discussion:
 
-- Electron as TokenTrail's application framework.
+- Electron as Token Trail's application framework.
 - Creation of a separate, detailed Electron product specification.
 - A strong security emphasis and a visually rich, cross-Linux product goal.
 - Phase 1 implementation and project dependency installation within this specification, authorized on August 14, 2026.

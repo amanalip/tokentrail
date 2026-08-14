@@ -1,12 +1,12 @@
-# TokenTrail Implementation Plan
+# Token Trail Implementation Plan
 
 **Status:** Approved plan; Phase 1 complete
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 2 is next; Phase 1 evidence is complete
+**Current phase:** Phase 2 planned but not started; Phase 1 evidence is complete
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 2:27 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
 
-This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how TokenTrail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
+This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
 ## Contents
 
@@ -208,7 +208,16 @@ Create a minimal, measurable, hardened Electron application foundation. This pha
 
 Prove one complete vertical path from approved Codex data to an accessible Overview without weakening process isolation or passing raw protocol data into the renderer.
 
-### 6.2 Codex adapter
+### 6.2 Product identity correction
+
+- [ ] Change every user-visible application label from `TokenTrail` to `Token Trail`, including the logo wordmark, renderer heading, HTML title, window title, onboarding, status copy, accessibility names, and future menus.
+- [ ] Set electron-builder's user-facing product name and Linux desktop metadata to `Token Trail`.
+- [ ] Keep the repository, npm package name, executable slug, custom protocol, filesystem-safe artifact stem, and application identifiers machine-safe as `tokentrail` where required.
+- [ ] Permit conventional `TokenTrail` spelling only inside source identifiers such as TypeScript types; never render those identifiers as product copy.
+- [ ] Update component, Electron, accessibility, packaged-app, and metadata tests to assert the spaced product name.
+- [ ] Rebuild the package and replace Phase 2 screenshot evidence only after visually confirming `Token Trail` appears everywhere visible.
+
+### 6.3 Codex adapter
 
 - [ ] Implement owned-process discovery and lifecycle behavior selected in Phase 1.
 - [ ] Implement request IDs, bounded timeouts, cancellation, backoff, restart limits, and safe shutdown.
@@ -220,7 +229,7 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Preserve missing, null, invalid, unknown, and unsupported states instead of converting them to zero.
 - [ ] Redact errors before they leave the privileged boundary.
 
-### 6.3 IPC and preload contract
+### 6.4 IPC and preload contract
 
 - [ ] Define narrow request and event contracts in shared code.
 - [ ] Validate sender frame, origin, payload, response, and subscription lifecycle.
@@ -229,7 +238,7 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Prevent duplicate listeners and guarantee unsubscribe behavior.
 - [ ] Add payload and rate limits where renderer calls could create resource pressure.
 
-### 6.4 Snapshot and refresh model
+### 6.5 Snapshot and refresh model
 
 - [ ] Create one in-memory normalized snapshot store.
 - [ ] Distinguish never loaded, loading, fresh, stale, partial, unsupported, signed out, unavailable, and failed states.
@@ -238,7 +247,7 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Establish a conservative measured automatic-refresh default or leave it disabled pending evidence.
 - [ ] Handle sparse updates without silently deleting unrelated valid data.
 
-### 6.5 Overview slice
+### 6.6 Overview slice
 
 - [ ] Implement onboarding and connection status.
 - [ ] Implement the Overview shell and one normalized quota presentation.
@@ -248,7 +257,7 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Provide keyboard access, semantic headings, accessible names, and text alternatives.
 - [ ] Use fixture data only in tests and development fixtures, never as an unexplained production fallback.
 
-### 6.6 Phase 2 verification
+### 6.7 Phase 2 verification
 
 - [ ] Run full, missing-account, single-bucket, multiple-bucket, null-field, unknown-field, malformed, oversized, method-not-found, and app-server-exit fixtures.
 - [ ] Attempt every denied method through adapter and IPC tests.
@@ -257,16 +266,18 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Verify refresh cancellation, timeout, backoff, restart budget, and shutdown behavior.
 - [ ] Complete component and end-to-end tests for every Overview state.
 - [ ] Repeat renderer-isolation and navigation tests in a packaged build.
+- [ ] Verify visible copy, accessibility names, window metadata, desktop metadata, and Phase 2 screenshots consistently use `Token Trail`.
 
-### 6.7 Phase 2 deliverables
+### 6.8 Phase 2 deliverables
 
 - Validated Codex adapter and normalized snapshot contracts.
 - Narrow preload API and authenticated IPC handlers.
 - Fixture-backed onboarding, connection, refresh, and Overview experience.
 - Vertical-slice tests and security evidence.
 - Updated protocol inventory, threat model, and compatibility notes.
+- Correct `Token Trail` product naming across the tested application and package metadata.
 
-### 6.8 Phase 2 exit criteria
+### 6.9 Phase 2 exit criteria
 
 - [ ] A fixture app-server can drive every specified Overview state end to end.
 - [ ] A compatible real local Codex app-server can be detected and read without exposing authentication material.
@@ -274,6 +285,7 @@ Prove one complete vertical path from approved Codex data to an accessible Overv
 - [ ] Raw protocol objects and raw errors cannot reach the renderer.
 - [ ] Renderer isolation still passes in development and packaged builds.
 - [ ] Every visible value identifies its provenance or unavailable reason.
+- [ ] No user-visible label incorrectly displays `TokenTrail` or the `tokentrail` repository slug.
 - [ ] No Phase 2 critical or high-severity defect remains open.
 
 ## 7. Phase 3 - Complete v1 product
@@ -332,7 +344,7 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [ ] Test all routes through keyboard-visible user behavior.
 - [ ] Confirm chart and table values match from the same normalized source.
 - [ ] Confirm no unavailable state becomes zero or an invented label.
-- [ ] Confirm clear-data removes only TokenTrail-owned data.
+- [ ] Confirm clear-data removes only Token Trail-owned data.
 - [ ] Confirm diagnostics contain no seeded sensitive value.
 
 ### 7.7 Phase 3 deliverables
@@ -382,7 +394,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 - [ ] Test offline, signed-out, missing Codex, unsupported Codex, malformed response, slow response, process exit, and repeated restart behavior.
 - [ ] Test suspend, resume, timezone change, display change, window close, reopen, and application shutdown.
-- [ ] Verify that child termination targets only a process owned by TokenTrail.
+- [ ] Verify that child termination targets only a process owned by Token Trail.
 - [ ] Verify that listener, timer, query, and process counts remain bounded across repeated use.
 - [ ] Ensure one endpoint failure does not erase unrelated valid sections.
 
@@ -530,7 +542,7 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 - [ ] Test light, dark, system, high-contrast observation, and reduced motion.
 - [ ] Test x64 and verified arm64 coverage, or label arm64 preview quality if the approved hardware gate is not met.
 - [ ] Run packaged performance, memory-growth, suspend, resume, timezone, offline, proxy, and lifecycle tests.
-- [ ] Capture a normal-use network trace proving no TokenTrail telemetry and only approved network behavior.
+- [ ] Capture a normal-use network trace proving no Token Trail telemetry and only approved network behavior.
 
 ### 10.4 Soak and remediation
 

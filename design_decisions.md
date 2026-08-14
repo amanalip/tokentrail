@@ -1,4 +1,4 @@
-# TokenTrail Design Decision Log
+# Token Trail Design Decision Log
 
 This document records product and technical design decisions in chronological order. Times use the `America/Toronto` timezone. Entries marked **Proposed** or **Under evaluation** are not authorization to implement them.
 
@@ -41,6 +41,7 @@ This document records product and technical design decisions in chronological or
   - [Versioned test evidence](#versioned-test-evidence)
   - [Boundaries that remain](#boundaries-that-remain)
   - [Decision outcome](#decision-outcome-4)
+- [008 - User-facing product name separated from repository identifier](#008---user-facing-product-name-separated-from-repository-identifier)
 
 ## Decision status guide
 
@@ -56,12 +57,12 @@ This document records product and technical design decisions in chronological or
 ## 001 - Initial KDE-native application direction
 
 **Recorded:** August 13, 2026 at 4:13 PM EDT (`America/Toronto`, UTC-04:00)
-**Historical note:** This direction was inherited from the earlier TokenTrail project handoff. Its original decision time was not recorded, so the timestamp above is when it was added to this log.
+**Historical note:** This direction was inherited from the earlier Token Trail project handoff. Its original decision time was not recorded, so the timestamp above is when it was added to this log.
 **Status:** Superseded by Decision 005; retained as the original proposal
 
 ### Context
 
-TokenTrail is intended to be a privacy-first desktop dashboard that reads and explains locally available Codex usage information. The original direction emphasized a native KDE experience for Linux users, particularly on KDE Plasma.
+Token Trail is intended to be a privacy-first desktop dashboard that reads and explains locally available Codex usage information. The original direction emphasized a native KDE experience for Linux users, particularly on KDE Plasma.
 
 ### Proposed KDE specification
 
@@ -101,7 +102,7 @@ TokenTrail is intended to be a privacy-first desktop dashboard that reads and ex
 
 ### Visual-library assessment
 
-The KDE/Qt stack has enough capability to build TokenTrail well: [Kirigami](https://develop.kde.org/docs/getting-started/kirigami/) for application structure, [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html) for custom visuals, [Qt Graphs](https://doc.qt.io/qt-6/qtgraphs-index.html) or [KQuickCharts](https://api.kde.org/) for charts, and [KDE Frameworks](https://develop.kde.org/products/frameworks/) for desktop integration. It does **not** offer as many ready-made dashboard themes, component kits, or specialized visualization libraries as the web ecosystem.
+The KDE/Qt stack has enough capability to build Token Trail well: [Kirigami](https://develop.kde.org/docs/getting-started/kirigami/) for application structure, [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html) for custom visuals, [Qt Graphs](https://doc.qt.io/qt-6/qtgraphs-index.html) or [KQuickCharts](https://api.kde.org/) for charts, and [KDE Frameworks](https://develop.kde.org/products/frameworks/) for desktop integration. It does **not** offer as many ready-made dashboard themes, component kits, or specialized visualization libraries as the web ecosystem.
 
 ### Reference links
 
@@ -113,7 +114,7 @@ The KDE/Qt stack has enough capability to build TokenTrail well: [Kirigami](http
 
 ### Decision outcome
 
-The KDE-native direction remained a strong candidate during the initial evaluation. On August 13, 2026, the user selected Electron in Decision 005 because TokenTrail's priorities had become a visually rich interface and broad Linux desktop coverage. This entry remains as the record of the original proposal. No KDE application implementation was authorized.
+The KDE-native direction remained a strong candidate during the initial evaluation. On August 13, 2026, the user selected Electron in Decision 005 because Token Trail's priorities had become a visually rich interface and broad Linux desktop coverage. This entry remains as the record of the original proposal. No KDE application implementation was authorized.
 
 ---
 
@@ -124,9 +125,9 @@ The KDE-native direction remained a strong candidate during the initial evaluati
 
 ### Context
 
-[Electron](https://www.electronjs.org/docs/latest/) was raised as an alternative because TokenTrail is a visual dashboard and may benefit from the web ecosystem's large selection of UI systems, chart libraries, animation tools, and reusable dashboard patterns.
+[Electron](https://www.electronjs.org/docs/latest/) was raised as an alternative because Token Trail is a visual dashboard and may benefit from the web ecosystem's large selection of UI systems, chart libraries, animation tools, and reusable dashboard patterns.
 
-Electron embeds Chromium and Node.js, allowing a desktop interface to use HTML, CSS, and JavaScript or TypeScript on Linux, Windows, and macOS. Its [process model](https://www.electronjs.org/docs/latest/tutorial/process-model) separates the privileged main process from renderer processes, so TokenTrail's Codex subprocess access would belong in the main process rather than the visual renderer.
+Electron embeds Chromium and Node.js, allowing a desktop interface to use HTML, CSS, and JavaScript or TypeScript on Linux, Windows, and macOS. Its [process model](https://www.electronjs.org/docs/latest/tutorial/process-model) separates the privileged main process from renderer processes, so Token Trail's Codex subprocess access would belong in the main process rather than the visual renderer.
 
 ### Proposed Electron specification, if selected
 
@@ -147,10 +148,10 @@ Electron embeds Chromium and Node.js, allowing a desktop interface to use HTML, 
 
 ### Electron benefits and trade-offs
 
-| Dimension | Electron benefits | Electron costs or risks | Effect on TokenTrail |
+| Dimension | Electron benefits | Electron costs or risks | Effect on Token Trail |
 | --- | --- | --- | --- |
 | Visual libraries | Large web/npm ecosystem for charts, heatmaps, sparklines, tooltips, animation, layout, icons, and accessible components | More choice means more dependency evaluation, inconsistent styling risk, and ongoing update work | Strong candidate for producing sophisticated dashboard visuals quickly; prototype evidence is still needed |
-| Custom appearance | HTML, CSS, SVG, Canvas, and WebGL allow almost any visual design | A heavily custom UI can feel unlike the user's desktop and needs careful accessibility work | Strong for a distinctive TokenTrail brand rather than a strictly native KDE look |
+| Custom appearance | HTML, CSS, SVG, Canvas, and WebGL allow almost any visual design | A heavily custom UI can feel unlike the user's desktop and needs careful accessibility work | Strong for a distinctive Token Trail brand rather than a strictly native KDE look |
 | Charting | Mature options such as [ECharts](https://echarts.apache.org/handbook/en/get-started/), [Chart.js](https://www.chartjs.org/docs/latest/), [D3](https://d3js.org/getting-started), [Plotly.js](https://plotly.com/javascript/), [Recharts](https://recharts.github.io/en-US/guide/getting-started/), and [visx](https://airbnb.io/visx/) | Libraries vary in size, license, accessibility, rendering method, and maintenance | Wider choice for trends, calendar heatmaps, interactive tooltips, and future analytics |
 | Development speed | TypeScript and web tooling make UI iteration, testing, and prototyping fast | Electron adds main/preload/renderer architecture and IPC contracts | Likely faster for visual iteration, especially if contributors know web development |
 | Cross-platform reach | One main web UI codebase can target Linux, Windows, and macOS | Each platform still needs testing, packaging, signing, and verification that local Codex integration works | Better long-term reach, but not automatically “build once, done” |
@@ -188,7 +189,7 @@ If Electron is selected, the following become non-negotiable design decisions:
 - Pin dependencies, review security advisories, update Electron promptly, and minimize third-party packages.
 - Ensure diagnostic exports remain local, explicit, previewed, and recursively redacted.
 
-[Electron's context-isolation guide](https://www.electronjs.org/docs/latest/tutorial/context-isolation) warns against exposing an unfiltered generic IPC function. TokenTrail should expose only narrow, purpose-specific calls such as `refreshUsage()` and sanitized usage-update subscriptions.
+[Electron's context-isolation guide](https://www.electronjs.org/docs/latest/tutorial/context-isolation) warns against exposing an unfiltered generic IPC function. Token Trail should expose only narrow, purpose-specific calls such as `refreshUsage()` and sanitized usage-update subscriptions.
 
 ### Reference links
 
@@ -202,11 +203,11 @@ If Electron is selected, the following become non-negotiable design decisions:
 
 ### Evaluation outcome
 
-For TokenTrail's current visual needs, this review found more ready-made chart, heatmap, animation, and dashboard options in the Electron/web ecosystem. KDE/Kirigami remains stronger for native Plasma integration, Linux desktop conventions, and avoiding a web renderer privilege bridge. Runtime differences still need to be measured with TokenTrail-specific prototypes.
+For Token Trail's current visual needs, this review found more ready-made chart, heatmap, animation, and dashboard options in the Electron/web ecosystem. KDE/Kirigami remains stronger for native Plasma integration, Linux desktop conventions, and avoiding a web renderer privilege bridge. Runtime differences still need to be measured with Token Trail-specific prototypes.
 
-At the time of this comparison, TokenTrail still described itself as a privacy-first KDE dashboard for Linux, so KDE/Kirigami remained the recommended default. The comparison also found that Electron would become the stronger choice if the product prioritized a highly branded analytics interface, rapid visual experimentation, and broader desktop reach.
+At the time of this comparison, Token Trail still described itself as a privacy-first KDE dashboard for Linux, so KDE/Kirigami remained the recommended default. The comparison also found that Electron would become the stronger choice if the product prioritized a highly branded analytics interface, rapid visual experimentation, and broader desktop reach.
 
-The user later confirmed those priorities and approved Electron in Decision 005. The recommendation in this historical evaluation is therefore superseded. TokenTrail-specific performance, accessibility, and packaging measurements are still required during implementation.
+The user later confirmed those priorities and approved Electron in Decision 005. The recommendation in this historical evaluation is therefore superseded. Token Trail-specific performance, accessibility, and packaging measurements are still required during implementation.
 
 ---
 
@@ -229,13 +230,13 @@ The user selected Electron on August 13, 2026. The framework question is resolve
 
 ### Context
 
-TokenTrail needed a distinctive identity that would remain recognizable as a small desktop icon and work coherently in both light and dark application themes. The mark also needed to communicate understanding and observation of Codex usage without looking like cryptocurrency, money, a speedometer, or a generic analytics chart.
+Token Trail needed a distinctive identity that would remain recognizable as a small desktop icon and work coherently in both light and dark application themes. The mark also needed to communicate understanding and observation of Codex usage without looking like cryptocurrency, money, a speedometer, or a generic analytics chart.
 
 ### First proposal - Escaping Trail
 
 The first ASCII concept placed a connected checkpoint path inside a rounded token shape and allowed the path to exit the boundary. It was described as **The Escaping Trail**: the token represented the product, checkpoints represented measurable usage over time, and the outward path suggested a trail continuing forward.
 
-That proposal was useful exploration, but its metaphor did not match the product precisely. A path escaping the token could suggest that usage was leaking away, being depleted, or leaving the user's control. TokenTrail's purpose is to help the user **see and understand progress**, not to celebrate consumption or depict something escaping.
+That proposal was useful exploration, but its metaphor did not match the product precisely. A path escaping the token could suggest that usage was leaking away, being depleted, or leaving the user's control. Token Trail's purpose is to help the user **see and understand progress**, not to celebrate consumption or depict something escaping.
 
 The concept was therefore rejected before production artwork. This was a normal ideation correction, not a design failure: naming the metaphor exposed the mismatch early enough to improve it cheaply.
 
@@ -247,9 +248,9 @@ The mark was revised so the complete path remains inside the rounded token bound
 - Two solid intermediate checkpoints represent recorded usage or observations.
 - A larger concentric upper-right waypoint represents the current position.
 - The rising connected path shows progression over time.
-- The enclosing rounded token communicates that TokenTrail observes and explains the journey as a coherent whole.
+- The enclosing rounded token communicates that Token Trail observes and explains the journey as a coherent whole.
 
-The working concept name became **Tracked Trail**. This wording is intentionally neutral: TokenTrail tracks where usage stands without implying that more usage is inherently better.
+The working concept name became **Tracked Trail**. This wording is intentionally neutral: Token Trail tracks where usage stands without implying that more usage is inherently better.
 
 ### Approved visual treatment
 
@@ -266,7 +267,7 @@ The approved concept presentation uses the same geometry in both themes. The com
 
 - The trail must remain entirely inside the token.
 - The current-position target must remain visually distinct from historical checkpoints.
-- The mark must remain understandable without the `TokenTrail` wordmark at small app-icon sizes.
+- The mark must remain understandable without the `Token Trail` wordmark at small app-icon sizes.
 - The identity must avoid arrows escaping the boundary, cryptocurrency symbols, currency marks, footprints, gauges, and generic chart imagery.
 - Light and dark variants must use the same geometry rather than becoming different logos.
 - Future production assets should include a precise vector master, transparent-background exports, icon-only variants, monochrome variants, and tested small sizes.
@@ -292,7 +293,7 @@ The user approved the **Tracked Trail** visual direction. The earlier **Escaping
 
 ### Decision
 
-Project documents should read like they were written by people working through real decisions together. They should be clear, direct, and specific to TokenTrail.
+Project documents should read like they were written by people working through real decisions together. They should be clear, direct, and specific to Token Trail.
 
 The following rules apply to new writing and future edits:
 
@@ -308,7 +309,7 @@ The following rules apply to new writing and future edits:
 
 ### Reasoning
 
-These documents are meant to help future contributors understand how TokenTrail developed. Natural writing makes that history easier to trust and easier to read. It also prevents useful project records from turning into generic template language.
+These documents are meant to help future contributors understand how Token Trail developed. Natural writing makes that history easier to trust and easier to read. It also prevents useful project records from turning into generic template language.
 
 ### Verification
 
@@ -323,15 +324,15 @@ The current Markdown files were searched for em dashes when this rule was added,
 
 ### Context
 
-The user confirmed that TokenTrail should use Electron. The deciding priorities were a visually rich, distinct dashboard and reliable behavior across major Linux desktop environments, including KDE Plasma. Security was established as a primary requirement rather than a secondary hardening task.
+The user confirmed that Token Trail should use Electron. The deciding priorities were a visually rich, distinct dashboard and reliable behavior across major Linux desktop environments, including KDE Plasma. Security was established as a primary requirement rather than a secondary hardening task.
 
-Electron applications can work well on KDE even though their controls are not Kirigami-native. Current Electron releases support native Wayland, system theme detection, StatusNotifierItem-based Linux tray behavior, and desktop notifications on environments that follow the freedesktop notification specification. TokenTrail will still test these behaviors on KDE, GNOME, Wayland, and X11 instead of assuming that one runtime removes Linux variation.
+Electron applications can work well on KDE even though their controls are not Kirigami-native. Current Electron releases support native Wayland, system theme detection, StatusNotifierItem-based Linux tray behavior, and desktop notifications on environments that follow the freedesktop notification specification. Token Trail will still test these behaviors on KDE, GNOME, Wayland, and X11 instead of assuming that one runtime removes Linux variation.
 
 The complete approved planning specification is [product_spec_electron.md](product_spec_electron.md). The earlier KDE document remains in [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) as historical context rather than being overwritten.
 
 ### Approved product direction
 
-- TokenTrail is a privacy-first, read-only Codex usage dashboard.
+- Token Trail is a privacy-first, read-only Codex usage dashboard.
 - Linux is the first release platform, with x64 and arm64 as the intended 64-bit architectures.
 - The visual identity is branded and consistent across desktops rather than tied to one desktop toolkit.
 - Light, dark, and system themes use the approved Tracked Trail identity.
@@ -372,15 +373,15 @@ The approved architecture treats the renderer as untrusted:
 - Protocol data is treated as untrusted, normalized into stable domain objects, and never passed raw to the renderer.
 - Electron fuses, ASAR integrity, dependency review, an SBOM, artifact checksums, current Electron security releases, and release signing are required parts of the release design.
 
-At planning time, the installed Codex CLI describes the app-server and its generated bindings as experimental. Its generated TypeScript contracts include the reads TokenTrail needs, but official public OpenAI documentation does not currently provide a stable third-party schema guarantee. The implementation must therefore use capability detection, runtime validation, fixtures, and explicit compatibility states.
+At planning time, the installed Codex CLI describes the app-server and its generated bindings as experimental. Its generated TypeScript contracts include the reads Token Trail needs, but official public OpenAI documentation does not currently provide a stable third-party schema guarantee. The implementation must therefore use capability detection, runtime validation, fixtures, and explicit compatibility states.
 
 **Later evidence:** Decision 006 records that a detailed official Codex App Server page subsequently documented the current account-level methods. The command remains experimental, so the compatibility requirements above still apply.
 
 ### Linux compatibility position
 
-TokenTrail will target current mainstream 64-bit desktop Linux rather than claiming to work on every Linux system. The intended test matrix includes KDE Plasma and GNOME on Wayland, representative X11 coverage, Cinnamon or Xfce, and Debian/Ubuntu, Fedora, and Arch-family distributions.
+Token Trail will target current mainstream 64-bit desktop Linux rather than claiming to work on every Linux system. The intended test matrix includes KDE Plasma and GNOME on Wayland, representative X11 coverage, Cinnamon or Xfce, and Debian/Ubuntu, Fedora, and Arch-family distributions.
 
-[Electron's Wayland overview](https://www.electronjs.org/blog/tech-talk-wayland) states that Electron 38.2 and newer supports Wayland out of the box. [Electron's Tray API](https://www.electronjs.org/docs/latest/api/tray/) uses StatusNotifierItem by default on Linux when available, and [Electron notifications](https://www.electronjs.org/docs/latest/tutorial/notifications) use `libnotify` on desktop environments including KDE. These capabilities support the choice, but TokenTrail must verify scaling, window behavior, tray activation, notifications, package dependencies, and compositor differences in real packaged builds.
+[Electron's Wayland overview](https://www.electronjs.org/blog/tech-talk-wayland) states that Electron 38.2 and newer supports Wayland out of the box. [Electron's Tray API](https://www.electronjs.org/docs/latest/api/tray/) uses StatusNotifierItem by default on Linux when available, and [Electron notifications](https://www.electronjs.org/docs/latest/tutorial/notifications) use `libnotify` on desktop environments including KDE. These capabilities support the choice, but Token Trail must verify scaling, window behavior, tray activation, notifications, package dependencies, and compositor differences in real packaged builds.
 
 Initial package candidates are AppImage, deb, rpm, and Pacman. Flatpak and Snap are deferred because sandboxed access to the user's host Codex process requires a separate security and lifecycle design.
 
@@ -388,7 +389,7 @@ Initial package candidates are AppImage, deb, rpm, and Pacman. Flatpak and Snap 
 
 | Alternative | Strength | Why it was not selected |
 | --- | --- | --- |
-| KDE Kirigami | Best Plasma integration, native conventions, and a smaller web privilege boundary | TokenTrail now prioritizes one highly branded visual system and broader desktop coverage over Kirigami-native identity |
+| KDE Kirigami | Best Plasma integration, native conventions, and a smaller web privilege boundary | Token Trail now prioritizes one highly branded visual system and broader desktop coverage over Kirigami-native identity |
 | Tauri | Smaller bundled runtime and a Rust privilege boundary | Adds Rust and Linux WebView variation; consistent rendering and one TypeScript application stack are higher current priorities |
 | Flutter | Strong custom rendering and cross-platform UI | Introduces a separate language and ecosystem without a clear advantage for the Codex TypeScript boundary or web chart ecosystem |
 | Electron Forge | Official Electron tutorial path with useful plugins | Its Vite plugin is marked experimental, while electron-builder directly covers the intended Linux package and update matrix |
@@ -398,7 +399,7 @@ Electron's costs remain real: larger artifacts, higher likely baseline memory th
 
 ### Decision outcome
 
-Electron is the approved TokenTrail framework. KDE/Kirigami is superseded as the implementation direction but preserved as an evaluated alternative. The new Electron product specification is the controlling technical plan once it is reviewed and accepted.
+Electron is the approved Token Trail framework. KDE/Kirigami is superseded as the implementation direction but preserved as an evaluated alternative. The new Electron product specification is the controlling technical plan once it is reviewed and accepted.
 
 At the time of Decision 005, this approval covered detailed planning but not implementation or dependency installation. Decision 007 later authorized Phase 1 implementation within the same read-only boundary. Publishing, signing, update deployment, and broader access remain unauthorized.
 
@@ -426,7 +427,7 @@ At the time of Decision 005, this approval covered detailed planning but not imp
 
 After reviewing the approved Electron specification against current local Codex bindings and the [official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server), the user approved additional v1 insights that can be calculated safely from the existing account-level reads.
 
-The goal is to make TokenTrail more useful without reading tasks, prompts, responses, projects, paths, Git data, model activity, or thread status. The additions must not guess at missing dates, predict future usage, combine unrelated units, or retain account history.
+The goal is to make Token Trail more useful without reading tasks, prompts, responses, projects, paths, Git data, model activity, or thread status. The additions must not guess at missing dates, predict future usage, combine unrelated units, or retain account history.
 
 ### Approved features
 
@@ -434,7 +435,7 @@ The goal is to make TokenTrail more useful without reading tasks, prompts, respo
 | --- | --- | --- |
 | Next reset timeline | Valid reported quota reset timestamps | Order valid future resets chronologically; keep missing or invalid reset times separate |
 | Quota attention ordering | Reported bucket-level reached state, window percentage, reset time, and stable identities | Use a documented deterministic order; do not predict blocking, label a percentage safe or dangerous, or assign a bucket state to one window |
-| Changes since TokenTrail opened | First and current valid normalized account snapshots | Keep baselines and deltas in memory only; clear them when the process exits |
+| Changes since Token Trail opened | First and current valid normalized account snapshots | Keep baselines and deltas in memory only; clear them when the process exits |
 | Complete-period comparison | Aggregate daily usage buckets | Compare 7-day periods with 14 complete dates and 30-day periods with 60 complete dates |
 | Calendar activity heatmap | Aggregate daily usage buckets | Keep reported zero, positive activity, and missing dates visibly and semantically distinct |
 | Descriptive activity statistics | Valid supplied daily buckets | Show exact-range total, daily average, active-day average, median, highest supplied day, and active-day count |
@@ -447,7 +448,7 @@ The goal is to make TokenTrail more useful without reading tasks, prompts, respo
 - Missing dates are unknown, not zero.
 - A comparison is unavailable unless both complete calendar periods contain one valid bucket for every required date.
 - Duplicate, invalid, negative, oversized, or otherwise rejected buckets do not enter calculations.
-- Relative change is unavailable when the preceding total is zero. TokenTrail never displays infinity.
+- Relative change is unavailable when the preceding total is zero. Token Trail never displays infinity.
 - “Highest supplied day” refers only to the selected supplied range and is not presented as the lifetime peak date.
 - A quota reached state is shown only when Codex reports it and stays at bucket scope unless Codex identifies a narrower scope.
 - Attention ordering does not forecast future usage or guarantee whether another task can run.
@@ -476,7 +477,7 @@ The [official Codex App Server documentation](https://learn.chatgpt.com/docs/app
 - `account/usage/read` with lifetime tokens, peak daily tokens, longest-running turn, current and longest streaks, and optional dated aggregate daily buckets.
 - The distinction between an authoritative reset-credit count and a detail list that may be absent or capped.
 
-The same structures were checked in TypeScript bindings generated locally from `codex-cli 0.146.1`. The official page also states that the app-server command and WebSocket transport are experimental and unsupported for production workloads. TokenTrail therefore retains capability detection, strict runtime validation, method allowlisting, version fixtures, and explicit unsupported states.
+The same structures were checked in TypeScript bindings generated locally from `codex-cli 0.146.1`. The official page also states that the app-server command and WebSocket transport are experimental and unsupported for production workloads. Token Trail therefore retains capability detection, strict runtime validation, method allowlisting, version fixtures, and explicit unsupported states.
 
 ### Decision outcome
 
@@ -493,7 +494,7 @@ At the time of Decision 006, this decision changed documentation and v1 scope on
 
 ### Context
 
-After reviewing the product direction, Linux packaging plan, GitHub release workflow, and manual-first update approach, the user authorized TokenTrail development to begin. The user also required unusually detailed source commentary so a future reader can learn the code without reconstructing its intent, and required a durable test report for every version.
+After reviewing the product direction, Linux packaging plan, GitHub release workflow, and manual-first update approach, the user authorized Token Trail development to begin. The user also required unusually detailed source commentary so a future reader can learn the code without reconstructing its intent, and required a durable test report for every version.
 
 ### Authorized work
 
@@ -520,4 +521,27 @@ This authorization does not approve publishing a release, signing artifacts, dep
 
 ### Decision outcome
 
-TokenTrail has moved from design and planning into Phase 1 development. The Electron product specification is now the controlling implementation standard, including its privacy, security, testing, commenting, and release boundaries.
+Token Trail has moved from design and planning into Phase 1 development. The Electron product specification is now the controlling implementation standard, including its privacy, security, testing, commenting, and release boundaries.
+
+---
+
+## 008 - User-facing product name separated from repository identifier
+
+**Recorded:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved; documentation updated and Phase 2 implementation pending
+
+### Context
+
+The repository and npm package use the machine-safe identifier `tokentrail`, and the Phase 1 shell derived the visible label `TokenTrail` from that identifier. The user clarified that the application name is **Token Trail**, with a space. A repository slug is not a product-name authority.
+
+### Decision
+
+- Every label shown to a person, including the logo wordmark, uses **Token Trail**.
+- The repository, npm package name, executable slug, custom protocol, application ID, and filesystem-safe artifact stem may remain `tokentrail` where spaces are unsuitable.
+- Conventional source identifiers may use `TokenTrail` when required by TypeScript naming conventions, but those identifiers never become visible copy automatically.
+- Documentation uses **Token Trail** except when quoting historical text, exact Git metadata, a machine identifier, or a source symbol.
+- Phase 2 corrects the existing renderer, window, package metadata, accessibility names, tests, and screenshot evidence before implementing the read-only Overview slice.
+
+### Decision outcome
+
+The product identity and repository identity are now explicitly separate. This turn changes documentation only. Phase 2 application code has not started.

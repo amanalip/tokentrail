@@ -1,4 +1,4 @@
-# TokenTrail Threat Model
+# Token Trail Threat Model
 
 **Status:** Phase 1 foundation baseline
 **Reviewed scope:** Electron shell, renderer loading, preload bridge, packaging, and development tooling
@@ -10,9 +10,9 @@ This threat model records what the Phase 1 foundation protects before Codex data
 
 - The user's Codex authentication, account identity, usage data, prompts, responses, tasks, and local projects.
 - The user's filesystem, environment variables, processes, shell, clipboard, browser sessions, and desktop permissions.
-- TokenTrail preferences and future redacted diagnostic exports.
+- Token Trail preferences and future redacted diagnostic exports.
 - Application integrity, release artifacts, tags, checksums, and update metadata.
-- The accuracy and provenance of values displayed by TokenTrail.
+- The accuracy and provenance of values displayed by Token Trail.
 
 ## Trust boundaries
 
@@ -50,10 +50,10 @@ This threat model records what the Phase 1 foundation protects before Codex data
 
 ## Phase 1 assumptions
 
-- The renderer bundle is authored by TokenTrail and still treated as untrusted because a renderer compromise must not become machine compromise.
+- The renderer bundle is authored by Token Trail and still treated as untrusted because a renderer compromise must not become machine compromise.
 - The local Vite server exists only during development on `127.0.0.1:5173`.
 - The Phase 1 bridge has no functions and no IPC channel exists.
-- No Codex process is started, no account data is read, and no TokenTrail usage data is persisted.
+- No Codex process is started, no account data is read, and no Token Trail usage data is persisted.
 - Chromium remote debugging is used only by the external packaged smoke harness. A normal user launch does not add the debugging switch.
 - Embedded ASAR integrity validation is not claimed on Linux because current Electron support is limited to macOS and Windows. Loading only from ASAR remains enabled.
 

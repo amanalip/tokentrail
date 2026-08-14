@@ -1,4 +1,4 @@
-# TokenTrail Product Specification
+# Token Trail Product Specification
 
 Status: Draft for review
 Target: First public-ready release (v1)
@@ -55,9 +55,9 @@ Last updated: 2026-08-13
 
 ## 1. Product summary
 
-TokenTrail is a privacy-first native KDE application that helps Linux users understand their Codex usage. It reads usage information from the locally authenticated Codex app-server, presents reported values faithfully, and explains calculated values in plain language.
+Token Trail is a privacy-first native KDE application that helps Linux users understand their Codex usage. It reads usage information from the locally authenticated Codex app-server, presents reported values faithfully, and explains calculated values in plain language.
 
-TokenTrail is a Codex usage dashboard. It is not an OpenAI API billing dashboard and does not claim to expose every ChatGPT product or model limit.
+Token Trail is a Codex usage dashboard. It is not an OpenAI API billing dashboard and does not claim to expose every ChatGPT product or model limit.
 
 The first release is intentionally read-only. It may observe and explain account data, but it must not change an account, consume credits, alter Codex tasks, or handle authentication credentials.
 
@@ -69,7 +69,7 @@ The primary user runs Codex on Linux and wants straightforward answers to questi
 - When does each window reset?
 - Am I currently blocked, and why?
 - How many tokens have been reported for recent days and over the account lifetime?
-- Which values came directly from Codex and which were calculated by TokenTrail?
+- Which values came directly from Codex and which were calculated by Token Trail?
 - Why do token counts and quota percentages not move together?
 
 The interface should be useful without requiring knowledge of APIs, token accounting, or the Codex protocol.
@@ -96,7 +96,7 @@ The interface should be useful without requiring knowledge of APIs, token accoun
 
 - Give a concise plain-language status on the Overview screen.
 - Explain quota windows, resets, blocked states, credits, tokens, and the distinction between Codex plan usage and OpenAI API usage.
-- Assign every displayed metric one provenance state: OpenAI-reported, locally observed, calculated by TokenTrail, or unavailable.
+- Assign every displayed metric one provenance state: OpenAI-reported, locally observed, calculated by Token Trail, or unavailable.
 - Visually distinguish estimates and calculations from reported facts.
 - Explain unavailable metrics instead of silently hiding important gaps.
 
@@ -222,7 +222,7 @@ Settings:
 - Automatic refresh on or off.
 - Refresh interval, constrained to a conservative supported range.
 - Time display preference: system default or explicit 12/24-hour choice if practical.
-- A “Clear TokenTrail data” action that removes preferences and cached non-sensitive runtime data after confirmation.
+- A “Clear Token Trail data” action that removes preferences and cached non-sensitive runtime data after confirmation.
 
 Diagnostics:
 
@@ -241,7 +241,7 @@ Raw diagnostic data must be recursively redacted before display or export. Unkno
 | --- | --- | --- |
 | OpenAI-reported | Received from the local Codex app-server as an account or usage value | `usedPercent`, `resetsAt`, lifetime tokens |
 | Locally observed | Derived from the local environment rather than the user's account | refresh time, Codex version, connection state |
-| Calculated by TokenTrail | Deterministically calculated from reported or observed inputs | remaining percentage, countdown, 7-day total |
+| Calculated by Token Trail | Deterministically calculated from reported or observed inputs | remaining percentage, countdown, 7-day total |
 | Unavailable | Not supplied, unsupported, invalid, or insufficient for a sound calculation | missing balance, incomplete 30-day total |
 
 Every metric component carries provenance in the presentation model, rather than adding labels only in the visual layer. Tooltips or detail views expose the label without overwhelming the main dashboard.
@@ -253,10 +253,10 @@ Every metric component carries provenance in the presentation model, rather than
 | Limit ID, name, and plan type | OpenAI-reported | Display when present; use neutral fallback labels when absent |
 | Primary/secondary designation | OpenAI-reported | Preserve designation without inventing semantic names |
 | Used percentage | OpenAI-reported | Validate numeric range; display source value |
-| Remaining percentage | Calculated by TokenTrail | `100 - usedPercent`, clamped only for display safety with invalid source data flagged |
+| Remaining percentage | Calculated by Token Trail | `100 - usedPercent`, clamped only for display safety with invalid source data flagged |
 | Window duration | OpenAI-reported | Preserve minutes and generate a human-readable duration |
 | Reset timestamp | OpenAI-reported | Convert for display without changing the source value |
-| Reset countdown | Calculated by TokenTrail | Reset time minus current local time |
+| Reset countdown | Calculated by Token Trail | Reset time minus current local time |
 | Reached-limit/spend-control state | OpenAI-reported | Map known values to explanations; preserve unknown values safely |
 
 ### 6.3 Usage metrics
@@ -268,8 +268,8 @@ Every metric component carries provenance in the presentation model, rather than
 | Peak daily tokens | OpenAI-reported | Display when present |
 | Current/longest streak | OpenAI-reported | Display in days |
 | Longest-running turn | OpenAI-reported | Format seconds as a readable duration |
-| Today/week/month totals | Calculated by TokenTrail | Sum available daily buckets; mark incomplete ranges |
-| 7-/30-day totals | Calculated by TokenTrail | Sum complete source ranges only; otherwise unavailable or explicitly partial |
+| Today/week/month totals | Calculated by Token Trail | Sum available daily buckets; mark incomplete ranges |
+| 7-/30-day totals | Calculated by Token Trail | Sum complete source ranges only; otherwise unavailable or explicitly partial |
 
 Turn-level input, cached-input, cache-write, output, reasoning-output, total-token, and context-window metrics are deliberately excluded from v1 because obtaining them requires task-level access, which is privacy-sensitive.
 
@@ -279,7 +279,7 @@ Turn-level input, cached-input, cache-write, output, reasoning-output, total-tok
 | --- | --- | --- |
 | Availability, balance, unlimited state | OpenAI-reported | Display only when supplied |
 | Spending limit and amount used | OpenAI-reported | Display in the reported unit and format |
-| Remaining spending percentage | Calculated by TokenTrail | Calculate only when units and a positive limit are valid |
+| Remaining spending percentage | Calculated by Token Trail | Calculate only when units and a positive limit are valid |
 | Spending reset/reached state | OpenAI-reported | Explain plainly |
 | Reset-credit count and metadata | OpenAI-reported | Display read-only; never invoke consumption methods |
 
@@ -289,15 +289,15 @@ Turn-level input, cached-input, cache-write, output, reasoning-output, total-tok
 
 - Local by default: data processing and presentation happen on the user's computer.
 - Data minimization: request and retain only what is needed for an enabled v1 feature.
-- No credentials: authentication tokens, cookies, headers, session secrets, and API keys are outside TokenTrail's data model.
+- No credentials: authentication tokens, cookies, headers, session secrets, and API keys are outside Token Trail's data model.
 - No content: prompts, responses, attachments, and generated content are never requested or stored.
 - No task metadata in v1: titles, paths, project names, Git data, and relationships are not requested for analytics.
-- No telemetry: TokenTrail sends no analytics or usage information to its developers or third parties.
+- No telemetry: Token Trail sends no analytics or usage information to its developers or third parties.
 - User-controlled export: diagnostic export requires a deliberate action and preview.
 
 ### 7.2 App-server process boundary
 
-TokenTrail launches or connects to the supported local Codex app-server using documented local process communication. Authentication remains owned by Codex. TokenTrail sends only approved read operations and parses only their responses and update notifications.
+Token Trail launches or connects to the supported local Codex app-server using documented local process communication. Authentication remains owned by Codex. Token Trail sends only approved read operations and parses only their responses and update notifications.
 
 The adapter must not log the full process environment, command-line secrets, authentication messages, or unredacted protocol payloads.
 
@@ -325,7 +325,7 @@ v1 does not build a local history database.
 - Non-sensitive connection and capability diagnostics.
 - Redacted diagnostic preview generated on demand.
 
-This data disappears when TokenTrail exits.
+This data disappears when Token Trail exits.
 
 ### 8.2 On disk
 
@@ -335,7 +335,7 @@ This data disappears when TokenTrail exits.
 
 ### 8.3 Clearing and future history
 
-“Clear TokenTrail data” removes all settings and any non-sensitive cache owned by TokenTrail after confirmation. It does not modify Codex data.
+“Clear Token Trail data” removes all settings and any non-sensitive cache owned by Token Trail after confirmation. It does not modify Codex data.
 
 Historical storage, retention periods, trend prediction, and task analytics require a separate opt-in design for a later release. That design must specify schema, encryption expectations, retention choices, deletion behavior, and migration before implementation.
 
@@ -386,7 +386,7 @@ Additional requirements:
 - Unexpected server-initiated requests are rejected unless explicitly required and audited for safe read-only operation.
 - Logs contain categories and redacted summaries, not raw payloads.
 - Export is local, explicit, redacted, and never automatic.
-- TokenTrail does not request administrator privileges.
+- Token Trail does not request administrator privileges.
 
 Any future write action, including redeeming a reset credit, requires a separate product design, threat review, explicit confirmation flow, and user approval before implementation.
 

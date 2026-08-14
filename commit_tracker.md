@@ -1,4 +1,4 @@
-# TokenTrail Commit Tracker
+# Token Trail Commit Tracker
 
 This document records the important outcome of each project commit in reverse chronological order. It complements Git history: Git remains the authoritative source for exact file changes, while this tracker explains why a change mattered and what was learned.
 
@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 015 - Phase 1 secure Electron foundation completed](#commit-015---phase-1-secure-electron-foundation-completed)
 - [Commit 014 - Commit history reconciled](#commit-014---commit-history-reconciled)
 - [Commit 013 - GitHub release workflow documented](#commit-013---github-release-workflow-documented)
 - [Commit 012 - Privacy-safe v1 insights approved](#commit-012---privacy-safe-v1-insights-approved)
@@ -20,7 +21,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Commit 007 - Tracker filename normalized](#commit-007---tracker-filename-normalized)
 - [Commit 006 - Tracker expanded and reordered](#commit-006---tracker-expanded-and-reordered)
 - [Commit 005 - Commit tracker introduced](#commit-005---commit-tracker-introduced)
-- [Commit 004 - README aligned with TokenTrail](#commit-004---readme-aligned-with-tokentrail)
+- [Commit 004 - README aligned with Token Trail](#commit-004---readme-aligned-with-token-trail)
 - [Commit 003 - KDE and Electron directions compared](#commit-003---kde-and-electron-directions-compared)
 - [Commit 002 - Product specification created](#commit-002---product-specification-created)
 - [Commit 001 - Repository initialization](#commit-001---repository-initialization)
@@ -53,6 +54,8 @@ Commit-message quality, related decision-log entries, and whether a change affec
 - Uncommitted work is kept in a separate section and is never presented as a commit.
 - The commit that creates or edits this tracker cannot reliably contain its own final hash without amending history. It starts as pending work and should be finalized by a later tracker update.
 - A lesson describes what became clearer; it does not assign blame.
+- Every new current and committed entry includes decisions, verification, fact check, sanity check, user learning, agent learning, risks, and follow-up. If a section has no new information, it says `No new learning` or `None identified` instead of being omitted. Older entries retain their historical schema unless they are otherwise reconciled.
+- Historical commit subjects, hashes, and quoted wording remain exact even when later naming decisions use different product copy.
 - Fact-check and sanity-check reports are included for every meaningful change moving forward.
 - A fact check names the evidence used and distinguishes confirmed facts from estimates, opinions, or untested assumptions.
 - A sanity check asks whether the change is coherent with project scope, privacy, security, naming, navigation, and existing decisions.
@@ -72,7 +75,7 @@ A fact-check report should cover the claims that could be verified for that chan
 
 ### Sanity-check report
 
-A sanity-check report should confirm that the change makes sense within TokenTrail as a whole. It should look for:
+A sanity-check report should confirm that the change makes sense within Token Trail as a whole. It should look for:
 
 - Conflicts with approved decisions, privacy rules, security boundaries, or current planning status.
 - Broken navigation, duplicated information, stale terminology, and inconsistent filenames.
@@ -84,60 +87,147 @@ A sanity-check report should confirm that the change makes sense within TokenTra
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 at 1:16 AM EDT (`America/Toronto`, UTC-04:00)
-**Last updated:** August 14, 2026 at 2:18 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 14, 2026 at 2:34 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
 ### Intent
 
-Implement the reviewable Phase 1 Electron foundation after the user's authorization, including secure packaging, account-free testing, screenshot evidence, and the corrected TokenTrail logo.
+Document **Token Trail** as the user-facing application name, schedule the executable correction in Phase 2, and repair the commit tracker without starting Phase 2 code.
 
 ### Important changes
 
-- Changed the repository and Electron specification status from planning to Phase 1 development.
-- Authorized dependency selection and installation within the approved read-only Electron scope.
-- Required teaching-style explanations for authored executable code while documenting narrow generated-file and format exceptions.
-- Required an evidence-based `tests/<version>/test_report.md` for every preview and stable version.
-- Added a detailed six-phase implementation plan with tasks, deliverables, verification, exit criteria, release gates, test-report rules, documentation work, open-question scheduling, risks, and final handoff checks.
-- Added a separately tracked post-v1 backlog for optional desktop behavior, updates, platforms, local data, customization, companion clients, and recurring maintenance.
-- Reconciled the product specification's delivery phases and README navigation with the implementation plan.
-- Added Design Decision 007 and reconciled the finalized metadata for Commit 014.
-- Added exact npm dependencies, a lockfile, strict TypeScript projects, separate Vite builds, linting, formatting, Vitest, Playwright, and electron-builder configuration.
-- Implemented the sandboxed Electron main window, restrictive local `tokentrail://app/` protocol, CSP, denied navigation and desktop permissions, empty frozen preload bridge, single-instance lifecycle, ASAR packaging, and production fuse posture.
-- Added centralized Codex request and notification allowlists, bounded protocol limits, exact large-decimal handling, and renderer-safe error categories.
-- Added unit, component, account-free fixture integration, Electron end-to-end, security, packaged-smoke, and packaged-performance suites.
-- Added the Phase 1 threat model, data-flow diagram, data inventory, dependency rationale, protocol compatibility record, and owned-stdio lifecycle decision.
-- Replaced the branding asset with a corrected logo that removes the unwanted duplicate top-left mark, optimized it to 768 pixels, rebuilt the package, and visually inspected a fresh screenshot from the tested app.
-- Created `tests/0.1.0/test_report.md`, embedded the packaged-app screenshot, and recorded results, environment, package inventory, fuses, performance, resolved findings, privacy review, and open gaps.
+- Established **Token Trail** as the user-facing product name while retaining `tokentrail` for machine-facing repository and package identifiers.
+- Updated active product documents to use the spaced name and added a controlling naming rule to the README and Electron specification.
+- Added a detailed Phase 2 checklist covering the logo wordmark, renderer, window and HTML titles, onboarding, accessibility names, package and Linux metadata, tests, and replacement screenshots.
+- Amended the Phase 1 report so its real screenshot honestly records the existing `TokenTrail` missing-space defect.
+- Added Design Decision 008 without changing executable code.
+- Reconciled committed Phase 1 work as Commit 015 and made all tracker sections mandatory, including user and agent learning.
+
+### Decisions and assumptions
+
+- The visible product name is **Token Trail** in headings, window titles, menus, onboarding, accessibility names, desktop metadata, documentation, screenshots, and release copy.
+- `tokentrail` remains valid for the repository, npm package, executable slug, protocol, filesystem-safe artifacts, and other machine-facing identifiers.
+- `TokenTrail` may remain inside conventional source-code identifiers, but source identifiers cannot be reused automatically as interface copy.
+- Existing Phase 1 executable code and its screenshot remain unchanged evidence; the report labels the defect instead of rewriting history.
+- Historical Git subjects and quoted old labels remain exact.
+- Phase 2 is planned but has not started.
 
 ### Verification
 
-- `npm run verify` passed formatting, lint, strict type checks, 46 unit and component tests, and one child-process fixture integration test.
-- V8 coverage recorded 97.91 percent statements, 96.96 percent branches, 100 percent functions, and 97.82 percent lines.
-- Two development Electron end-to-end tests passed, including system/light/dark themes; two accessibility smoke tests and two Electron security tests passed; the final packaged smoke test passed and captured the curated screenshot; the packaged performance test passed evidence collection.
-- `npm audit` reported zero known vulnerabilities on August 14, 2026.
-- The final package loaded `tokentrail://app/`, exposed no Node globals, used a 704,181-byte ASAR with an explicit file set, and preserved the reviewed production fuses.
-- `git diff --check` passed before the final documentation update and must be repeated before commit.
+- `git diff --check` passed.
+- Twelve Markdown files were checked and every local file-link target exists.
+- Active documentation uses **Token Trail** except where `tokentrail` or `TokenTrail` is deliberately quoted as a machine identifier, source identifier, historical label, or known Phase 1 defect.
+- Application tests were not rerun because this change edits Markdown only.
 
 ### Fact-check report
 
-- The user explicitly authorized development, requested detailed comments, required phase-by-phase screenshot-backed test reports, and requested removal of the logo's duplicate top-left mark.
-- Commit 014 is `ed54725`; it changed only `commit_tracker.md` with 105 insertions and 3 deletions.
-- Exact package versions are locked in `package.json` and `package-lock.json`; dependency rationale records their licenses and selection findings.
-- The Phase 1 report identifies the working tree as based on `23d5c8c`; it does not invent a final commit hash before the maintainer commits.
-- Packaged performance measured 1,002.7 ms cold startup, 909.3 ms warm startup, 0.57 percent idle CPU, 717.7 MB summed RSS, and 276.2 MB proportional memory on KDE Wayland x64.
+- The user explicitly clarified that the application name is `Token Trail`; `tokentrail` is only the repository name.
+- Git confirms Phase 1 was committed as `75bb8f5` at 2:29:26 AM EDT with 74 changed files, 10,673 insertions, and 67 deletions.
+- The checked-in Phase 1 screenshot visibly displays `TokenTrail`, so the report retains that fact until Phase 2 produces corrected evidence.
 
 ### Sanity-check report
 
-- Implementation stays inside the approved local read-only boundary and does not connect to a real Codex account.
-- Renderer isolation, navigation denial, a closed method allowlist, bounded test fixtures, and package fuses align with the threat model.
-- Publication, signing, update deployment, telemetry, broader Codex access, retained history, and GitHub release automation remain gated.
-- The provisional memory target is missed and remains visible as Phase 4 optimization or evidence-based architecture reconsideration work.
-- Authored source uses teaching-style rationale comments while generated, lock, image, and data-only files retain their documented exceptions.
+- The naming update changes active documentation and future requirements without falsely claiming that the Phase 1 binary already displays the corrected name.
+- Phase 2 remains planned but not started, as requested.
+- Repository and machine identifiers remain stable, so the documentation does not create an unnecessary migration or compatibility change.
+
+### User lessons
+
+- Versioned reports embed screenshots captured from the app actually tested, so visible defects such as the missing space in `TokenTrail` remain inspectable rather than being hidden by later prose.
+- The repository identifier and the visible product name serve different purposes: `tokentrail` is machine-facing, while **Token Trail** is the application name.
+- Phase 2 naming work is documented but has not started.
+
+### Agent lessons
+
+- Never infer a user-facing product name by title-casing a repository, package, executable, or protocol identifier.
+- Treat **Token Trail** as controlled visible copy and `tokentrail` as a machine identifier; audit both separately in implementation and tests.
+- Screenshot evidence is also naming evidence. When a screenshot proves a defect, update the report honestly and replace the screenshot only after the corrected build is tested.
+- The commit tracker must preserve user and agent learning for current uncommitted work as well as finalized commits. Required sections are explicit, even when their content is `No new learning`.
+- Re-read Git state before updating the tracker because the user may commit between turns; committed work must not remain labeled as pending.
+
+### Risks or limitations
+
+- The Phase 1 binary and screenshot still display `TokenTrail` without the required space; correction and replacement evidence are scheduled for Phase 2.
+- Historical tracker wording may retain `TokenTrail` when it quotes an exact old commit subject or records the terminology used at that time.
 
 ### Follow-up
 
-Review and commit the completed Phase 1 foundation, then begin the Phase 2 owned-process Codex adapter and first read-only Overview slice.
+Review and commit this documentation-only naming correction. Do not start Phase 2 until the user gives the next implementation instruction.
+
+---
+
+## Commit 015 - Phase 1 secure Electron foundation completed
+
+**Commit:** `75bb8f5` - `Complete Phase 1 secure Electron foundation`
+**Timestamp:** August 14, 2026 at 2:29:26 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Build and verify the hardened Electron foundation before introducing real Codex data or a renderer privilege surface.
+
+### Important changes
+
+- Added exact dependencies, lockfile, strict TypeScript projects, separate Vite builds, formatting, linting, coverage, fixture integration, Playwright, and electron-builder configuration.
+- Implemented the sandboxed Electron window, restrictive `tokentrail://app/` protocol, CSP, denied navigation and permissions, empty frozen preload bridge, single-instance lifecycle, ASAR packaging, and production fuses.
+- Added closed Codex request and notification allowlists, protocol bounds, exact large-decimal handling, renderer-safe errors, and allowlist-built diagnostics with secret canaries.
+- Added unit, component, fixture, end-to-end, accessibility, security, packaged, coverage, and performance suites.
+- Added architecture, threat, data, dependency, and protocol records plus a screenshot-backed `tests/0.1.0/test_report.md`.
+- Replaced the duplicate-mark logo asset and captured the tested packaged shell.
+
+### Decisions and assumptions
+
+- Phase 1 reads no real Codex account data and exposes no renderer IPC method.
+- Phase 2 will use an owned `codex app-server` stdio child unless later evidence requires revisiting the lifecycle.
+- Production fuses remain strict even though packaged testing therefore needs a normal process plus test-only loopback CDP.
+- Unavailable GNOME, X11, arm64, installer, and clean-distribution evidence stays visible rather than being inferred.
+
+### Verification
+
+- `npm run verify` passed formatting, lint, strict type checks, 46 unit and component tests, and one fixture integration test.
+- V8 coverage recorded 97.91 percent statements, 96.96 percent branches, 100 percent functions, and 97.82 percent lines.
+- Two development Electron, two accessibility, two security, one packaged-smoke, and one packaged-performance test passed.
+- `npm audit` reported zero known vulnerabilities.
+- The package used a 704,181-byte explicit ASAR and the reviewed fuse posture.
+
+### Fact-check report
+
+- Git records commit `75bb8f5`, author Aman Ali, timestamp August 14, 2026 at 2:29:26 AM EDT, 74 changed files, 10,673 insertions, and 67 deletions.
+- Packaged evidence recorded 1,002.7 ms cold startup, 909.3 ms warm startup, 0.57 percent idle CPU, 717.7 MB summed RSS, and 276.2 MB proportional memory on KDE Wayland x64.
+- The commit contains no GitHub workflow, public release, installer matrix, signing secret, telemetry, or real Codex connection.
+
+### Sanity-check report
+
+- Renderer isolation, navigation denial, the closed Codex allowlist, bounded fixtures, and package fuses align with the threat model.
+- The foundation remains inside the approved read-only scope.
+- The provisional memory miss is visible and not converted into a passing target.
+
+### User lessons
+
+- Electron application upgrades will use versioned packages and future GitHub Releases, not GitHub Pages deployment.
+- Phase 1 is a secure development foundation rather than a public release or completed dashboard.
+- Versioned reports contain screenshots from the app actually tested and retain visible limitations.
+- Startup met the provisional target, while Electron memory remained above the provisional ceiling.
+
+### Agent lessons
+
+- Production Electron fuses can invalidate Playwright's ordinary Electron launcher assumptions; packaged tests need the reviewed normal-process plus local CDP strategy.
+- Both summed RSS and proportional memory must be reported because shared Chromium pages affect their interpretation.
+- Protocol methods, bounds, error categories, and diagnostic fields must be centralized and deny unknown values by default.
+- Teaching-style comments still require focused functions and precise names; comments cannot compensate for unclear design.
+- Phase evidence is incomplete until the final tested screenshot is visually inspected and embedded in the versioned report.
+
+### Risks or limitations
+
+- KDE Wayland x64 is the only measured desktop and architecture.
+- The provisional memory target is missed and remains Phase 4 work.
+- No real Codex connection, installer matrix, release workflow, signing, update behavior, or public artifact exists.
+- The committed Phase 1 build displays the unspaced `TokenTrail` label; Decision 008 schedules correction for Phase 2.
+
+### Follow-up
+
+Complete the approved product-name correction before the Phase 2 read-only Overview implementation, after the user authorizes Phase 2 to start.
 
 ---
 
@@ -156,6 +246,11 @@ Finalize the commit-tracker records for the approved privacy-safe insights and G
 - Added finalized records for Commit 012 and Commit 013.
 - Preserved their decisions, verification, fact checks, sanity checks, lessons, risks, and follow-up work.
 
+### Decisions and assumptions
+
+- Git remains authoritative for commit identity and file statistics.
+- Reconciliation documents already committed decisions without changing their scope.
+
 ### Verification
 
 - Git records 105 insertions and 3 deletions in `commit_tracker.md`.
@@ -169,6 +264,21 @@ Finalize the commit-tracker records for the approved privacy-safe insights and G
 ### Sanity-check report
 
 - The change improved project history without implying that planned application or release work had already occurred.
+
+### User lessons
+
+- Documentation-only commits still matter when they change approved product or release behavior.
+- The tracker explains why a commit matters, while Git retains the exact patch and metadata.
+
+### Agent lessons
+
+- Finalize pending tracker entries promptly after the user commits so committed work is not left labeled uncommitted.
+- A reconciliation entry must preserve earlier decisions and learnings rather than reducing them to file statistics.
+
+### Risks or limitations
+
+- A tracker reconciliation can describe only evidence available in Git and the recorded conversation; it must not invent missing intent.
+- The reconciliation commit could not record its own final hash until a later update, which Commit 015 now supplies through repository history.
 
 ### Follow-up
 
@@ -184,7 +294,7 @@ Record the next meaningful project change as current uncommitted work, then fina
 
 ### Intent
 
-Define how approved TokenTrail versions become reviewable Linux release artifacts without allowing ordinary pushes to publish application updates.
+Define how approved Token Trail versions become reviewable Linux release artifacts without allowing ordinary pushes to publish application updates.
 
 ### Important changes
 
@@ -249,7 +359,7 @@ After the Electron scaffold exists, implement and test the packaging workflow un
 
 ### Intent
 
-Add only reliable, secure v1 insights that can be derived from TokenTrail's already approved account, rate-limit, and aggregate-usage reads. Define detailed interfaces, exact formulas, unavailable states, privacy boundaries, and tests before implementation.
+Add only reliable, secure v1 insights that can be derived from Token Trail's already approved account, rate-limit, and aggregate-usage reads. Define detailed interfaces, exact formulas, unavailable states, privacy boundaries, and tests before implementation.
 
 ### Important changes
 
@@ -268,7 +378,7 @@ Add only reliable, secure v1 insights that can be derived from TokenTrail's alre
 - No new Codex method is approved.
 - Missing daily dates remain unknown and never become zero.
 - Period comparisons require complete consecutive dates for both periods.
-- Current-session baselines exist only in memory and clear when TokenTrail exits.
+- Current-session baselines exist only in memory and clear when Token Trail exits.
 - Reached-state text requires a Codex-reported reached state and remains at bucket scope unless Codex identifies a narrower scope.
 - Quota attention ordering is deterministic but is not a forecast.
 - “Highest supplied day” is limited to the selected supplied range.
@@ -295,7 +405,7 @@ Add only reliable, secure v1 insights that can be derived from TokenTrail's alre
 - The locally generated bindings match the required rate-limit, credit, daily-bucket, and aggregate-summary shapes.
 - The official documentation also exposes workspace messages, models, threads, and live thread token usage. None of those broader methods was added to the v1 allowlist by this work.
 - The documentation states that the app-server command and WebSocket transport are experimental and unsupported for production workloads. Capability detection, strict validation, fixtures, and explicit unsupported states therefore remain required.
-- The seven-day expiry label, attention ordering, comparison periods, statistics, and interface layouts are TokenTrail product rules. They are documented as calculations or presentation rules rather than Codex-reported facts.
+- The seven-day expiry label, attention ordering, comparison periods, statistics, and interface layouts are Token Trail product rules. They are documented as calculations or presentation rules rather than Codex-reported facts.
 
 ### Sanity-check report
 
@@ -312,7 +422,7 @@ Add only reliable, secure v1 insights that can be derived from TokenTrail's alre
 
 ### Why this work matters
 
-These additions make TokenTrail more useful without weakening its privacy-first purpose. The interface can reveal timing, recent supplied activity patterns, source completeness, and current reported capacity while remaining honest about what Codex did not provide.
+These additions make Token Trail more useful without weakening its privacy-first purpose. The interface can reveal timing, recent supplied activity patterns, source completeness, and current reported capacity while remaining honest about what Codex did not provide.
 
 ### User lessons so far
 
@@ -336,7 +446,7 @@ These additions make TokenTrail more useful without weakening its privacy-first 
 ### Risks or limitations
 
 - Daily buckets may not cover enough dates for either comparison.
-- Session deltas disappear by design and cannot explain activity before TokenTrail opened.
+- Session deltas disappear by design and cannot explain activity before Token Trail opened.
 - Attention ordering helps scanning but cannot predict whether Codex will accept future work.
 - The official protocol and local bindings can change while app-server remains experimental.
 - The seven-day expiry threshold may need usability review, but changing it would be an explicit product decision.
@@ -355,7 +465,7 @@ Implement the approved insights only under separate authorization, with the docu
 
 ### Intent
 
-Record Electron as the approved TokenTrail framework and preserve a complete implementation-ready product, interface, security, Linux, testing, packaging, and release plan without starting application development.
+Record Electron as the approved Token Trail framework and preserve a complete implementation-ready product, interface, security, Linux, testing, packaging, and release plan without starting application development.
 
 ### Important changes
 
@@ -446,7 +556,7 @@ Make technical decisions easier to verify by putting direct documentation links 
 - Technical claims should be linked at the point of use.
 - A successful URL response and evidence that supports a claim are separate checks.
 - Meaningful work includes both a factual evidence review and a product-level coherence review.
-- Comparative claims remain judgments until a TokenTrail prototype measures them.
+- Comparative claims remain judgments until a Token Trail prototype measures them.
 
 ### Verification
 
@@ -474,7 +584,7 @@ The project moved from merely listing technologies to showing readers where to v
 ### User lessons
 
 - Inline links reduce friction when reviewing a technical comparison.
-- Fact checking asks whether a claim is supported; sanity checking asks whether the result fits TokenTrail.
+- Fact checking asks whether a claim is supported; sanity checking asks whether the result fits Token Trail.
 - Recording a failed check and its correction gives future readers more confidence than hiding the failure.
 
 ### Agent lessons
@@ -589,7 +699,7 @@ Save the approved logo concept, provide separate light and dark files, document 
 - The full path remains inside the token to represent observed progress rather than usage escaping.
 - Light and dark variants share identical geometry.
 - The current PNG files are approved concept assets, not substitutes for a future vector master.
-- Repository prose should be natural, direct, specific to TokenTrail, and free of em dashes.
+- Repository prose should be natural, direct, specific to Token Trail, and free of em dashes.
 
 ### Verification
 
@@ -601,7 +711,7 @@ Save the approved logo concept, provide separate light and dark files, document 
 
 ### Why this commit matters
 
-This commit gives TokenTrail its first approved visual identity and preserves the reasoning behind it. It also turns several documentation preferences into written project conventions, reducing the chance that future work loses the context established during ideation.
+This commit gives Token Trail its first approved visual identity and preserves the reasoning behind it. It also turns several documentation preferences into written project conventions, reducing the chance that future work loses the context established during ideation.
 
 ### User lessons
 
@@ -821,7 +931,7 @@ Expand lessons where the history supports them, keep newest commits first, and f
 
 ---
 
-## Commit 004 - README aligned with TokenTrail
+## Commit 004 - README aligned with Token Trail
 
 **Commit:** `319d60b` - `Document TokenTrail project vision and planning status`
 **Timestamp:** August 13, 2026 at 4:24:14 PM EDT (`America/Toronto`, UTC-04:00)
@@ -829,7 +939,7 @@ Expand lessons where the history supports them, keep newest commits first, and f
 
 ### Intent
 
-Replace the old project name in the repository landing page and give visitors a concise, accurate explanation of TokenTrail.
+Replace the old project name in the repository landing page and give visitors a concise, accurate explanation of Token Trail.
 
 ### Important changes
 
@@ -851,7 +961,7 @@ Replace the old project name in the repository landing page and give visitors a 
 
 ### Why this commit matters
 
-The README is the repository's front door. This small change makes the visible project identity match TokenTrail and tells a new visitor what the project is trying to achieve without falsely suggesting that an application already exists. It also routes readers to deeper documents instead of leaving important context discoverable only through conversation history.
+The README is the repository's front door. This small change makes the visible project identity match Token Trail and tells a new visitor what the project is trying to achieve without falsely suggesting that an application already exists. It also routes readers to deeper documents instead of leaving important context discoverable only through conversation history.
 
 ### User lessons
 
@@ -911,7 +1021,7 @@ Preserve the inherited KDE-native proposal and evaluate Electron as an alternati
 
 - Git records one new design-decision file with 180 lines.
 - Current official KDE, Qt, and Electron documentation was consulted for the comparison.
-- No executable prototype or performance benchmark was produced, so resource and development-speed comparisons remain informed expectations rather than measured TokenTrail results.
+- No executable prototype or performance benchmark was produced, so resource and development-speed comparisons remain informed expectations rather than measured Token Trail results.
 
 ### Why this commit matters
 
@@ -924,7 +1034,7 @@ This commit prevents the inherited KDE proposal from becoming an unquestioned im
 - A toolkit does not create good design automatically; layout, hierarchy, typography, accessibility, and coherent interaction still require deliberate work.
 - Electron's cross-platform promise reduces UI duplication, but it does not remove platform-specific testing, packaging, signing, or Codex compatibility work.
 - Native KDE development can still produce rich custom visuals through QML, Qt Quick, Qt Graphs, and KQuickCharts; the difference is largely ecosystem breadth and effort.
-- Electron usually carries a larger runtime footprint because it bundles Chromium and Node.js, but TokenTrail should measure packaged size, memory, and startup time rather than rely only on general reputation.
+- Electron usually carries a larger runtime footprint because it bundles Chromium and Node.js, but Token Trail should measure packaged size, memory, and startup time rather than rely only on general reputation.
 - Security must be considered while choosing the framework, not attached after the UI is built.
 - A small disposable prototype can answer visual and performance questions more reliably than a long abstract debate.
 - Changing the framework later would require updating the product specification, acceptance criteria, packaging plan, and terminology consistently.
@@ -932,12 +1042,12 @@ This commit prevents the inherited KDE proposal from becoming an unquestioned im
 ### Agent lessons
 
 - Framework recommendations must be tied to explicit product priorities rather than personal preference or library counts.
-- For TokenTrail, visual-library breadth, KDE identity, resource use, contributor learning curve, security boundaries, and possible cross-platform distribution pull the choice in different directions.
+- For Token Trail, visual-library breadth, KDE identity, resource use, contributor learning curve, security boundaries, and possible cross-platform distribution pull the choice in different directions.
 - Electron requires a deliberately narrow main/preload/renderer architecture; the visual renderer must never gain generic process, filesystem, shell, or protocol access.
 - `contextIsolation`, renderer sandboxing, disabled Node integration, a restrictive Content Security Policy, and validated purpose-specific IPC are baseline requirements if Electron is selected.
 - The Codex protocol adapter and its read-only allowlist should remain conceptually independent of the UI framework, even though their implementations would differ.
 - Current official documentation should be used for framework comparisons because Electron, Qt, Kirigami, and packaging practices evolve.
-- Claims such as “lighter,” “faster,” or “easier” should be labeled as expectations until TokenTrail-specific prototypes provide measurements.
+- Claims such as “lighter,” “faster,” or “easier” should be labeled as expectations until Token Trail-specific prototypes provide measurements.
 - A decision log must record alternatives and status clearly so “evaluated” is not later misread as “approved.”
 - If Electron is selected, dependency count and visual-library selection should stay intentional; the availability of many npm packages is not a reason to adopt many packages.
 
@@ -961,7 +1071,7 @@ The user should choose KDE/Kirigami, choose Electron, or explicitly approve a di
 
 ### Intent
 
-Turn the inherited TokenTrail handoff into a reviewable first-release product specification without beginning application implementation.
+Turn the inherited Token Trail handoff into a reviewable first-release product specification without beginning application implementation.
 
 ### Important changes
 
@@ -985,7 +1095,7 @@ Turn the inherited TokenTrail handoff into a reviewable first-release product sp
 
 ### Why this commit matters
 
-This is the first commit that explains what TokenTrail is supposed to become. It converts a broad handoff into testable product boundaries and makes future implementation review possible. It is also a guardrail: contributors can compare a proposed feature with documented goals, non-goals, privacy rules, and acceptance criteria before adding it.
+This is the first commit that explains what Token Trail is supposed to become. It converts a broad handoff into testable product boundaries and makes future implementation review possible. It is also a guardrail: contributors can compare a proposed feature with documented goals, non-goals, privacy rules, and acceptance criteria before adding it.
 
 ### User lessons
 
@@ -1000,11 +1110,11 @@ This is the first commit that explains what TokenTrail is supposed to become. It
 
 ### Agent lessons
 
-- TokenTrail must distinguish OpenAI-reported values, locally observed values, TokenTrail calculations, and unavailable values throughout its data model and UI.
+- Token Trail must distinguish OpenAI-reported values, locally observed values, Token Trail calculations, and unavailable values throughout its data model and UI.
 - The Codex app-server is experimental, so raw protocol behavior must be isolated behind a compatibility adapter.
 - Protocol fields and methods cannot be assumed to exist forever; capability detection, optional parsing, unknown values, and partial failure are core requirements.
 - The initial integration must remain read-only. Displaying a reset credit does not authorize consuming it.
-- Authentication must stay owned by Codex; TokenTrail must never copy, expose, or store Codex or ChatGPT credentials.
+- Authentication must stay owned by Codex; Token Trail must never copy, expose, or store Codex or ChatGPT credentials.
 - Task titles, project paths, Git data, and turn details are privacy-sensitive and cannot silently enter the initial scope.
 - Calculated totals must show incomplete source ranges instead of presenting partial data as complete.
 - A specification should separate current product decisions from future implementation sequencing so a plan is not mistaken for authorization.
@@ -1037,7 +1147,7 @@ Create the initial Git repository and establish its basic legal and documentatio
 - Added `.gitattributes`.
 - Added the project license.
 - Added the original two-line README using the earlier `kodex_usage` name.
-- Established the baseline from which TokenTrail planning could proceed.
+- Established the baseline from which Token Trail planning could proceed.
 
 ### Decisions and assumptions
 

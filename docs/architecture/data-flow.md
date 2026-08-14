@@ -1,4 +1,4 @@
-# TokenTrail Data Flow
+# Token Trail Data Flow
 
 **Status:** Phase 1 foundation baseline
 **Last updated:** August 14, 2026
@@ -38,7 +38,7 @@ flowchart LR
 5. Usage snapshots and current-session changes stay in memory and disappear at process exit.
 6. Preferences contain only validated non-sensitive user choices.
 7. Diagnostic export constructs an allowlisted safe object and shows it before writing.
-8. Normal v1 operation sends no TokenTrail telemetry.
+8. Normal v1 operation sends no Token Trail telemetry.
 
 ## Future network boundary
 

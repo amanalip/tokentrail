@@ -1,13 +1,13 @@
-# TokenTrail 0.1.0 Phase 1 Test Report
+# Token Trail 0.1.0 Phase 1 Test Report
 
-**Report state:** Phase 1 complete
+**Report state:** Phase 1 complete; product-name correction recorded for Phase 2
 **Test date:** August 14, 2026
 **Recommendation:** Not ready for public release; suitable as a reviewed Phase 1 development foundation
-**Source state:** Uncommitted working tree based on commit `23d5c8c`
+**Tested source:** Commit `75bb8f5` (`Complete Phase 1 secure Electron foundation`)
 
 ## 1. Purpose
 
-This report records the evidence produced while building Phase 1 of TokenTrail. It covers the secure Electron foundation, account-free Codex fixture, branded shell, Linux development package, packaged screenshot, security posture, and baseline performance. It does not claim that the Codex connection or v1 dashboard is implemented.
+This report records the evidence produced while building Phase 1 of Token Trail. It covers the secure Electron foundation, account-free Codex fixture, branded shell, Linux development package, packaged screenshot, security posture, and baseline performance. It does not claim that the Codex connection or v1 dashboard is implemented.
 
 The report is updated phase by phase. Screenshots are captured from the app under test, visually inspected, and then embedded here. Routine CI screenshots remain transient unless deliberately promoted into this versioned evidence folder.
 
@@ -16,8 +16,8 @@ The report is updated phase by phase. Screenshots are captured from the app unde
 | Item | Tested value |
 | --- | --- |
 | Product version | `0.1.0` development foundation |
-| Source base | `23d5c8c1569c34b5fff1ad5e21c91b5e5a885ada` |
-| Source state | Working tree; final commit hash is pending maintainer commit |
+| Source commit | `75bb8f5206f2f6ff2d9883f4f61c80879d367279` |
+| Source state | Committed Phase 1 build; later documentation records the naming correction without altering tested evidence |
 | Operating system | CachyOS Linux, kernel `7.1.8-1-cachyos` |
 | Architecture | `x86_64` |
 | Desktop | KDE Plasma |
@@ -75,13 +75,13 @@ The final comprehensive local command was `npm run verify`. Electron and child-p
 
 ### 5.1 Final Phase 1 packaged shell
 
-![TokenTrail Phase 1 packaged shell](screenshots/phase-1-packaged-shell.png)
+![Token Trail Phase 1 packaged shell](screenshots/phase-1-packaged-shell.png)
 
 **Capture:** Final electron-builder unpacked x64 package, KDE Plasma Wayland, light system theme, `1456 x 1053` viewport. The screenshot was captured by the packaged Playwright smoke test after the custom `tokentrail://app/` document loaded.
 
 **State shown:** Honest Phase 1 foundation state. No Codex account is connected and no fabricated quota, token, credit, or usage values are displayed.
 
-**Visual review:** Pass. The local logo, title, status, explanatory copy, and boundary card render clearly. The corrected logo contains only the main TokenTrail mark and wordmark; the unwanted duplicate mark in the top-left corner is absent. No unrelated desktop window, account identifier, path, notification, or private content is visible.
+**Visual review:** Pass for Phase 1 shell legibility and removal of the unwanted duplicate top-left mark. The screenshot also proves that the Phase 1 heading and logo wordmark display `TokenTrail` without the required space. The correct user-facing name is `Token Trail`; both visible labels are explicit Phase 2 correction items. No unrelated desktop window, account identifier, path, notification, or private content is visible.
 
 ## 6. Security evidence
 
@@ -171,6 +171,7 @@ The memory miss is not waived. Phase 4 must profile and reduce avoidable use, te
 | Packaged cleanup could miss a fast child exit | Registered the owned-process exit listener before signaling it | Resolved |
 | First performance evidence run lost the process tree when optional PSS access failed | Preserved valid RSS snapshots and treated PSS as optional kernel evidence | Resolved |
 | Original logo contained an unwanted duplicate mark in its top-left corner | Replaced and optimized the logo, rebuilt the package, and recaptured evidence | Resolved |
+| Phase 1 user-facing copy displays `TokenTrail` instead of `Token Trail` | Added a controlling naming rule and detailed Phase 2 implementation and verification tasks | Open; scheduled for Phase 2 |
 | Provisional memory ceiling was missed | Kept visible as Phase 4 performance work | Open, not release-blocking for Phase 1 development |
 
 ## 10. Coverage gaps and deferred tests
@@ -189,6 +190,6 @@ Pass for Phase 1 scope. Test fixtures contain no real account data. The app does
 
 ## 12. Phase conclusion
 
-The secure local Electron foundation builds, launches, packages, and preserves its intended renderer boundary on the available KDE Wayland x64 environment. The corrected branded shell and its screenshot evidence are reviewable. Phase 1 is not a user release and cannot yet deliver the TokenTrail product workflow.
+The secure local Electron foundation builds, launches, packages, and preserves its intended renderer boundary on the available KDE Wayland x64 environment. The corrected logo artwork and screenshot evidence are reviewable, and the screenshot-backed product-name defect is scheduled for Phase 2. Phase 1 is not a user release and cannot yet deliver the Token Trail product workflow.
 
 Phase 1 is complete with unavailable desktop and architecture coverage recorded rather than implied. The owned Codex stdio lifecycle is selected, but its production implementation begins in Phase 2. Phase 2 must not widen the approved method or IPC surface without new runtime schemas and security tests.

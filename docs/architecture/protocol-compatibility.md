@@ -12,7 +12,7 @@ The installed CLI exposes the experimental `codex app-server` command with stdio
 codex app-server generate-ts --experimental --out <temporary-directory>
 ```
 
-The generated directory remained under `/tmp` and was not copied into the application. TokenTrail will define narrow runtime schemas for approved fields instead of importing the entire broad protocol surface.
+The generated directory remained under `/tmp` and was not copied into the application. Token Trail will define narrow runtime schemas for approved fields instead of importing the entire broad protocol surface.
 
 ## Approved application methods
 
@@ -42,7 +42,7 @@ The generated protocol also contains task, turn, filesystem, shell, process, con
 
 ## Initial connection lifecycle decision
 
-Phase 2 will start and own one `codex app-server` child through stdio. TokenTrail will resolve a trusted executable without a shell, pass a fixed argument array, retain the exact child handle, bound message and stderr processing, and stop only that owned child during shutdown or recovery.
+Phase 2 will start and own one `codex app-server` child through stdio. Token Trail will resolve a trusted executable without a shell, pass a fixed argument array, retain the exact child handle, bound message and stderr processing, and stop only that owned child during shutdown or recovery.
 
 The existing daemon or proxy path is not an automatic fallback in v1. Supporting it would add endpoint discovery, shared lifecycle, authorization, ownership, and compatibility behavior before the direct read-only path is proven. It can be reconsidered only if owned stdio fails measured compatibility or lifecycle requirements.
 

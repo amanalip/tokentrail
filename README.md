@@ -1,6 +1,6 @@
-# TokenTrail
+# Token Trail
 
-> **Project status:** Phase 1 foundation complete; Phase 2 is next
+> **Project status:** Phase 1 foundation complete; Phase 2 planned but not started
 
 ## Contents
 
@@ -10,13 +10,15 @@
 
 ## About
 
-TokenTrail is a privacy-first desktop dashboard intended to help people understand their Codex usage. It aims to present available quota windows, token activity, reset times, credits, and related metrics in a clear and approachable way.
+Token Trail is a privacy-first desktop dashboard intended to help people understand their Codex usage. It aims to present available quota windows, token activity, reset times, credits, and related metrics in a clear and approachable way.
+
+The user-facing product name is **Token Trail**. The repository, npm package, executable slug, custom protocol, and code identifiers may use the machine-safe form `tokentrail` or `TokenTrail`; those identifiers must never replace the spaced product name in visible interface copy.
 
 The approved Electron application has completed its Phase 1 secure foundation. Phase 2 will implement the first read-only Codex-to-Overview slice. Publication, signing, update deployment, telemetry, and broader Codex access remain separately gated.
 
 ## Development
 
-TokenTrail currently requires Node.js 24.15 or newer and npm 12 or newer.
+Token Trail currently requires Node.js 24.15 or newer and npm 12 or newer.
 
 ```bash
 npm install
