@@ -2,6 +2,8 @@
 
 **Status:** Phase 2 complete locally; ready for review and commit
 **Tested:** August 14, 2026, America/Toronto
+**Evidence record finalized:** August 14, 2026 at 11:08:04 AM EDT (`America/Toronto`, UTC-04:00; Git author time for commit `f8d1b9b`)
+**Historical timestamp limitation:** Exact start and finish timestamps for each Phase 2 command were not captured; they must not be reconstructed or implied
 **Source state:** Uncommitted Phase 2 working tree based on `4fba55e`
 **Platform:** CachyOS Linux 7.1.8, x64, KDE Plasma Wayland  
 **Release effect:** No GitHub Release was created or published

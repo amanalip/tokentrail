@@ -714,17 +714,19 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 - Each tested application version uses `tests/test_reports/<version>/test_report.md`.
 - Prerelease identifiers remain part of the folder name, such as `tests/test_reports/1.0.0-preview.1/test_report.md`.
 - The report begins when the version candidate is created and is updated as CI and manual evidence arrives.
+- Every local, CI, and manual execution records exact start and finish times in a human-readable 12-hour form such as `August 14, 2026 at 1:20 PM EDT`, followed by the IANA timezone and numeric UTC offset; the report separately records its evidence-finalization time.
+- Historical timestamps are never guessed from memory or file modification times. Missing timing evidence is labeled `not captured` and remains a visible reporting limitation.
 - Each implementation phase updates the active version report and adds curated screenshots under `tests/test_reports/<version>/screenshots/` from the real tested application.
 - If a candidate changes code, it receives a new prerelease identifier or patch version. Evidence from an older commit is not silently reused.
 - Reports are committed before the corresponding release is published.
 
 ### 12.2 Required report sections
 
-1. Version, commit, tag, report status, and release recommendation.
+1. Version, commit, tag, report status, release recommendation, and human-readable timezone-aware evidence-finalization time.
 2. Scope tested and changes since the preceding tested version.
 3. Local and CI environments, including architecture and desktop details.
 4. Artifact inventory with sizes and SHA-256 checksums.
-5. Exact commands and workflow run identifiers.
+5. Exact commands, workflow run identifiers, and human-readable per-execution start and finish times with timezone abbreviation, UTC offset, and IANA timezone.
 6. Summary table for every test layer.
 7. Detailed failures, warnings, retries, flakes, and skipped checks.
 8. Security and privacy verification.
@@ -775,7 +777,11 @@ A later test failure can reopen an earlier phase gate. Phase completion is evide
 
 ### 13.3 Release documentation
 
-- Changelog and release notes.
+- Maintain one root `CHANGELOG.md` in newest-version-first order. Each released version records its ISO release date and only evidence-backed user-visible additions, changes, fixes, security corrections, deprecations, and removals.
+- Keep an `Unreleased` section only for implemented, verified work. Planned work never appears as shipped, and empty headings are omitted.
+- Build changelog entries from the commit tracker and verified diff, then reconcile them against the versioned test report; do not copy internal agent/user lessons, implementation trivia, or raw commit subjects into user-facing prose.
+- Create version-specific GitHub Release notes from the matching changelog entry, adding artifact/install links, checksums, supported platforms, upgrade notes, and known limitations. Release notes may be more operational but must not contradict the changelog.
+- Link each released changelog version to its immutable tag or GitHub Release after publication. Corrections to a published immutable release use a new patch version rather than silently rewriting its historical entry.
 - Artifact and checksum inventory.
 - SBOM and signing status.
 - Versioned test report.

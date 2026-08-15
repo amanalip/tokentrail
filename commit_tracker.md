@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 021 - Documentation lifecycle expanded and KDE proposal relocated](#commit-021---documentation-lifecycle-expanded-and-kde-proposal-relocated)
 - [Commit 020 - Architecture documentation expanded](#commit-020---architecture-documentation-expanded)
 - [Commit 019 - Phase 3 requirements and test evidence reorganized](#commit-019---phase-3-requirements-and-test-evidence-reorganized)
 - [Commit 018 - Phase 2 core read-only slice completed](#commit-018---phase-2-core-read-only-slice-completed)
@@ -92,9 +93,75 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 after commit `39f4d13`
-**Last updated:** August 14, 2026 at 12:08 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 14, 2026 after commit `92619a4`
+**Last updated:** August 14, 2026 at 11:44:25 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+### Intent
+
+Make precise, human-readable, timezone-aware times mandatory in every versioned test report, correct the honest limitations in the existing historical reports, and define how the changelog differs from detailed engineering records.
+
+### Important changes
+
+- Added Git-verifiable evidence-finalization timestamps to the 0.1.0 and 0.2.0 reports.
+- Explicitly labeled the unavailable historical per-command start and finish times instead of inventing precision.
+- Required every future local, CI, and manual execution to record human-readable 12-hour start and finish times, timezone abbreviation, numeric UTC offset, and IANA timezone.
+- Defined a root, user-facing changelog sourced from verified changes and reconciled with the test report, while keeping detailed lessons and implementation history in the commit tracker.
+- Defined version-specific GitHub Release notes as an operational extension of the matching changelog entry.
+
+### Decisions and assumptions
+
+- The timestamp of the commit that finalized an evidence record is not represented as the execution time of every test inside it.
+- Missing historical timing is written as `not captured`; filesystem modification times and memory are not acceptable substitutes.
+- `CHANGELOG.md` describes verified user impact. `commit_tracker.md` retains engineering rationale and learning. Versioned test reports retain detailed evidence.
+- Published changelog history follows immutable releases; shipped corrections receive a new patch version.
+
+### Verification
+
+- Git author timestamps for commits `75bb8f5` and `f8d1b9b` were read directly in ISO 8601 form.
+- Documentation consistency, Markdown targets, and whitespace are checked.
+- Application tests are not rerun because executable behavior is unchanged.
+
+### Fact-check report
+
+- Git records Phase 1 commit `75bb8f5` at August 14, 2026 at 2:29:26 AM EDT and Phase 2 commit `f8d1b9b` at August 14, 2026 at 11:08:04 AM EDT.
+- These values establish when the corresponding evidence records entered their milestone commits; they do not prove individual command start or finish times.
+- The former reports contained a calendar date but no exact per-execution timestamps.
+
+### Sanity-check report
+
+- The new rule is precise across daylight-saving changes because it requires both offset and IANA timezone.
+- Historical reports disclose their limitation without falsifying evidence.
+- Changelog, release notes, tracker, and test reports have distinct audiences and do not duplicate all content.
+- No application capability, privacy boundary, publication state, or release recommendation changes.
+
+### User lessons
+
+- A proper displayed test time uses a readable 12-hour clock and includes the date, timezone abbreviation, UTC offset, and named timezone; a calendar date alone is incomplete.
+- The changelog is concise product history, whereas the commit tracker and reports preserve deeper reasoning and proof.
+
+### Agent lessons
+
+- Start timing capture before running the first test, not while writing the report afterward.
+- Never use a later commit time as a substitute for an earlier test execution time; label each timestamp by what it actually measures.
+- Build changelog prose from verified user impact, not from raw commit messages or planned features.
+
+### Risks or limitations
+
+- Phase 1 and Phase 2 exact per-command execution times remain unavailable because they were not captured contemporaneously.
+- Timestamp compliance needs automation or a report checklist in later implementation so it is not dependent on memory.
+
+### Follow-up
+
+Use timestamped command capture from the beginning of Phase 3 and verify the active report before marking its phase gate complete.
+
+---
+
+## Commit 021 - Documentation lifecycle expanded and KDE proposal relocated
+
+**Commit:** `92619a4` - `Expand documentation lifecycle coverage and relocate historical KDE spec`
+**Timestamp:** August 14, 2026 at 12:12:46 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -120,21 +187,21 @@ Complete the planned documentation lifecycle through Phases 4, 5, and 6 so the f
 
 ### Verification
 
-- Phase heading numbering, planned filenames, document ownership, local Markdown links, and whitespace are checked.
-- Application tests are not rerun because this change modifies Markdown only.
+- Phase heading numbering, planned filenames, document ownership, local Markdown links, and whitespace were checked.
+- Application tests were not rerun because the change modified Markdown only.
 
 ### Fact-check report
 
-- Git confirms the prior architecture expansion was committed as `39f4d13` before this work began.
+- Git confirms commit `92619a4`, author Aman Ali, timestamp August 14, 2026 at 12:12:46 PM EDT, 7 changed files, 177 insertions, and 23 deletions.
 - The added tasks map directly to existing Phase 4 quality, Phase 5 packaging/release, and Phase 6 validation/publication responsibilities.
 - No future document is presented as an existing file or implemented capability.
-- The KDE specification's content remains present at its new path, and active links now resolve there.
+- The KDE specification's content remains present at its new path, and active links resolve there.
 
 ### Sanity-check report
 
 - The expanded documentation scope does not add product features, network behavior, release authority, or support claims.
 - Documents are assigned to the phase that can produce their evidence, avoiding speculative current-state prose.
-- User documentation and operational documentation are separated from architecture while remaining part of the final completion gate.
+- User and operational documentation are separated from architecture while remaining part of the final completion gate.
 - Moving the KDE proposal does not change the approved Electron framework decision or revive KDE scope.
 
 ### User lessons
@@ -146,7 +213,7 @@ Complete the planned documentation lifecycle through Phases 4, 5, and 6 so the f
 ### Agent lessons
 
 - Audit documentation coverage across the whole lifecycle: design, implementation, quality, distribution, operation, support, incident response, and maintenance.
-- Do not satisfy documentation completeness by placing every topic in architecture; use user, support, release, and maintenance collections where appropriate.
+- Do not place every completeness topic in architecture; use user, support, release, and maintenance collections where appropriate.
 - Treat documentation walkthroughs as verification for installation, upgrade, uninstall, and release procedures.
 - When moving a historical document, preserve its context, update active links and repository maps, and retain exact old paths only where describing historical Git facts.
 
@@ -157,7 +224,7 @@ Complete the planned documentation lifecycle through Phases 4, 5, and 6 so the f
 
 ### Follow-up
 
-Review and commit this phase-wide documentation plan. Create and validate each file only during its assigned phase.
+Create and validate each planned file only during its assigned phase.
 
 ---
 

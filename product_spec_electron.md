@@ -1733,8 +1733,10 @@ At minimum before stable release:
 ### 21.5 Versioned test reports
 
 - Every preview and stable version has a detailed Markdown report at `tests/test_reports/<version>/test_report.md`, for example `tests/test_reports/0.1.0/test_report.md`.
-- The report identifies the version, release tag when present, exact commit, test date, runner or machine, operating system, architecture, desktop environment, display server, relevant tool versions, and package format.
-- It records the exact commands executed and the evidence-backed result of unit, schema, integration, preload, component, end-to-end, security, accessibility, compatibility, performance, packaging, and packaged-smoke checks that apply to that version.
+- The report identifies the version, release tag when present, exact commit, human-readable evidence-finalization time, runner or machine, operating system, architecture, desktop environment, display server, relevant tool versions, and package format.
+- It records each execution's exact start and finish in a human-readable 12-hour form such as `August 14, 2026 at 1:20 PM EDT (America/Toronto, UTC-04:00)`, plus the exact commands or CI workflow run identifiers.
+- It records the evidence-backed result of unit, schema, integration, preload, component, end-to-end, security, accessibility, compatibility, performance, packaging, and packaged-smoke checks that apply to that version.
+- A date without a time, offset, and timezone is not sufficient. Unix timestamps and unexplained machine-formatted values are not used as the primary displayed time. An exact historical time that was not captured is labeled `not captured`; it is never estimated from memory or unrelated filesystem metadata.
 - Failures, warnings, skipped checks, unavailable hardware, incomplete matrix coverage, known limitations, artifact names, and checksums remain visible. A check that did not run is never presented as passing.
 - The report ends with a clear release recommendation: ready, preview-only, or not ready, plus the reasons for that recommendation.
 - Each phase adds curated screenshots of the tested application states under `tests/test_reports/<version>/screenshots/` and embeds them in the report with a caption naming the build, environment, and behavior shown.
@@ -1742,6 +1744,15 @@ At minimum before stable release:
 - Screenshots must not contain account identifiers, private paths, prompts, responses, tokens, credentials, notifications, or unrelated desktop content.
 - Reports contain no credentials, account identifiers, private paths, prompts, responses, raw protocol payloads, or other sensitive diagnostic data.
 - The report is committed with the version candidate and updated from actual CI and manual evidence before its GitHub Release is published.
+
+### 21.6 Changelog and release-note policy
+
+- The root `CHANGELOG.md` is the durable, user-facing history and is ordered newest version first. Each released heading includes the semantic version and ISO calendar release date.
+- Entries contain only implemented and verified user-visible additions, changes, fixes, security corrections, deprecations, and removals. Planned work, internal reasoning, agent/user lessons, and unverified claims are excluded.
+- An `Unreleased` section may contain verified work already present on the development branch, but it never describes a plan as shipped.
+- The commit tracker and exact version diff are source material; the versioned test report is the evidence cross-check. Commit subjects are rewritten as clear user impact rather than copied mechanically.
+- GitHub Release notes are derived from the matching changelog version and add artifact links, checksums, supported platforms, installation or upgrade instructions, and known limitations.
+- After publication, the changelog version links to the immutable tag or release. A correction that changes shipped behavior or artifacts requires a new patch version.
 
 ## 22. Observability and diagnostics
 

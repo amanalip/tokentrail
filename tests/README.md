@@ -26,3 +26,5 @@ tests/test_reports/0.2.0/
 ```
 
 Routine test output, traces, transient screenshots, and coverage remain outside these version folders. A file enters `test_reports/` only when it is deliberately reviewed as privacy-safe durable evidence.
+
+Every report records precise, human-readable, timezone-aware times. Each test execution includes its start and finish in the form `August 14, 2026 at 1:20 PM EDT (America/Toronto, UTC-04:00)`. The report also records when its evidence was finalized. A calendar date alone, a local time without an offset and timezone, a Unix timestamp, or an unexplained machine-formatted time is insufficient as the displayed record. If exact timing was not captured, the report says `not captured` instead of estimating it.
