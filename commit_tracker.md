@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 029 - Close section 8.2 with the motion and idle-CPU review](#commit-029---close-section-82-with-the-motion-and-idle-cpu-review)
 - [Commit 028 - Wire the daily chart to design tokens with animation disabled](#commit-028---wire-the-daily-chart-to-design-tokens-with-animation-disabled)
 - [Commit 027 - Add the responsive width and zoom layout sweep](#commit-027---add-the-responsive-width-and-zoom-layout-sweep)
 - [Commit 026 - Complete theme verification with WCAG remediation and theme-aware tints](#commit-026---complete-theme-verification-with-wcag-remediation-and-theme-aware-tints)
@@ -100,11 +101,51 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `de36e15`
-**Last updated:** August 21, 2026 at 6:16 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `f7c00b8`
+**Last updated:** August 21, 2026 at 6:42 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending chart-token entry was finalized as commit `de36e15` (Wire the daily chart to design tokens with animation disabled). This entry closes section 8.2 with the animation and idle-CPU review.
+The previously pending motion-review entry was finalized as commit `f7c00b8` (Close section 8.2 with the motion and idle-CPU review). This entry opens section 8.3 with completed keyboard-only workflow evidence and one latent clear-data defect fixed.
+
+### Intent
+
+Prove that every primary workflow completes through raw keyboard events alone on the real built application, add a first-class skip link for keyboard users, and fix the defect the new sweep exposed in the clear-data reset promise.
+
+### Important changes
+
+- Added `tests/e2e/keyboard-workflows.spec.ts`: one keyboard-only pass over skip link activation, Overview refresh completion, Usage chart/table toggling, focusable bounded scroll regions, theme and motion radio groups via arrow keys, automatic-refresh toggle plus numeric interval spin keys, diagnostics preview build, and the two-step clear-data flow including its Cancel escape. No pointer input occurs anywhere in the suite.
+- Added a "Skip to content" bypass as the first control in document order; it moves focus into the main landmark without rewriting the hash, so deep-linked routes survive. The main landmark takes a negative tab index to receive that focus.
+- Added regression coverage in `routes.test.tsx`: the skip link is first in document order, leaves a deep-linked hash untouched while moving focus, and route content stays put.
+- Fixed a latent clear-data defect found by the sweep: the route ignored the defaults returned by `clearApplicationData`, so visible settings stayed stale until restart even though the dialog promised an immediate reset. The shared preferences hook now exposes an adoption path that applies validated defaults without recreating the deleted document; unit coverage asserts the live theme attribute and radio state return to System.
+- Updated the accessibility architecture document's evidence and limitation sections for all of the above; marked the plan's keyboard-navigation and visible-focus tasks complete from this evidence.
+
+### Decisions and assumptions
+
+- Keyboard-only proof belongs at the end-to-end layer on the built application because jsdom cannot reproduce Electron focus semantics such as forward Tab order leaving the last landmark.
+- Observable effects of asynchronous preference saves are asserted through polling rather than fixed sleeps so the suite stays fast and deterministic.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 204 passed across 27 files including the new skip-link and clear-data adoption cases, integration tests 30 passed.
+- Full Playwright e2e suite after a fresh build: 22 passed, including the new keyboard workflow sweep.
+- `npm run check:docs`: 34 files scanned, no broken links.
+
+### Risks or limitations
+
+- Route-change focus management (moving focus to each new heading) remains open in the accessibility architecture limitations and lands next.
+- The keyboard sweep exercises the fixture scenario's data shapes; denser lists use the same focusable containers verified here.
+
+### Follow-up
+
+Continue section 8.3: integrate axe-core into the automated suites and remediate serious findings, then record the manual screen-reader, high-contrast, and reduced-motion campaign.
+
+---
+
+## Commit 029 - Close section 8.2 with the motion and idle-CPU review
+
+**Commit:** `f7c00b8` - `Close section 8.2 with the motion and idle-CPU review`
+**Timestamp:** August 21, 2026 at 6:16:37 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -135,6 +176,8 @@ Complete the final section 8.2 task by reviewing every continuous or decorative 
 ### Follow-up
 
 Section 8.2 is closed. Begin section 8.3 accessibility work: axe-core integration into the component or end-to-end suites, then keyboard-only completion checks, then the manual screen-reader campaign record.
+
+---
 
 ---
 

@@ -86,11 +86,14 @@ export function useCurrentUnixSeconds(intervalMilliseconds = 30_000): number {
 
 /**
  * Load persisted preferences once and expose an updater that persists complete replacements. Renderer state
- * never contains usage-derived values because the preferences schema itself excludes them.
+ * never contains usage-derived values because the preferences schema itself excludes them. A separate
+ * adoption path applies already-validated state without persisting, for flows such as clear-data where
+ * the privileged side already deleted the document and returned reviewed defaults.
  */
 export function usePreferences(): {
   readonly preferences: Preferences;
   readonly savePreferences: (next: Preferences) => Promise<void>;
+  readonly adoptPreferences: (next: Preferences) => void;
 } {
   // Start from reviewed defaults so first render never waits on IPC.
   const [preferences, setPreferences] = useState<Preferences>(createDefaultPreferences);
@@ -111,5 +114,10 @@ export function usePreferences(): {
     setPreferences(await window.tokenTrail.setPreferences(next));
   };
 
-  return { preferences, savePreferences };
+  // Adopt validated in-memory defaults without recreating a persisted document.
+  const adoptPreferences = (next: Preferences): void => {
+    setPreferences(next);
+  };
+
+  return { preferences, savePreferences, adoptPreferences };
 }

@@ -1146,6 +1146,24 @@ h3 {
   border: 0;
 }
 
+/* Keep the keyboard bypass off-screen until focused, then present it as a first-class control. */
+.skip-link {
+  position: absolute;
+  top: var(--space-3xs);
+  left: -100vw;
+  z-index: 10;
+}
+
+/* Reveal the bypass on keyboard focus with the standard surface treatment and focus ring. */
+.skip-link:focus {
+  left: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+
 /* Remove nonessential movement when reduced motion is forced by preference or system. */
 @media (prefers-reduced-motion: reduce) {
   .motion-system *,

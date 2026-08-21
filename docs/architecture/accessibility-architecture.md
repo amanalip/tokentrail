@@ -1,6 +1,6 @@
 # Accessibility Architecture
 
-**Status:** Implemented Phase 3 scope; Phase 4 evidence pending
+**Status:** Implemented Phase 3 scope; Phase 4 keyboard and layout evidence recorded, screen-reader/axe-core campaigns in progress
 **Last updated:** August 21, 2026
 
 This document explains the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts. The product specification (sections 8 and 10) controls required behavior; Phase 4 adds the full manual screen-reader campaign and axe-core review evidence.
@@ -55,9 +55,13 @@ This document explains the implemented semantic, keyboard, focus, announcement, 
 - `tests/accessibility/foundation-accessibility.spec.ts`: landmark structure, unique level-one heading, 200 percent zoom reflow.
 - `routes.test.tsx`: role-based queries throughout (searchbox, radios, regions, pressed toggles) exercise the accessible tree continuously.
 - `tests/e2e/overview.spec.ts`: state headings and banners verified through accessible roles.
+- `tests/e2e/responsive.spec.ts` (Phase 4): core actions stay visible and unclipped across the width and zoom matrix, including the minimum window at 200 percent zoom.
+- `tests/e2e/keyboard-workflows.spec.ts` (Phase 4): every primary workflow — skip link, refresh, Usage chart/table toggle, focusable scroll regions, theme and motion preference changes via arrow keys, automatic-refresh toggle plus numeric interval, diagnostics preview build, and the two-step clear-data confirmation including its Cancel escape — completes through raw keyboard events alone on the built application.
+- Phase 4 keyboard additions: a first-in-document "Skip to content" link that moves focus into the main landmark without rewriting the hash (protecting deep links), covered in `routes.test.tsx`; focus remains visibly outlined through the reviewed focus-ring tokens.
+- Clear-data adoption fix (Phase 4): confirming the dialog now applies returned defaults immediately, so the visible interface matches the promised reset instead of waiting for a restart.
 
 ## Known limitations
 
-- Route changes do not yet programmatically move focus to the new route heading; landmark navigation currently covers this. Focus management lands with the Phase 4 keyboard campaign.
+- Route changes do not yet programmatically move focus to the new route heading; landmark navigation currently covers this. Focus management lands with the remaining Phase 4 keyboard campaign work.
 - Manual screen-reader verification (Orca), high-contrast observation, and axe-core automated review are scheduled Phase 4 evidence and have not been recorded yet.
 - Live-region announcements for background snapshot pushes are not yet distinguished from user-triggered refreshes.

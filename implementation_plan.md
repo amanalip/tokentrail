@@ -434,8 +434,8 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 ### 8.3 Accessibility
 
-- [ ] Complete keyboard-only navigation for onboarding, routes, refresh, settings, diagnostics, dialogs, tables, and chart alternatives.
-- [ ] Provide visible focus and logical focus movement.
+- [x] Complete keyboard-only navigation for onboarding, routes, refresh, settings, diagnostics, dialogs, tables, and chart alternatives.
+- [x] Provide visible focus and logical focus movement.
 - [ ] Verify semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements.
 - [ ] Run axe-core and review every serious result.
 - [ ] Perform manual screen-reader testing on representative Linux environments.

@@ -409,6 +409,10 @@ describe('SettingsDiagnosticsRoute', () => {
     // Navigate to Settings & Diagnostics.
     await user.click(await screen.findByRole('link', { name: 'Settings & Diagnostics' }));
 
+    // Select an explicit theme so the reset has an observable effect on the live document.
+    await user.click(screen.getByRole('radio', { name: 'Dark' }));
+    expect(document.documentElement.dataset['theme']).toBe('dark');
+
     // The first activation opens a confirmation dialog instead of deleting anything.
     await user.click(screen.getByRole('button', { name: 'Clear data' }));
     expect(bridge.clearApplicationData).not.toHaveBeenCalled();
@@ -424,6 +428,37 @@ describe('SettingsDiagnosticsRoute', () => {
       within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Clear data' }),
     );
     expect(bridge.clearApplicationData).toHaveBeenCalledWith();
+
+    // The returned defaults are adopted immediately without a persisted write: the explicit
+    // theme attribute disappears and the visible radios return to System.
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+    const darkRadio = screen.getByRole('radio', { name: 'Dark' }) as HTMLInputElement;
+    expect(darkRadio.checked).toBe(false);
+  });
+
+  it('offers a skip link that moves focus without rewriting a deep-linked route', async () => {
+    // Install one snapshot and render the shell.
+    installBridge(createSnapshot());
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Navigate to a deep route so the bypass has something to protect.
+    await user.click(await screen.findByRole('link', { name: 'Settings & Diagnostics' }));
+
+    // The skip link is the very first control in the document order.
+    const firstControl = document.body.querySelector('a, button, input, [tabindex]');
+    const skipLink = screen.getByRole('link', { name: 'Skip to content' });
+    expect(firstControl).toBe(skipLink);
+
+    // Activating it moves focus into the content landmark while leaving the hash untouched,
+    // because a rewritten hash would throw a deep-linked route back to Overview.
+    act(() => skipLink.focus());
+    await user.keyboard('{Enter}');
+    expect(window.location.hash).toBe('#settings');
+    expect(document.activeElement?.id).toBe('overview');
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Settings & Diagnostics' }),
+    ).not.toBeNull();
   });
 
   it('requires a preview before export and exports exactly the previewed document', async () => {

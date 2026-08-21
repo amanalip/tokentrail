@@ -78,7 +78,7 @@ export function App() {
 
   // Share one snapshot subscription and one preferences document across all routes.
   const { snapshot, refresh, isRefreshing } = useOverviewSnapshot();
-  const { preferences, savePreferences } = usePreferences();
+  const { preferences, savePreferences, adoptPreferences } = usePreferences();
 
   // Follow hash changes so keyboard and assistive navigation stay first-class.
   useEffect(() => {
@@ -105,6 +105,18 @@ export function App() {
   // Render one application shell with stable navigation, status, and content landmarks.
   return (
     <div className={`app-shell ${motionClass}`}>
+      {/* Offer keyboard users an immediate bypass of the navigation rail. Activation moves focus
+          into the content landmark without rewriting the hash, so a deep-linked route survives. */}
+      <a
+        className="skip-link"
+        href="#overview"
+        onClick={(event) => {
+          event.preventDefault();
+          document.getElementById('overview')?.focus();
+        }}
+      >
+        Skip to content
+      </a>
       <aside className="sidebar" aria-label="Primary navigation">
         <a className="brand" href="#overview" aria-label="Token Trail Overview">
           <img src={logoUrl} alt="" width="44" height="44" />
@@ -129,7 +141,8 @@ export function App() {
         </div>
       </aside>
 
-      <main className="overview" id="overview">
+      {/* The negative tab index lets the skip link move focus here without joining Tab order. */}
+      <main className="overview" id="overview" tabIndex={-1}>
         {target.route === 'overview' && (
           <OverviewRoute
             snapshot={snapshot}
@@ -149,6 +162,7 @@ export function App() {
             snapshot={snapshot}
             preferences={preferences}
             savePreferences={savePreferences}
+            adoptPreferences={adoptPreferences}
           />
         )}
       </main>

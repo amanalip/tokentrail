@@ -15,11 +15,14 @@ export function SettingsDiagnosticsRoute({
   snapshot,
   preferences,
   savePreferences,
+  adoptPreferences,
 }: {
   snapshot: OverviewSnapshot;
   preferences: Preferences;
   // Adopt the shared hook updater so every save applies immediately instead of waiting for a restart.
   savePreferences: (next: Preferences) => Promise<void>;
+  // Apply already-validated defaults without persisting, used after the document was deleted.
+  adoptPreferences: (next: Preferences) => void;
 }) {
   // Track which tab is visible; both concern local application state.
   const [tab, setTab] = useState<'preferences' | 'diagnostics'>('preferences');
@@ -31,9 +34,10 @@ export function SettingsDiagnosticsRoute({
   // Track the two-step clear-data confirmation so a single click can never delete data.
   const [confirmingClear, setConfirmingClear] = useState(false);
 
-  // Clear only Token Trail-owned data after explicit confirmation and adopt returned defaults.
+  // Clear only Token Trail-owned data after explicit confirmation and adopt returned defaults so
+  // the visible interface matches the promised reset without recreating a persisted document.
   const clearOwnedData = async (): Promise<void> => {
-    await window.tokenTrail.clearApplicationData();
+    adoptPreferences(await window.tokenTrail.clearApplicationData());
     setConfirmingClear(false);
   };
 
