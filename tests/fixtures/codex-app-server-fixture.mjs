@@ -90,6 +90,29 @@ function createRateLimitsResult() {
   };
 }
 
+// Create one scenario-specific approved aggregate-usage result.
+function createUsageResult() {
+  // Preserve an honest unavailable usage section when no account exists.
+  if (scenario === 'empty' || scenario === 'missing-account') {
+    return { summary: null, dailyBuckets: null };
+  }
+
+  // Supply two complete synthetic days plus reported summary counters.
+  return {
+    summary: {
+      lifetimeTokens: '4203910',
+      peakDailyTokens: '180400',
+      currentStreakDays: 8,
+      longestStreakDays: 19,
+      longestTurnSeconds: 2520,
+    },
+    dailyBuckets: [
+      { date: '2026-08-12', tokens: '91210' },
+      { date: '2026-08-13', tokens: '124500' },
+    ],
+  };
+}
+
 // Handle each complete request independently.
 requestLines.on('line', (line) => {
   try {
@@ -147,6 +170,19 @@ requestLines.on('line', (line) => {
         process.exit(1);
       }
       sendProtocolValue({ id: request.id, result: createRateLimitsResult() });
+      return;
+    }
+
+    // Exercise the approved aggregate-usage read with synthetic dated buckets.
+    if (request.method === 'account/usage/read') {
+      if (scenario === 'method-not-found') {
+        sendProtocolValue({
+          id: request.id,
+          error: { code: -32_601, message: 'fixture method missing' },
+        });
+        return;
+      }
+      sendProtocolValue({ id: request.id, result: createUsageResult() });
       return;
     }
 

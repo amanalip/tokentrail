@@ -13,6 +13,11 @@ import { CodexProcessClient } from './codex/codex-process-client';
 // Import the narrow Overview IPC registration.
 import { installOverviewIpc } from './ipc/overview-ipc';
 
+// Import the Phase 3 preferences and diagnostics IPC registration.
+import { installApplicationIpc } from './ipc/application-ipc';
+import { PreferenceStore } from './preferences/preference-store';
+import { buildDiagnosticsDocument } from './diagnostics/build-diagnostics';
+
 // Import the fixed main-to-renderer event channel without exposing it to renderer code.
 import { TOKEN_TRAIL_IPC_CHANNELS } from '../shared/contracts/token-trail-bridge';
 
@@ -109,8 +114,12 @@ if (!hasSingleInstanceLock) {
   // Own one process and snapshot controller for the complete application lifetime.
   const overviewController = createOverviewController();
 
+  // Own the validated preferences store inside the Electron user-data directory.
+  const preferenceStore = new PreferenceStore({ userDataDirectory: app.getPath('userData') });
+
   // Retain IPC cleanup once Electron installs the fixed handlers.
   let removeOverviewIpc: (() => void) | null = null;
+  let removeApplicationIpc: (() => void) | null = null;
 
   // Resolve the renderer output relative to the bundled main entry, never from the launch directory.
   const rendererRoot = path.resolve(__dirname, '..', 'renderer');
@@ -130,6 +139,43 @@ if (!hasSingleInstanceLock) {
 
     // Install purpose-specific IPC before the renderer can request its initial snapshot.
     removeOverviewIpc = installOverviewIpc(overviewController);
+
+    // Install preferences and diagnostics handlers backed by the privileged services.
+    removeApplicationIpc = installApplicationIpc({
+      loadPreferences: () => preferenceStore.load(),
+      savePreferences: (preferences) => preferenceStore.save(preferences),
+      clearOwnedData: () => preferenceStore.clear(),
+      buildDiagnosticsPreview: async () =>
+        buildDiagnosticsDocument({
+          environment: {
+            tokenTrailVersion: app.getVersion(),
+            electronVersion: process.versions.electron ?? 'unknown',
+            chromiumVersion: process.versions.chrome ?? 'unknown',
+            nodeVersion: process.versions.node ?? 'unknown',
+            operatingSystem: process.platform,
+            architecture: process.arch,
+            sessionType:
+              process.env['XDG_SESSION_TYPE'] === 'wayland'
+                ? 'wayland'
+                : process.env['XDG_SESSION_TYPE'] === 'x11'
+                  ? 'x11'
+                  : 'unknown',
+          },
+          connection: {
+            codexDiscovered: overviewController.getSnapshot().state !== 'unavailable',
+            codexReportedVersion: null,
+            supportedCapabilities: [
+              'account/read',
+              'account/rateLimits/read',
+              'account/usage/read',
+            ],
+            unsupportedCapabilities: [],
+          },
+          snapshot: overviewController.getSnapshot(),
+          preferences: await preferenceStore.load(),
+          generatedAt: new Date(),
+        }),
+    });
 
     // Forward only validated normalized snapshot changes to the current approved renderer.
     overviewController.subscribe((snapshot) => {
@@ -174,6 +220,8 @@ if (!hasSingleInstanceLock) {
   app.once('before-quit', () => {
     removeOverviewIpc?.();
     removeOverviewIpc = null;
+    removeApplicationIpc?.();
+    removeApplicationIpc = null;
     overviewController.stop();
   });
 }

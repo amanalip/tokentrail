@@ -46,9 +46,14 @@ test('renders every reported quota bucket', async () => {
     const page = await electronApplication.firstWindow();
     await expect(page.getByText('2 reported')).toBeVisible();
 
+    // Scope to the complete section because the attention summary also names buckets.
+    const completeSection = page.getByRole('region', { name: 'All reported quota buckets' });
+
     // Confirm both independently named buckets exist in the complete section.
-    await expect(page.getByRole('heading', { level: 3, name: 'Codex' })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 3, name: 'Code review' })).toBeVisible();
+    await expect(completeSection.getByRole('heading', { level: 3, name: 'Codex' })).toBeVisible();
+    await expect(
+      completeSection.getByRole('heading', { level: 3, name: 'Code review' }),
+    ).toBeVisible();
   } finally {
     // Close the test-owned application.
     await electronApplication.close();

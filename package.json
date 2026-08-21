@@ -37,6 +37,7 @@
     "verify": "npm run check:format && npm run lint && npm run typecheck && npm run test && npm run test:integration"
   },
   "dependencies": {
+    "echarts": "6.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "4.4.3"

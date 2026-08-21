@@ -684,3 +684,371 @@ h3 {
     border-right-color: var(--mint);
   }
 }
+
+/* Provide the dedicated display token for large percentage metrics with explicit glyph spacing. */
+:root {
+  --display-number-size: 3.25rem;
+  --display-number-tracking: 0.04em;
+}
+
+/* Keep dense digit shapes such as 48% and 88% visually distinct at display sizes. */
+.display-number {
+  font-size: var(--display-number-size);
+  font-weight: 750;
+  letter-spacing: var(--display-number-tracking);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* Preserve unclipped numerals for 100% at supported widths and zoom levels. */
+@media (min-width: 480px) {
+  .remaining-value .display-number {
+    white-space: nowrap;
+  }
+}
+
+/* Present generic content panels consistently beneath the primary card. */
+.panel {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+}
+
+/* Keep panel notes calm and secondary. */
+.panel-note {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Lay out summary cards in a responsive grid. */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.summary-card {
+  padding: 1rem 1.15rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.45rem;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-card small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+/* Render timeline rows as one readable ordered list. */
+.timeline-list,
+.attention-list,
+.session-list,
+.clause-list,
+.credit-list {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.timeline-list li:last-child {
+  border-bottom: none;
+}
+
+.attention-list > li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.attention-list > li:last-child {
+  border-bottom: none;
+}
+
+.attention-list h3 {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.attention-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attention-list ul li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  justify-content: space-between;
+  color: var(--muted-strong);
+  font-size: 0.92rem;
+  padding: 0.2rem 0;
+}
+
+.session-list li,
+.clause-list li {
+  padding: 0.4rem 0;
+  color: var(--muted-strong);
+}
+
+.credit-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.credit-list li:last-child {
+  border-bottom: none;
+}
+
+.credit-list p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Style the chart/table view toggle as one grouped control. */
+.view-toggle {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.view-toggle button {
+  padding: 0.45rem 1rem;
+  color: var(--muted-strong);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.view-toggle button[aria-pressed='true'] {
+  color: var(--text);
+  background: var(--surface-raised);
+}
+
+/* Keep wide tables scrollable without clipping their region from keyboard users. */
+.table-scroll {
+  max-height: 26rem;
+  margin-top: 1rem;
+  overflow: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table caption {
+  padding: 0.6rem;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-raised);
+  color: var(--muted-strong);
+  font-size: 0.85rem;
+}
+
+/* Render heatmap cells with distinct, color-independent states. */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(1.1rem, 1fr));
+  gap: 3px;
+  margin-top: 1rem;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  min-width: 0.9rem;
+  border-radius: 3px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+}
+
+/* Reported zero uses an outline-only cell so it cannot be confused with missing. */
+.heatmap-cell--zero {
+  background: transparent;
+  border: 1px dashed var(--muted);
+}
+
+/* Positive intensity bands use the progress trail hue with increasing opacity. */
+.heatmap-cell--positive {
+  background: color-mix(in srgb, var(--mint) 55%, transparent);
+  border-color: transparent;
+}
+
+/* Missing dates stay visibly hollow and unlabeled rather than looking like quiet days. */
+.heatmap-cell--missing {
+  opacity: 0.45;
+}
+
+/* Lay out learn cards in a responsive grid. */
+.learn-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+}
+
+.learn-search label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.learn-search input {
+  max-width: 24rem;
+  padding: 0.55rem 0.8rem;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.learn-card {
+  padding: 1rem 1.15rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+}
+
+.learn-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.learn-card p {
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Group preference controls with accessible fieldsets. */
+.preference-fieldset {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+}
+
+.preference-fieldset legend {
+  padding: 0 0.4rem;
+  color: var(--muted-strong);
+  font-size: 0.9rem;
+}
+
+.preference-fieldset label {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-right: 1.25rem;
+}
+
+.preference-toggle {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.preference-toggle input[type='number'] {
+  width: 6rem;
+  padding: 0.4rem 0.6rem;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Present the diagnostics preview as bounded monospace text. */
+.diagnostic-preview {
+  max-height: 22rem;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* Hide visually while keeping text available to assistive technology. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Remove nonessential movement when reduced motion is forced by preference or system. */
+@media (prefers-reduced-motion: reduce) {
+  .motion-system *,
+  .motion-full * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Honor an explicit reduced preference even when the system allows motion. */
+.motion-reduced *,
+.motion-reduced *::before,
+.motion-reduced *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}

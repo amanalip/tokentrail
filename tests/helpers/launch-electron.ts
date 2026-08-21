@@ -19,6 +19,24 @@ const require = createRequire(import.meta.url);
 // Resolve the exact Electron executable installed by the pinned development dependency.
 const electronExecutablePath = require('electron') as string;
 
+// Name the environment variables that would force Electron packaging or development flags and must never
+// leak from a maintainer's shell into a test process, because they change identity and fixture behavior.
+const FORCED_ELECTRON_ENVIRONMENT_KEYS = Object.freeze([
+  'ELECTRON_FORCE_IS_PACKAGED',
+  'ELECTRON_IS_DEV',
+] as const);
+
+// Build one sanitized copy of the parent environment without the forced packaging switches.
+function createSanitizedTestEnvironment(): NodeJS.ProcessEnv {
+  // Copy every parent variable except the reviewed force flags.
+  const environment: NodeJS.ProcessEnv = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (FORCED_ELECTRON_ENVIRONMENT_KEYS.some((forcedKey) => forcedKey === key)) continue;
+    environment[key] = value;
+  }
+  return environment;
+}
+
 /**
  * Launch the built Token Trail application without a development URL so tests exercise the secure custom protocol.
  */
@@ -32,7 +50,7 @@ export async function launchBuiltApplication(
     cwd: repositoryRoot,
     // Activate only the main process's exact unpackaged checked-in fixture hook when requested.
     env: {
-      ...process.env,
+      ...createSanitizedTestEnvironment(),
       ...(fixtureScenario === undefined
         ? {}
         : { TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario }),

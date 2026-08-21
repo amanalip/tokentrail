@@ -9,9 +9,13 @@ import { beforeEach, expect, it, vi } from 'vitest';
 
 // Import runtime validation and the public snapshot type for safe fixtures.
 import {
+  createLoadingOverviewSnapshot,
   overviewSnapshotSchema,
   type OverviewSnapshot,
 } from '../shared/contracts/overview-snapshot';
+
+// Import reviewed preference defaults for bridge stubbing.
+import { createDefaultPreferences, type Preferences } from '../shared/contracts/preferences';
 
 // Import the narrow bridge type so tests cannot add generic IPC behavior.
 import type { TokenTrailBridge } from '../shared/contracts/token-trail-bridge';
@@ -21,8 +25,12 @@ import { App } from './App';
 
 // Construct one complete normalized fixture through the real public boundary schema.
 function createSnapshot(overrides: Partial<OverviewSnapshot> = {}): OverviewSnapshot {
+  // Start from the honest loading factory so new Phase 3 sections always exist with valid defaults.
+  const base = createLoadingOverviewSnapshot('2026-08-14T07:00:00.000Z');
+
   // Parse every test value so fixtures cannot bypass renderer contract invariants.
   return overviewSnapshotSchema.parse({
+    ...base,
     state: 'ready',
     accountKind: 'chatgpt',
     planType: 'plus',
@@ -81,6 +89,11 @@ function installBridge(initialSnapshot: OverviewSnapshot, refreshSnapshot = init
         listener = null;
       };
     }),
+    getPreferences: vi.fn().mockResolvedValue(createDefaultPreferences()),
+    setPreferences: vi.fn(async (preferences: Preferences) => preferences),
+    previewDiagnostics: vi.fn(),
+    exportDiagnostics: vi.fn().mockResolvedValue({ saved: false, errorCategory: null }),
+    clearApplicationData: vi.fn().mockResolvedValue(createDefaultPreferences()),
   });
 
   // Define the same read-only global shape exposed by contextBridge in Electron.

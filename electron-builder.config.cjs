@@ -21,8 +21,14 @@ module.exports = {
   // Skip native rebuilding because Phase 1 has no native runtime dependency.
   npmRebuild: false,
 
-  // Package bundled production output and metadata while excluding dependencies already bundled by Vite.
-  files: ['dist/**/*', 'package.json', 'LICENSE', '!node_modules/**/*'],
+  // Package bundled production output, the runtime window icon, and metadata while excluding dependencies already bundled by Vite.
+  files: [
+    'dist/**/*',
+    'assets/branding/tokentrail-icon-v2-dark.png',
+    'package.json',
+    'LICENSE',
+    '!node_modules/**/*',
+  ],
 
   // Remove execution modes and environment-controlled debug paths that Token Trail does not need.
   electronFuses: {

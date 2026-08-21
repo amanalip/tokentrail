@@ -139,7 +139,16 @@ export async function launchPackagedApplication(): Promise<PackagedApplicationHa
     {
       cwd: path.dirname(packagedExecutablePath),
       // Isolate packaged tests from a real Codex installation and account by searching only the empty test profile.
-      env: { ...process.env, PATH: userDataDirectory, HOME: userDataDirectory },
+      // Forced Electron packaging or development switches from the maintainer's shell must not leak into tests.
+      env: {
+        ...Object.fromEntries(
+          Object.entries(process.env).filter(
+            ([key]) => key !== 'ELECTRON_FORCE_IS_PACKAGED' && key !== 'ELECTRON_IS_DEV',
+          ),
+        ),
+        PATH: userDataDirectory,
+        HOME: userDataDirectory,
+      },
       stdio: ['ignore', 'ignore', 'pipe'],
     },
   );

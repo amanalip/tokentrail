@@ -86,6 +86,13 @@ export async function launchDevelopmentApplication(
   // Keep a bounded tail of development output for startup failures.
   let output = '';
 
+  // Copy the parent environment without forced Electron packaging or development switches.
+  const environment: NodeJS.ProcessEnv = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key === 'ELECTRON_FORCE_IS_PACKAGED' || key === 'ELECTRON_IS_DEV') continue;
+    environment[key] = value;
+  }
+
   // Start the exact checked-in orchestrator used by `npm run dev`; direct Node ownership makes cleanup reliable.
   const developmentProcess = spawn(
     process.execPath,
@@ -94,7 +101,7 @@ export async function launchDevelopmentApplication(
       cwd: repositoryRoot,
       detached: false,
       env: {
-        ...process.env,
+        ...environment,
         TOKENTRAIL_TEST_DEBUG_PORT: String(debuggingPort),
         TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario,
       },

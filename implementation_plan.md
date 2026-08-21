@@ -1,10 +1,10 @@
 # Token Trail Implementation Plan
 
-**Status:** Approved plan; Phases 1 and 2 complete locally
+**Status:** Approved plan; Phases 1 through 3 implementation complete locally, Phase 3 verification evidence partially captured
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 2 complete with `tests/test_reports/0.2.0/test_report.md`; Phase 3 is next
+**Current phase:** Phase 3 implemented with shared domain library, six routes, preferences, diagnostics, and architecture documents; remaining Phase 3 verification items are listed unchecked in section 7.8
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
-**Last updated:** August 14, 2026 at 12:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 21, 2026
 
 This plan turns the approved Electron product specification into an executable six-phase delivery sequence. It tracks how Token Trail moves from an empty application repository to a tested Linux v1.0.0 release. The product specification controls behavior, security, privacy, and acceptance requirements. This plan controls sequencing, evidence, and completion tracking. If the two documents conflict, implementation stops until they are reconciled.
 
@@ -312,72 +312,72 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 
 ### 7.2 Shared domain model
 
-- [ ] Complete account, quota bucket, quota window, usage, credit, reset-credit, coverage, diagnostics, preferences, and provenance contracts.
-- [ ] Implement exact precision-safe arithmetic and formatting.
-- [ ] Implement deterministic primary-window selection and explain the selection.
-- [ ] Implement reset timeline ordering.
-- [ ] Implement quota attention ordering without forecasting or invented severity.
-- [ ] Implement in-memory session baselines, reset transitions, counter decreases, and process-lifetime clearing.
-- [ ] Implement complete-period 7-day and 30-day comparisons with strict date coverage.
-- [ ] Implement calendar heatmap states that distinguish positive, reported zero, and missing dates.
-- [ ] Implement total, daily average, active-day average, median, highest supplied day, and active-day count.
-- [ ] Implement coverage reporting and calculation availability reasons.
-- [ ] Implement reset-credit expiry ordering and the exact seven-day display rule.
-- [ ] Implement combined-capacity clauses without cross-unit arithmetic or a synthetic score.
+- [x] Complete account, quota bucket, quota window, usage, credit, reset-credit, coverage, diagnostics, preferences, and provenance contracts.
+- [x] Implement exact precision-safe arithmetic and formatting.
+- [x] Implement deterministic primary-window selection and explain the selection.
+- [x] Implement reset timeline ordering.
+- [x] Implement quota attention ordering without forecasting or invented severity.
+- [x] Implement in-memory session baselines, reset transitions, counter decreases, and process-lifetime clearing.
+- [x] Implement complete-period 7-day and 30-day comparisons with strict date coverage.
+- [x] Implement calendar heatmap states that distinguish positive, reported zero, and missing dates.
+- [x] Implement total, daily average, active-day average, median, highest supplied day, and active-day count.
+- [x] Implement coverage reporting and calculation availability reasons.
+- [x] Implement reset-credit expiry ordering and the exact seven-day display rule.
+- [x] Implement combined-capacity clauses without cross-unit arithmetic or a synthetic score.
 
 ### 7.3 Product routes
 
-- [ ] Complete Overview with all reported buckets and approved derived summaries.
-- [ ] Build Quota Windows with grouping, sorting, raw-safe detail, provenance, timeline, attention ordering, and session change.
-- [ ] Build Usage with date-range controls, chart, calendar heatmap, accessible table, summaries, statistics, comparisons, and coverage.
-- [ ] Build Credits with balance, unlimited state, spending limits, reached state, reset credits, expiry, and read-only explanations.
-- [ ] Build Learn with quota, token, credit, provenance, privacy, statistics, and completeness explanations.
-- [ ] Build Settings and Diagnostics with themes, refresh choices, redacted preview, export, clear-data confirmation, and support information.
+- [x] Complete Overview with all reported buckets and approved derived summaries.
+- [x] Build Quota Windows with grouping, sorting, raw-safe detail, provenance, timeline, attention ordering, and session change.
+- [x] Build Usage with date-range controls, chart, calendar heatmap, accessible table, summaries, statistics, comparisons, and coverage.
+- [x] Build Credits with balance, unlimited state, spending limits, reached state, reset credits, expiry, and read-only explanations.
+- [x] Build Learn with quota, token, credit, provenance, privacy, statistics, and completeness explanations.
+- [x] Build Settings and Diagnostics with themes, refresh choices, redacted preview, export, clear-data confirmation, and support information.
 - [ ] Add contextual navigation from metrics and errors to the relevant explanation or corrective action.
 
 ### 7.4 Phase 3 identity and metric readability corrections
 
-- [ ] Set the main `BrowserWindow` icon explicitly to a Token Trail icon so development launches do not display Electron's default lightning-bolt icon in the title bar, task switcher, dock, or desktop shell.
-- [ ] Resolve the icon from an application-owned path that works in development, built-content tests, and packaged execution without reading the launch directory.
-- [ ] Keep electron-builder and Linux desktop metadata pointed at the same Token Trail identity while preserving the machine-safe executable name `tokentrail`.
+- [x] Set the main `BrowserWindow` icon explicitly to a Token Trail icon so development launches do not display Electron's default lightning-bolt icon in the title bar, task switcher, dock, or desktop shell.
+- [x] Resolve the icon from an application-owned path that works in development, built-content tests, and packaged execution without reading the launch directory.
+- [x] Keep electron-builder and Linux desktop metadata pointed at the same Token Trail identity while preserving the machine-safe executable name `tokentrail`.
 - [ ] Test the runtime window icon independently from package metadata because a correct installer icon does not prove the live development window uses it.
 - [ ] Capture window-chrome or desktop-shell evidence where the available compositor exposes the icon; record environments where automated capture cannot include native chrome.
-- [ ] Improve large-percentage typography so adjacent digits and the percent sign remain visually distinct, especially for dense shapes such as `48%` and `88%`.
-- [ ] Use explicit numeric typography tokens, tabular numerals where suitable, and reviewed letter spacing rather than relying on the font's default display-size kerning.
+- [x] Improve large-percentage typography so adjacent digits and the percent sign remain visually distinct, especially for dense shapes such as `48%` and `88%`.
+- [x] Use explicit numeric typography tokens, tabular numerals where suitable, and reviewed letter spacing rather than relying on the font's default display-size kerning.
 - [ ] Test representative values `11%`, `47%`, `48%`, `88%`, and `100%` in light and dark themes, at normal scaling and 200 percent zoom, and at the narrowest supported Overview width.
 - [ ] Add visual-regression or screenshot evidence that detects merged, clipped, overlapping, or ambiguous primary metric glyphs.
 
 ### 7.5 State and preference behavior
 
-- [ ] Use TanStack Query only for bounded asynchronous state where it improves freshness and retry clarity.
-- [ ] Keep sensitive or usage-derived values out of persisted preferences.
-- [ ] Validate every preference before storage and after loading.
-- [ ] Quarantine corrupt preference data and explain reset behavior.
-- [ ] Keep session observations only in memory and clear them on exit.
-- [ ] Handle local timezone changes without corrupting source timestamps or comparisons.
+- [x] Use TanStack Query only for bounded asynchronous state where it improves freshness and retry clarity.
+- [x] Keep sensitive or usage-derived values out of persisted preferences.
+- [x] Validate every preference before storage and after loading.
+- [x] Quarantine corrupt preference data and explain reset behavior.
+- [x] Keep session observations only in memory and clear them on exit.
+- [x] Handle local timezone changes without corrupting source timestamps or comparisons.
 
 ### 7.6 Diagnostics
 
-- [ ] Construct diagnostic output from an explicit safe schema.
-- [ ] Provide a complete preview before export.
-- [ ] Exclude email, IDs, paths, prompts, responses, raw protocol data, environment variables, session baselines, and unknown fields.
-- [ ] Seed canaries for every sensitive class and fail tests if any canary appears.
-- [ ] Use a user-selected export destination and safe file-writing behavior.
+- [x] Construct diagnostic output from an explicit safe schema.
+- [x] Provide a complete preview before export.
+- [x] Exclude email, IDs, paths, prompts, responses, raw protocol data, environment variables, session baselines, and unknown fields.
+- [x] Seed canaries for every sensitive class and fail tests if any canary appears.
+- [x] Use a user-selected export destination and safe file-writing behavior.
 - [ ] Record only sanitized local health categories needed for troubleshooting.
 
 ### 7.7 Architecture documentation expansion
 
-- [ ] Maintain `docs/architecture/README.md` as the entry point, current-system map, document ownership table, and recommended reading order.
+- [x] Maintain `docs/architecture/README.md` as the entry point, current-system map, document ownership table, and recommended reading order.
 - [ ] Keep separate detailed documents for the Electron process model, Codex adapter/lifecycle, normalization and data contracts, IPC/preload boundary, renderer state model, development-versus-production runtime, and testing architecture.
-- [ ] Create `docs/architecture/calculations-and-precision.md` with the implemented arithmetic, coverage, date, bigint/decimal, unavailable-state, and formula-test contracts.
-- [ ] Create `docs/architecture/preferences-and-storage.md` with the implemented schema, defaults, migrations, corruption behavior, persistence exclusions, and clear-data ownership.
-- [ ] Create `docs/architecture/diagnostics-and-redaction.md` with the implemented safe schema, canary strategy, preview/export flow, filesystem boundary, and prohibited fields.
-- [ ] Create `docs/architecture/navigation-and-route-composition.md` with the implemented route tree, data dependencies, loading boundaries, focus behavior, and contextual navigation.
-- [ ] Create `docs/architecture/accessibility-architecture.md` with the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts.
+- [x] Create `docs/architecture/calculations-and-precision.md` with the implemented arithmetic, coverage, date, bigint/decimal, unavailable-state, and formula-test contracts.
+- [x] Create `docs/architecture/preferences-and-storage.md` with the implemented schema, defaults, migrations, corruption behavior, persistence exclusions, and clear-data ownership.
+- [x] Create `docs/architecture/diagnostics-and-redaction.md` with the implemented safe schema, canary strategy, preview/export flow, filesystem boundary, and prohibited fields.
+- [x] Create `docs/architecture/navigation-and-route-composition.md` with the implemented route tree, data dependencies, loading boundaries, focus behavior, and contextual navigation.
+- [x] Create `docs/architecture/accessibility-architecture.md` with the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts.
 - [ ] Keep those five documents marked planned or implementation-in-progress until their corresponding Phase 3 systems and tests exist; never present intended behavior as current evidence.
-- [ ] Record packaging/release/update architecture in Phase 5 rather than describing unimplemented release behavior as current behavior.
-- [ ] Give each architecture document status, scope, invariants, failure behavior, security/privacy boundaries, test evidence, known limitations, and links to controlling decisions.
-- [ ] Update architecture documents in the same change as any material boundary or lifecycle modification; stale architecture text is a defect.
+- [x] Record packaging/release/update architecture in Phase 5 rather than describing unimplemented release behavior as current behavior.
+- [x] Give each architecture document status, scope, invariants, failure behavior, security/privacy boundaries, test evidence, known limitations, and links to controlling decisions.
+- [x] Update architecture documents in the same change as any material boundary or lifecycle modification; stale architecture text is a defect.
 - [ ] Include compact diagrams where process ownership, data transformation, event order, or failure recovery would otherwise be difficult to reconstruct.
 - [ ] Run local-link and terminology checks across the architecture set before Phase 3 closes.
 

@@ -64,20 +64,55 @@ export const rateLimitSnapshotInputSchema = z
     planType: metadataStringSchema.nullable(),
     // Preserve only presence of an explicit reached category; raw enum text never reaches the renderer.
     rateLimitReachedType: metadataStringSchema.nullable(),
+    // Phase 3: retain credit and spending-control fields as unknown for availability-aware normalization.
+    credits: z.unknown().optional(),
+    individualLimit: z.unknown().optional(),
+    spendControlReached: z.unknown().optional(),
   })
   .strip();
 
-// Validate the multi-bucket response with a hard bucket count enforced by the generic object-width limit.
+// Validate a quota snapshot container and strip all fields not approved for the Phase 2 slice.
 export const rateLimitsReadResultSchema = z
   .object({
     // Accept null for compatibility with older or partial servers and fixtures.
     rateLimits: rateLimitSnapshotInputSchema.nullable(),
     // Validate each keyed snapshot while stripping unrelated raw fields.
     rateLimitsByLimitId: z.record(metadataStringSchema, rateLimitSnapshotInputSchema).nullable(),
-    // Do not expose reset-credit detail in the Phase 2 Overview slice.
+    // Phase 3: retain reset-credit structure as unknown for availability-aware normalization.
     rateLimitResetCredits: z.unknown().optional(),
     // Accept the older observed fixture spelling only as ignored compatibility input.
     resetCredits: z.unknown().optional(),
+  })
+  .strip();
+
+// Validate one dated aggregate-usage bucket while leaving field semantics to normalization.
+export const usageDailyBucketInputSchema = z
+  .object({
+    // Accept the calendar key and counter as unknown so invalid records are counted, not coerced.
+    date: z.unknown(),
+    tokens: z.unknown(),
+  })
+  .strip();
+
+// Validate the one approved aggregate-usage read before availability-aware normalization.
+export const accountUsageReadResultSchema = z
+  .object({
+    // Preserve reported summary counters as unknown; normalization decides availability per field.
+    summary: z
+      .object({
+        lifetimeTokens: z.unknown().optional(),
+        peakDailyTokens: z.unknown().optional(),
+        currentStreakDays: z.unknown().optional(),
+        longestStreakDays: z.unknown().optional(),
+        longestTurnSeconds: z.unknown().optional(),
+      })
+      .strip()
+      .nullable(),
+    // Bound daily buckets by the generic transport array ceiling before semantic validation runs.
+    dailyBuckets: z
+      .array(usageDailyBucketInputSchema)
+      .max(CODEX_PROTOCOL_LIMITS.maximumArrayItems)
+      .nullable(),
   })
   .strip();
 
@@ -93,3 +128,4 @@ export const rateLimitsUpdatedParamsSchema = z
 export type AccountReadResult = z.infer<typeof accountReadResultSchema>;
 export type RateLimitSnapshotInput = z.infer<typeof rateLimitSnapshotInputSchema>;
 export type RateLimitsReadResult = z.infer<typeof rateLimitsReadResultSchema>;
+export type AccountUsageReadResult = z.infer<typeof accountUsageReadResultSchema>;

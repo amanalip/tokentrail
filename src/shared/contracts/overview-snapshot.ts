@@ -4,28 +4,17 @@ import { z } from 'zod';
 // Import the closed renderer-safe error categories instead of permitting caller-authored error messages.
 import { APPLICATION_ERROR_CATEGORIES } from './application-error';
 
-// Enumerate the only provenance labels the Overview may present to a user.
-export const METRIC_PROVENANCE = Object.freeze([
-  'codex-reported',
-  'locally-observed',
-  'calculated',
-  'unavailable',
-] as const);
+// Import shared metric primitives from their own module so contract modules stay acyclic.
+import { numericMetricSchema } from './metric';
 
-// Describe one finite numeric value together with its stable provenance and availability explanation.
-export const numericMetricSchema = z
-  .object({
-    // Preserve a valid value or an explicit absence without inventing zero.
-    value: z.number().finite().nullable(),
-    // Keep provenance inside the domain object rather than attaching it only in the visual layer.
-    provenance: z.enum(METRIC_PROVENANCE),
-    // Use a bounded local explanation key so raw protocol or error text cannot cross IPC.
-    explanation: z.string().min(1).max(96),
-  })
-  .strict();
+// Import the Phase 3 usage, credits, and session-observation sections carried beside quota data.
+import { usageSectionSchema, createUnavailableUsageSection } from './usage-data';
+import { creditsSectionSchema, createUnavailableCreditsSection } from './credits-data';
+import { createEmptySessionObservation, sessionObservationSchema } from './session-observation';
 
-// Derive the immutable presentation type directly from its runtime validator.
-export type NumericMetric = Readonly<z.infer<typeof numericMetricSchema>>;
+// Re-export the metric primitives under their historical import path for existing privileged callers.
+export { METRIC_PROVENANCE, numericMetricSchema } from './metric';
+export type { NumericMetric } from './metric';
 
 // Describe one validated quota window without passing the raw app-server object to the renderer.
 export const quotaWindowSchema = z
@@ -89,6 +78,12 @@ export const overviewSnapshotSchema = z
     planType: z.string().min(1).max(64).nullable(),
     // Bound the number of quota buckets accepted by the renderer.
     quotas: z.array(quotaBucketSchema).max(64),
+    // Carry the normalized aggregate-usage section with its own availability state.
+    usage: usageSectionSchema,
+    // Carry the normalized credits section with its own availability state.
+    credits: creditsSectionSchema,
+    // Attach the in-memory current-session observation derived by the privileged controller.
+    sessionObservation: sessionObservationSchema,
     // Record the last successful read separately so a failed refresh cannot make old data look new.
     lastSuccessfulRefreshAt: z.string().datetime({ offset: true }).nullable(),
     // Record the latest local attempt for diagnostics and immediate feedback.
@@ -109,6 +104,9 @@ export function createLoadingOverviewSnapshot(attemptedAt: string | null): Overv
     accountKind: null,
     planType: null,
     quotas: [],
+    usage: createUnavailableUsageSection(),
+    credits: createUnavailableCreditsSection(),
+    sessionObservation: createEmptySessionObservation(),
     lastSuccessfulRefreshAt: null,
     refreshAttemptedAt: attemptedAt,
     errorCategory: null,

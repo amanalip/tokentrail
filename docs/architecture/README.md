@@ -1,7 +1,7 @@
 # Token Trail Architecture Guide
 
-**Status:** Phase 2 implemented-system index; later documents scheduled by phase
-**Last updated:** August 14, 2026 at 12:08 PM EDT
+**Status:** Phase 3 implemented-system index; later documents scheduled by phase
+**Last updated:** August 21, 2026
 
 This directory explains how Token Trail works as a complete system. The product specification defines required behavior, the implementation plan defines delivery order, and these documents explain the implemented technical boundaries and why they exist.
 
@@ -19,7 +19,8 @@ This directory explains how Token Trail works as a complete system. The product 
 10. [Renderer state model](renderer-state-model.md) — Overview states, refresh behavior, provenance, and presentation rules.
 11. [Runtime modes and CSP](runtime-modes-and-csp.md) — development, built-content, and packaged differences.
 12. [Testing architecture](testing-architecture.md) — which test layer proves each boundary.
-13. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
+13. Phase 3 system documents: [calculations and precision](calculations-and-precision.md), [preferences and storage](preferences-and-storage.md), [diagnostics and redaction](diagnostics-and-redaction.md), [navigation and route composition](navigation-and-route-composition.md), and [accessibility architecture](accessibility-architecture.md).
+14. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
 
 ## Document ownership and status
 
@@ -37,6 +38,11 @@ This directory explains how Token Trail works as a complete system. The product 
 | `renderer-state-model.md` | Overview UI states | State, provenance, refresh, or presentation change |
 | `runtime-modes-and-csp.md` | Development, built, packaged modes | Vite, CSP, protocol, packaging, or harness change |
 | `testing-architecture.md` | Phase 2 evidence layers | Test command, fixture, environment, or gate change |
+| `calculations-and-precision.md` | Phase 3 calculation and ordering library | Formula, precision, ordering, or availability-rule change |
+| `preferences-and-storage.md` | Phase 3 preferences schema and store | Schema field, migration, storage path, or write-path change |
+| `diagnostics-and-redaction.md` | Phase 3 diagnostics document and export | Schema field, preview/export flow, or canary change |
+| `navigation-and-route-composition.md` | Phase 3 route tree and data composition | Route, navigation rule, or contextual-link change |
+| `accessibility-architecture.md` | Implemented semantic/keyboard/chart contracts | Semantic, focus, announcement, chart-alternative, or motion change |
 | `data-flow.md` | Trust-boundary diagram | Data source, destination, or persistence change |
 | `data-inventory.md` | Approved data classes | Any new field or storage path |
 | `threat-model.md` | Threats and controls | New capability or trust boundary |
@@ -45,19 +51,13 @@ This directory explains how Token Trail works as a complete system. The product 
 
 ## Current system boundary
 
-Phase 2 implements a local, read-only Overview. Electron main owns the Codex child process and all raw protocol input. Preload exposes three purpose-specific methods. The renderer receives normalized in-memory snapshots and cannot access Node, Electron, raw IPC, the filesystem, environment variables, or arbitrary Codex methods.
+Phase 3 implements the complete v1 route set over the Phase 2 boundary. Electron main owns the Codex child process and all raw protocol input, performs the three approved reads plus the sparse-update notification, and derives in-memory session deltas. Preload exposes seven purpose-specific methods (three Overview, two preferences, two diagnostics). The renderer receives normalized in-memory snapshots and cannot access Node, Electron, raw IPC, the filesystem, environment variables, or arbitrary Codex methods.
 
-Token Trail currently persists no account, quota, or usage snapshot. It performs no telemetry and no application-initiated update request. Aggregate usage and the remaining product routes begin in Phase 3. Packaging formats and GitHub release automation remain Phase 5.
+Token Trail persists only the validated preferences document. Usage snapshots, session deltas, and diagnostics content stay in memory; diagnostics export writes only a user-previewed document through a native save dialog. There is no telemetry and no application-initiated update request. Packaging formats and GitHub release automation remain Phase 5.
 
 ## Planned documents by implementation phase
 
-The following documents are created alongside their implementations, not speculatively presented as current architecture:
-
-- `calculations-and-precision.md`;
-- `preferences-and-storage.md`;
-- `diagnostics-and-redaction.md`;
-- `navigation-and-route-composition.md`;
-- `accessibility-architecture.md`.
+The five Phase 3 documents listed above are now implemented-system records maintained alongside their code.
 
 Phase 4 creates the following from implemented product-quality behavior and test evidence:
 

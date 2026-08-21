@@ -25,6 +25,13 @@ function createSuccessfulResponses(): Readonly<Record<string, unknown>> {
       },
       rateLimitsByLimitId: null,
     },
+    'account/usage/read': {
+      summary: { lifetimeTokens: '4201400', currentStreakDays: 8 },
+      dailyBuckets: [
+        { date: '2026-08-12', tokens: '91210' },
+        { date: '2026-08-13', tokens: '124500' },
+      ],
+    },
   };
 }
 
@@ -131,5 +138,123 @@ describe('OverviewController', () => {
     nowMilliseconds += 1;
     await expect(controller.refresh()).resolves.toMatchObject({ state: 'ready' });
     expect(factoryCalls).toBe(4);
+  });
+
+  // Require the approved aggregate-usage read to populate the usage section beside quota data.
+  it('normalizes the aggregate-usage read into the usage section', async () => {
+    const client = createFakeClient();
+    const originalRequest = client.request.getMockImplementation();
+    client.request.mockImplementation(async (method, params) => {
+      if (method === 'account/usage/read') {
+        return {
+          summary: { lifetimeTokens: '4203910', currentStreakDays: 8 },
+          dailyBuckets: [
+            { date: '2026-08-12', tokens: '91210' },
+            { date: '2026-08-13', tokens: '124500' },
+          ],
+        };
+      }
+      return originalRequest!(method, params);
+    });
+    const controller = new OverviewController({ createClient: () => client });
+
+    const snapshot = await controller.refresh();
+    expect(snapshot.usage.state).toBe('ready');
+    expect(snapshot.usage.summary.lifetimeTokens).toBe('4203910');
+    expect(snapshot.usage.days.map((day) => day.tokens)).toEqual(['91210', '124500']);
+    expect(snapshot.usage.coverage.missingDates).toEqual([]);
+  });
+
+  // Require a failed usage read to keep valid quota data visible instead of erasing the snapshot.
+  it('keeps quota data when only the aggregate-usage read fails', async () => {
+    const client = createFakeClient();
+    const originalRequest = client.request.getMockImplementation();
+    client.request.mockImplementation(async (method, params) => {
+      if (method === 'account/usage/read') {
+        throw new CodexProcessError('request-timeout');
+      }
+      return originalRequest!(method, params);
+    });
+    const controller = new OverviewController({ createClient: () => client });
+
+    const snapshot = await controller.refresh();
+    expect(snapshot.state).toBe('partial');
+    expect(snapshot.quotas).toHaveLength(1);
+    expect(snapshot.quotas[0]?.windows[0]?.usedPercent.value).toBe(37);
+    expect(snapshot.usage.state).toBe('unavailable');
+  });
+
+  // Require in-memory session deltas to appear from the second valid snapshot onward.
+  it('derives session deltas against the first valid process baseline', async () => {
+    let usedPercent = 28;
+    let lifetimeTokens = '4201400';
+    const client = createFakeClient();
+    const originalRequest = client.request.getMockImplementation();
+    client.request.mockImplementation(async (method, params) => {
+      if (method === 'account/rateLimits/read') {
+        const base = (await originalRequest!(method, params)) as {
+          rateLimits: { primary: { usedPercent: number } };
+        };
+        return {
+          ...base,
+          rateLimits: { ...base.rateLimits, primary: { ...base.rateLimits.primary, usedPercent } },
+        };
+      }
+      if (method === 'account/usage/read') {
+        return { summary: { lifetimeTokens }, dailyBuckets: null };
+      }
+      return originalRequest!(method, params);
+    });
+    const controller = new OverviewController({ createClient: () => client });
+
+    // The first valid snapshot establishes the baseline and reports no deltas.
+    const firstSnapshot = await controller.refresh();
+    expect(firstSnapshot.sessionObservation.validSnapshotCount).toBe(1);
+    expect(firstSnapshot.sessionObservation.quotaDeltas).toEqual([]);
+
+    // The second valid snapshot produces exact percentage-point and counter deltas.
+    usedPercent = 32;
+    lifetimeTokens = '4203910';
+    const secondSnapshot = await controller.refresh();
+    expect(secondSnapshot.sessionObservation.validSnapshotCount).toBe(2);
+    expect(secondSnapshot.sessionObservation.quotaDeltas[0]).toMatchObject({
+      bucketId: 'codex',
+      baselinePercent: 28,
+      currentPercent: 32,
+      changePercentagePoints: '4',
+    });
+    expect(secondSnapshot.sessionObservation.counterDeltas[0]).toMatchObject({
+      counterId: 'lifetime',
+      increaseTokens: '2510',
+      sourceValueChanged: false,
+    });
+  });
+
+  // Require a reset transition to suppress cross-reset percentage deltas.
+  it('reports reset transitions without displaying misleading negative usage', async () => {
+    let resetsAt = 1_800_000_000;
+    const client = createFakeClient();
+    const originalRequest = client.request.getMockImplementation();
+    client.request.mockImplementation(async (method, params) => {
+      if (method === 'account/rateLimits/read') {
+        const base = (await originalRequest!(method, params)) as {
+          rateLimits: { primary: { resetsAt: number } };
+        };
+        return {
+          ...base,
+          rateLimits: { ...base.rateLimits, primary: { ...base.rateLimits.primary, resetsAt } },
+        };
+      }
+      return originalRequest!(method, params);
+    });
+    const controller = new OverviewController({ createClient: () => client });
+
+    await controller.refresh();
+
+    // Advance the reset timestamp and drop the percentage to simulate a completed reset.
+    resetsAt = 1_800_600_000;
+    const afterReset = await controller.refresh();
+    expect(afterReset.sessionObservation.resetTransitions).toHaveLength(1);
+    expect(afterReset.sessionObservation.quotaDeltas).toHaveLength(0);
   });
 });

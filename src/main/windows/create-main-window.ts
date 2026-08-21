@@ -13,6 +13,16 @@ import { WINDOW_SECURITY_PREFERENCES } from '../security/window-security-prefere
 // Resolve the preload output beside the main output according to the reviewed build layout.
 const preloadPath = path.resolve(__dirname, '..', 'preload', 'index.cjs');
 
+// Resolve the application-owned window icon from the packaged assets, never from the launch directory.
+const windowIconPath = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'assets',
+  'branding',
+  'tokentrail-icon-v2-dark.png',
+);
+
 /**
  * Create Token Trail's one main window with an explicit least-privilege preference set. The caller supplies a
  * validated loopback development URL or `null`; packaged content remains the default and production path.
@@ -28,6 +38,8 @@ export function createMainWindow(developmentUrl: string | null): BrowserWindow {
     backgroundColor: '#10131a',
     title: 'Token Trail',
     autoHideMenuBar: true,
+    // Supply the Token Trail identity explicitly so no desktop shell shows Electron's default icon.
+    icon: windowIconPath,
     webPreferences: {
       ...WINDOW_SECURITY_PREFERENCES,
       preload: preloadPath,

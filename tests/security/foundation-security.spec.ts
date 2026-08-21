@@ -32,12 +32,21 @@ test('keeps privileged globals out of the renderer', async () => {
       };
     });
 
-    // Confirm no privileged global exists and the reviewed bridge contains only named Overview capabilities.
+    // Confirm no privileged global exists and the reviewed bridge contains only named reviewed capabilities.
     expect(capabilityState).toEqual({
       requireType: 'undefined',
       processType: 'undefined',
       ipcRendererType: 'undefined',
-      bridgeKeys: ['getOverviewSnapshot', 'refreshOverview', 'onOverviewChanged'],
+      bridgeKeys: [
+        'getOverviewSnapshot',
+        'refreshOverview',
+        'onOverviewChanged',
+        'getPreferences',
+        'setPreferences',
+        'previewDiagnostics',
+        'exportDiagnostics',
+        'clearApplicationData',
+      ],
       bridgeFrozen: true,
     });
   } finally {

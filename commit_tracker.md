@@ -93,67 +93,80 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 14, 2026 after commit `92619a4`
-**Last updated:** August 14, 2026 at 11:44:25 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `bfdbcc7`
+**Last updated:** August 21, 2026 at 8:53:36 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+The previously pending documentation entry was finalized as commit `bfdbcc7` (Document timezone-aware test evidence and changelog policy).
 
 ### Intent
 
-Make precise, human-readable, timezone-aware times mandatory in every versioned test report, correct the honest limitations in the existing historical reports, and define how the changelog differs from detailed engineering records.
+Implement the Phase 3 complete v1 product: the shared domain and calculation library, all six product routes over the proven Phase 2 boundary, validated preferences with safe persistence, redacted diagnostics with preview-before-export, runtime window identity, large-number typography, and the five scheduled Phase 3 architecture documents.
 
 ### Important changes
 
-- Added Git-verifiable evidence-finalization timestamps to the 0.1.0 and 0.2.0 reports.
-- Explicitly labeled the unavailable historical per-command start and finish times instead of inventing precision.
-- Required every future local, CI, and manual execution to record human-readable 12-hour start and finish times, timezone abbreviation, numeric UTC offset, and IANA timezone.
-- Defined a root, user-facing changelog sourced from verified changes and reconciled with the test report, while keeping detailed lessons and implementation history in the commit tracker.
-- Defined version-specific GitHub Release notes as an operational extension of the matching changelog entry.
+- Added shared domain contracts for usage (exact decimal-string counters), credits/reset credits, session observations, preferences, diagnostics, and a standalone metric module that removes contract-layer import cycles.
+- Added the dependency-free calculation library: strict calendar-date parsing/arithmetic, exact bigint formatting, statistics, complete-period comparisons, heatmap classification, coverage accounting, reset-timeline ordering, quota attention ordering, primary-window selection, reset-credit expiry classification, combined-capacity clause selection, and in-memory session-delta derivation with reset-transition rebasing.
+- Extended the protocol layer with the approved `account/usage/read` schema plus availability-aware usage and credits normalization; invalid records are counted in coverage and never silently participate.
+- Extended `OverviewController` to perform the aggregate-usage read without erasing quota data on its failure, to derive session deltas against an in-memory process baseline, and to rebase baselines across reset transitions.
+- Built the six-route renderer shell (Overview, Quota Windows, Usage, Credits, Learn, Settings & Diagnostics) with hash-based navigation, one shared snapshot subscription, render-safe clock hook, ECharts SVG chart with accessible table alternative, calendar heatmap distinguishing zero/positive/missing, statistics/comparisons/coverage panels, expiry-grouped credit list, searchable local Learn content, theme/motion/time-format preferences, and a two-step clear-data confirmation.
+- Added the privileged preference store (atomic writes, restrictive permissions, quarantine-on-corruption), the closed diagnostics document schema with allowlist-built preview and user-selected export, and four new purpose-specific IPC handlers behind sender validation.
+- Set the runtime `BrowserWindow` icon explicitly from an application-owned packaged path and added display-number typography tokens with tabular numerals and explicit letter spacing.
+- Created the five Phase 3 architecture documents (calculations-and-precision, preferences-and-storage, diagnostics-and-redaction, navigation-and-route-composition, accessibility-architecture) and updated the index plus stale IPC/renderer-state documents.
+- Fixed a test-environment defect where `ELECTRON_FORCE_IS_PACKAGED` leaked from maintainer shells into Electron test processes, silently bypassing fixture scenarios and pointing built-app tests at a real Codex account; launch helpers now strip forced packaging switches.
 
 ### Decisions and assumptions
 
-- The timestamp of the commit that finalized an evidence record is not represented as the execution time of every test inside it.
-- Missing historical timing is written as `not captured`; filesystem modification times and memory are not acceptable substitutes.
-- `CHANGELOG.md` describes verified user impact. `commit_tracker.md` retains engineering rationale and learning. Versioned test reports retain detailed evidence.
-- Published changelog history follows immutable releases; shipped corrections receive a new patch version.
+- Aggregate counters cross IPC as canonical decimal strings and are calculated as `bigint`; only chart geometry converts to numbers, clamped at the safe-integer maximum while text stays exact.
+- TanStack Query remains unused: the Phase 2 controller already provides bounded asynchronous state, so adding it would grow dependencies without improving freshness or retry clarity.
+- The seven-day expiry notice, attention order, and capacity clauses are interface rules computed from reported values; no forecast, score, or cross-unit arithmetic exists.
+- Session deltas exist only in main-process memory, clear at exit, and are never persisted, logged, or exported.
+- Clear-data removes exactly the preference document and any quarantined sibling after explicit renderer-side confirmation.
+- The package version stays 0.2.0 until the versioned 0.3.0 evidence record exists.
 
 ### Verification
 
-- Git author timestamps for commits `75bb8f5` and `f8d1b9b` were read directly in ISO 8601 form.
-- Documentation consistency, Markdown targets, and whitespace are checked.
-- Application tests are not rerun because executable behavior is unchanged.
+- `npm run verify` passes: formatting, lint, strict type checks across five projects, 165 unit/component tests, and 13 real-process integration tests.
+- Playwright suites pass: 10 end-to-end (fixture-backed), 3 security (including the extended eight-method bridge-surface enumeration), 2 accessibility, 2 development-mode, 1 packaged, 1 performance.
+- New coverage includes calendar/bignum/statistics/comparison/ordering/expiry/clause/delta unit tests, usage and credits normalization tests, controller usage-read and baseline tests, preference-store corruption/atomicity/clear tests, diagnostics canary scans, and renderer route tests for navigation, usage honesty, credits capping copy, settings persistence, preview-before-export, and clear-data confirmation.
+- Documentation local links were checked during writing; a full repository-wide link sweep before phase close remains open.
 
 ### Fact-check report
 
-- Git records Phase 1 commit `75bb8f5` at August 14, 2026 at 2:29:26 AM EDT and Phase 2 commit `f8d1b9b` at August 14, 2026 at 11:08:04 AM EDT.
-- These values establish when the corresponding evidence records entered their milestone commits; they do not prove individual command start or finish times.
-- The former reports contained a calendar date but no exact per-execution timestamps.
+- All listed suites were executed locally on August 21, 2026 and passed; counts above come from the run output.
+- The environment defect was reproduced empirically: with `ELECTRON_FORCE_IS_PACKAGED=true` present, `app.isPackaged` returned true inside launched processes, the fixture branch never activated, and built-app tests displayed live account data; HEAD (before this work) failed identically, confirming the defect pre-existed this change.
+- No real account values are stored in the repository; fixtures remain synthetic.
 
 ### Sanity-check report
 
-- The new rule is precise across daylight-saving changes because it requires both offset and IANA timezone.
-- Historical reports disclose their limitation without falsifying evidence.
-- Changelog, release notes, tracker, and test reports have distinct audiences and do not duplicate all content.
-- No application capability, privacy boundary, publication state, or release recommendation changes.
+- No write, prompt, task, repository, filesystem, credential, telemetry, update, or release capability was added; the Codex allowlist is unchanged.
+- Raw protocol data stops in main; the renderer receives only schema-validated normalized DTOs, now including usage, credits, and session sections with their own availability states.
+- Missing data never becomes zero: heatmap cells, comparisons, statistics, and deltas preserve explicit unavailability.
+- The bridge grew from three to eight reviewed methods and the security surface test was updated to enumerate them exactly; frozen-object and sender-validation guarantees are unchanged.
+- Phase 3 is not declared closed: remaining §7.8 verification items stay visibly unchecked.
 
 ### User lessons
 
-- A proper displayed test time uses a readable 12-hour clock and includes the date, timezone abbreviation, UTC offset, and named timezone; a calendar date alone is incomplete.
-- The changelog is concise product history, whereas the commit tracker and reports preserve deeper reasoning and proof.
+- A shell environment variable can silently redirect desktop-app tests from fixtures to a real account; test harnesses must sanitize inherited environments.
+- Exact arithmetic needs one representation decision made early: decimal strings at the boundary, bigint in calculations, floats only for drawn geometry.
 
 ### Agent lessons
 
-- Start timing capture before running the first test, not while writing the report afterward.
-- Never use a later commit time as a substitute for an earlier test execution time; label each timestamp by what it actually measures.
-- Build changelog prose from verified user impact, not from raw commit messages or planned features.
+- React compiler lint rules reject impure clock reads during render; sample time in effects through a bounded-interval hook instead.
+- Contract modules that re-export shared primitives must import them from a leaf module to avoid initialization cycles.
+- A queue-based store must not call its own queued save from inside a queued operation; inline the write to avoid deadlock.
+- When a security enumeration test fails on new bridge keys, extending the reviewed list is the intended flow — but each added method needs sender validation, schema boundaries, and documentation in the same change.
 
 ### Risks or limitations
 
-- Phase 1 and Phase 2 exact per-command execution times remain unavailable because they were not captured contemporaneously.
-- Timestamp compliance needs automation or a report checklist in later implementation so it is not dependent on memory.
+- Remaining Phase 3 verification: full section 21.2 fixture catalog, keyboard-visible route sweep, runtime window-icon evidence, typography visual matrix (`11%`, `47%`, `48%`, `88%`, `100%`), repository-wide link check, and the versioned 0.3.0 test report.
+- Diagnostics connection section does not yet carry the observed CLI version string; sanitized health categories beyond last-refresh remain Phase 4 work.
+- Route changes do not yet move focus programmatically; landmark navigation currently covers keyboard users.
+- ECharts raises the renderer bundle above 500 kB minified; code-splitting and budget enforcement belong to Phase 4 performance work.
 
 ### Follow-up
 
-Use timestamped command capture from the beginning of Phase 3 and verify the active report before marking its phase gate complete.
+Complete the remaining §7.8 verification items and produce `tests/test_reports/0.3.0/test_report.md` before marking the Phase 3 gate complete; do not publish a release.
 
 ---
 

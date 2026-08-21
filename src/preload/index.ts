@@ -7,13 +7,15 @@ import {
   type TokenTrailBridge,
 } from '../shared/contracts/token-trail-bridge';
 
-// Import the public runtime validator so malformed IPC cannot reach renderer state.
+// Import the public runtime validators so malformed IPC cannot reach renderer state.
 import {
   overviewSnapshotSchema,
   type OverviewSnapshot,
 } from '../shared/contracts/overview-snapshot';
+import { preferencesSchema, type Preferences } from '../shared/contracts/preferences';
+import { diagnosticsDocumentSchema } from '../shared/contracts/diagnostics';
 
-// Expose exactly the three purpose-specific Overview capabilities reviewed for Phase 2.
+// Expose exactly the reviewed purpose-specific capabilities across the isolation boundary.
 const tokenTrailBridge: TokenTrailBridge = Object.freeze({
   // Read the current safe snapshot through one fixed internal channel.
   getOverviewSnapshot: async () =>
@@ -45,6 +47,34 @@ const tokenTrailBridge: TokenTrailBridge = Object.freeze({
       ipcRenderer.removeListener(TOKEN_TRAIL_IPC_CHANNELS.overviewChanged, wrappedListener);
     };
   },
+
+  // Read the persisted validated preferences through one fixed internal channel.
+  getPreferences: async () =>
+    preferencesSchema.parse(await ipcRenderer.invoke(TOKEN_TRAIL_IPC_CHANNELS.getPreferences)),
+
+  // Send a complete replacement document and return the stored validated result.
+  setPreferences: async (preferences: Preferences) =>
+    preferencesSchema.parse(
+      await ipcRenderer.invoke(TOKEN_TRAIL_IPC_CHANNELS.setPreferences, preferences),
+    ),
+
+  // Build and return the redacted diagnostics preview for display before any save.
+  previewDiagnostics: async () =>
+    diagnosticsDocumentSchema.parse(
+      await ipcRenderer.invoke(TOKEN_TRAIL_IPC_CHANNELS.previewDiagnostics),
+    ),
+
+  // Offer a native save dialog and write the previewed document; never returns a filesystem path.
+  exportDiagnostics: async () =>
+    ipcRenderer.invoke(TOKEN_TRAIL_IPC_CHANNELS.exportDiagnostics) as ReturnType<
+      TokenTrailBridge['exportDiagnostics']
+    >,
+
+  // Delete only Token Trail-owned preference files and adopt the returned reviewed defaults.
+  clearApplicationData: async () =>
+    preferencesSchema.parse(
+      await ipcRenderer.invoke(TOKEN_TRAIL_IPC_CHANNELS.clearApplicationData),
+    ),
 });
 
 // Publish one frozen, named application API into the isolated renderer world.

@@ -1,11 +1,17 @@
 // Import the renderer-safe normalized shapes and boundary validator.
 import {
   overviewSnapshotSchema,
-  type NumericMetric,
   type OverviewSnapshot,
   type QuotaBucket,
   type QuotaWindow,
 } from '../../shared/contracts/overview-snapshot';
+
+// Import the Phase 3 usage and credits sections attached beside quota data.
+import type { CreditsSection } from '../../shared/contracts/credits-data';
+import type { UsageSection } from '../../shared/contracts/usage-data';
+import { createUnavailableCreditsSection } from '../../shared/contracts/credits-data';
+import { createUnavailableUsageSection } from '../../shared/contracts/usage-data';
+import { createEmptySessionObservation } from '../../shared/contracts/session-observation';
 
 // Import only the already validated privileged protocol input types.
 import type {
@@ -22,19 +28,19 @@ export interface NormalizedOverviewData {
   readonly planType: string | null;
   // Carry bounded normalized quota buckets and never their raw protocol counterparts.
   readonly quotas: readonly QuotaBucket[];
+  // Carry the normalized aggregate-usage section with its own availability state.
+  readonly usage: UsageSection;
+  // Carry the normalized credits section with its own availability state.
+  readonly credits: CreditsSection;
   // Record whether supported input was incomplete or contained invalid fields.
   readonly isPartial: boolean;
 }
 
-// Construct one immutable numeric metric through a small reviewed helper.
-function metric(
-  value: number | null,
-  provenance: NumericMetric['provenance'],
-  explanation: string,
-): NumericMetric {
-  // Freeze each metric so privileged state cannot be mutated after validation.
-  return Object.freeze({ value, provenance, explanation });
-}
+// Import the shared metric factory so every boundary freezes values identically.
+import { createNumericMetric } from '../../shared/contracts/metric';
+
+// Construct one immutable numeric metric through the shared reviewed helper.
+const metric = createNumericMetric;
 
 // Return a trimmed non-empty string or a local safe fallback without performing markup interpretation.
 function safeLabel(value: string | null, fallback: string): string {
@@ -210,6 +216,8 @@ export function normalizeOverviewData(
     accountKind,
     planType,
     quotas: Object.freeze(normalizedBuckets.map(({ bucket }) => bucket)),
+    usage: createUnavailableUsageSection(),
+    credits: createUnavailableCreditsSection(),
     isPartial: sourceSnapshots.length > 64 || normalizedBuckets.some(({ isPartial }) => isPartial),
   });
 }
@@ -223,9 +231,11 @@ export function createSuccessfulOverviewSnapshot(
   const state: OverviewSnapshot['state'] =
     normalized.accountKind === null
       ? 'signed-out'
-      : normalized.quotas.length === 0
+      : normalized.quotas.length === 0 && normalized.usage.state === 'unavailable'
         ? 'unavailable'
-        : normalized.isPartial
+        : normalized.isPartial ||
+            normalized.usage.state === 'partial' ||
+            normalized.credits.state === 'partial'
           ? 'partial'
           : 'ready';
 
@@ -235,6 +245,9 @@ export function createSuccessfulOverviewSnapshot(
     accountKind: normalized.accountKind,
     planType: normalized.planType,
     quotas: normalized.quotas,
+    usage: normalized.usage,
+    credits: normalized.credits,
+    sessionObservation: createEmptySessionObservation(),
     lastSuccessfulRefreshAt: observedAt,
     refreshAttemptedAt: observedAt,
     errorCategory: null,

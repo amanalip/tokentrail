@@ -23,12 +23,21 @@ import {
   normalizeOverviewData,
 } from '../codex/normalize-overview';
 
-// Import runtime schemas for the two approved Phase 2 reads and sparse update notification.
+// Import Phase 3 usage and credits normalization for the approved aggregate-usage read.
+import { normalizeCreditsData, normalizeUsageData } from '../codex/normalize-usage';
+
+// Import runtime schemas for the approved reads and sparse update notification.
 import {
   accountReadResultSchema,
+  accountUsageReadResultSchema,
   rateLimitsReadResultSchema,
   rateLimitsUpdatedParamsSchema,
 } from '../codex/protocol-schemas';
+import type { AccountUsageReadResult } from '../codex/protocol-schemas';
+
+// Import session-observation derivation so in-memory deltas are computed once, in shared code.
+import { deriveSessionDeltas } from '../../shared/domain/session-deltas';
+import type { SessionObservation } from '../../shared/contracts/session-observation';
 
 // Describe a constructor seam used by deterministic fixture tests without widening production methods.
 // Describe only the client capabilities the controller owns, allowing deterministic in-memory lifecycle tests.
@@ -75,6 +84,12 @@ export class OverviewController {
 
   // Retain the exact active process client for reads and shutdown.
   #client: OverviewProcessClient | null = null;
+
+  // Retain the in-memory first valid snapshot of this process as the session-delta baseline.
+  #sessionBaseline: OverviewSnapshot | null = null;
+
+  // Count valid snapshots observed since process open without persisting any snapshot body.
+  #validSnapshotCount = 0;
 
   // Retain one in-flight refresh so simultaneous UI calls share the same operation.
   #inFlightRefresh: Promise<OverviewSnapshot> | null = null;
@@ -211,15 +226,44 @@ export class OverviewController {
       // Validate and strip the raw response before normalization.
       const rateLimitsResult = rateLimitsReadResultSchema.parse(rateLimitsResultUnknown);
 
+      // Request the approved aggregate-usage read; a failure here must not erase quota data.
+      let usageResult: AccountUsageReadResult | null = null;
+      let usageReadFailed = false;
+      try {
+        const usageResultUnknown = await client.request('account/usage/read', undefined);
+        usageResult = accountUsageReadResultSchema.parse(usageResultUnknown);
+      } catch {
+        // Keep the usage section explicitly unavailable while retaining valid quota data.
+        usageResult = null;
+        usageReadFailed = true;
+      }
+
       // Convert validated protocol input into the renderer-safe domain at one boundary.
+      const nowDate = this.#now();
+      const normalizedBase = normalizeOverviewData(accountResult, rateLimitsResult);
+      const { usage } = normalizeUsageData(usageResult);
+      const credits = normalizeCreditsData(rateLimitsResult, Math.floor(nowDate.getTime() / 1_000));
       const successfulSnapshot = createSuccessfulOverviewSnapshot(
-        normalizeOverviewData(accountResult, rateLimitsResult),
-        this.#now().toISOString(),
+        { ...normalizedBase, usage, credits },
+        nowDate.toISOString(),
       );
 
+      // A failed endpoint marks the whole snapshot partial without erasing successful sections.
+      const snapshotWithEndpointState =
+        usageReadFailed && successfulSnapshot.state === 'ready'
+          ? overviewSnapshotSchema.parse({ ...successfulSnapshot, state: 'partial' })
+          : successfulSnapshot;
+
+      // Derive in-memory session deltas against the process baseline before publishing.
+      const observation = this.#buildSessionObservation(snapshotWithEndpointState);
+      const snapshotWithObservation = overviewSnapshotSchema.parse({
+        ...snapshotWithEndpointState,
+        sessionObservation: observation,
+      });
+
       // Store, broadcast, and return the successful normalized snapshot.
-      this.#recordSuccess(successfulSnapshot);
-      return successfulSnapshot;
+      this.#recordSuccess(snapshotWithObservation);
+      return snapshotWithObservation;
     } catch (error) {
       // Convert Zod, process, timeout, and other internal failures into a closed safe category.
       const category = this.#categorizeError(error);
@@ -304,6 +348,59 @@ export class OverviewController {
     this.#consecutiveFailures = 0;
     this.#nextRestartAtMilliseconds = 0;
     this.#setSnapshot(snapshot);
+  }
+
+  // Derive the in-memory session observation and advance baselines for this process lifetime only.
+  #buildSessionObservation(current: OverviewSnapshot): SessionObservation {
+    // Establish the baseline at the first valid snapshot without persisting anything.
+    if (this.#sessionBaseline === null) {
+      this.#sessionBaseline = current;
+      this.#validSnapshotCount = 1;
+      return {
+        startedAtIso: current.lastSuccessfulRefreshAt,
+        validSnapshotCount: this.#validSnapshotCount,
+        quotaDeltas: [],
+        counterDeltas: [],
+        resetTransitions: [],
+      };
+    }
+
+    // Count each subsequent valid snapshot for honest observation-depth display.
+    this.#validSnapshotCount += 1;
+
+    // Derive deltas against the retained baseline using shared exact-arithmetic rules.
+    const derived = deriveSessionDeltas(this.#sessionBaseline, current);
+
+    // Rebase each reset-transitioned window so no cross-reset delta can ever be displayed later.
+    let rebasedBaseline = this.#sessionBaseline;
+    if (derived.resetTransitions.length > 0) {
+      const transitionedIds = new Set(
+        derived.resetTransitions.map(
+          (transition) => `${transition.bucketId}:${transition.windowKind}`,
+        ),
+      );
+      rebasedBaseline = overviewSnapshotSchema.parse({
+        ...this.#sessionBaseline,
+        quotas: this.#sessionBaseline.quotas.map((bucket) => ({
+          ...bucket,
+          windows: bucket.windows.filter(
+            (window) => !transitionedIds.has(`${bucket.id}:${window.kind}`),
+          ),
+        })),
+      });
+    }
+
+    // Retain the possibly rebased baseline in memory only; it clears when the process exits.
+    this.#sessionBaseline = rebasedBaseline;
+
+    // Return the immutable observation attached to the outgoing snapshot response.
+    return {
+      startedAtIso: this.#sessionBaseline.lastSuccessfulRefreshAt,
+      validSnapshotCount: this.#validSnapshotCount,
+      quotaDeltas: [...derived.quotaDeltas],
+      counterDeltas: [...derived.counterDeltas],
+      resetTransitions: [...derived.resetTransitions],
+    };
   }
 
   // Validate, store, and broadcast one complete snapshot.
