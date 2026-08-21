@@ -39,6 +39,7 @@ The visual system deliberately creates no third-party licensing obligations:
 | typescript-eslint | 8.67.0 | BSD-2-Clause | TypeScript lint parsing and rules | Current parser supporting TypeScript below 6.1, which selected TypeScript 6.0.3 |
 | Prettier | 3.9.6 | MIT | Deterministic authored-code formatting | Keeps mechanical formatting separate from design decisions |
 | jsdom | 30.0.1 | MIT | Renderer component test DOM | Current version compatible with the required Node 24.15 or newer toolchain |
+| axe-core | 4.13.0 | MPL-2.0 | Automated accessibility engine injected by the Phase 4 audit suite | The industry-standard ruleset named by the plan; runs only inside test-driven browser contexts, is never bundled into application output, and carries no runtime license obligation for the GPL-3.0-only application |
 
 Supporting type, React transform, testing-library, globals, hook-lint, and Electron-fuse packages are pinned in the manifest and remain development-only.
 

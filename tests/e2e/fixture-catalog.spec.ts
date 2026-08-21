@@ -149,6 +149,10 @@ test('sweeps all six routes through keyboard-only navigation', async () => {
       await expect(
         page.getByRole('heading', { level: 1, name: destination.heading }),
       ).toBeVisible();
+
+      // Route changes move focus to the content heading by design; release it so the next leg
+      // of the walk starts from the top of the tab order again.
+      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     }
   } finally {
     // Close the exact test-owned Electron process.

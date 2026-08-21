@@ -122,6 +122,8 @@ export function LearnRoute({ focusEntryId }: { focusEntryId?: string | null }) {
   }, [filtered]);
 
   // Move keyboard and pointer attention to the deep-linked card after the filtered list settles.
+  // Focusing the card (not just highlighting it) lets assistive technology announce the exact
+  // explanation a contextual link targeted instead of leaving focus at the document top.
   useEffect(() => {
     // Ignore navigation that did not name a reviewed entry.
     if (focusEntryId === null || focusEntryId === undefined) return;
@@ -134,6 +136,10 @@ export function LearnRoute({ focusEntryId }: { focusEntryId?: string | null }) {
     if (typeof card.scrollIntoView === 'function') {
       card.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
+
+    // The negative tab index makes the card focusable without inserting it into Tab order.
+    card.setAttribute('tabindex', '-1');
+    card.focus();
   }, [focusEntryId, filtered]);
 
   // Render the complete Learn route.

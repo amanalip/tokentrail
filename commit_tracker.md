@@ -10,6 +10,8 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 031 - Move focus to new route content on navigation](#commit-031---move-focus-to-new-route-content-on-navigation)
+- [Commit 030 - Open section 8.3 with keyboard-only workflow evidence](#commit-030---open-section-83-with-keyboard-only-workflow-evidence)
 - [Commit 029 - Close section 8.2 with the motion and idle-CPU review](#commit-029---close-section-82-with-the-motion-and-idle-cpu-review)
 - [Commit 028 - Wire the daily chart to design tokens with animation disabled](#commit-028---wire-the-daily-chart-to-design-tokens-with-animation-disabled)
 - [Commit 027 - Add the responsive width and zoom layout sweep](#commit-027---add-the-responsive-width-and-zoom-layout-sweep)
@@ -101,11 +103,82 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `f7c00b8`
-**Last updated:** August 21, 2026 at 6:42 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `231d332`
+**Last updated:** August 21, 2026 at 7:05 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending motion-review entry was finalized as commit `f7c00b8` (Close section 8.2 with the motion and idle-CPU review). This entry opens section 8.3 with completed keyboard-only workflow evidence and one latent clear-data defect fixed.
+The previously pending keyboard-evidence entry was finalized as commit `3d89ea8`, and the route-focus work was finalized as commit `231d332`. This entry records axe-core integration and its one remediation.
+
+### Intent
+
+Complete the plan's "run axe-core and review every serious result" task with a permanent automated gate across routes, tabs, preview states, and both themes, remediating whatever the engine found.
+
+### Important changes
+
+- Added the pinned dev dependency `axe-core` 4.13.0 (MPL-2.0, test-context only, never bundled into application output) and documented it in the dependency rationale.
+- Added `tests/e2e/accessibility-audit.spec.ts`: nine scans over the built fixture application — all six routes, the settings diagnostics tab with a built preview, and light-theme rescans of Overview and Usage — gating on zero serious or critical violations while logging every lesser impact for review.
+- Injection uses Playwright's debugger-channel init script plus one reload because the packaged CSP correctly blocks inline page scripts; the audit therefore runs without weakening any production security property.
+- Remediation: the single serious finding (a nested unfocusable scroll container around the diagnostics preview) was fixed structurally by moving scrolling entirely to the already-focusable region, removing the duplicate overflow from the preview block itself.
+- Updated the accessibility architecture evidence and limitations; marked the plan's axe-core task complete.
+
+### Decisions and assumptions
+
+- The gate asserts zero serious and critical findings; minor and moderate results remain visible in run output so future reviews see them without blocking on engine opinion.
+- CSP bypass through the debugger channel is test-harness privilege, not an application change; the shipped policy is untouched.
+
+### Verification
+
+- `npm run check:docs` clean; `npm audit --omit=dev` reports zero known vulnerabilities.
+- `npm run verify` passed end-to-end; full e2e plus accessibility suites after a fresh build: 25 passed including the audit suite reporting zero violations.
+
+### Risks or limitations
+
+- axe covers rendered states reachable in this suite; future interactive states should add scans when they land.
+
+### Follow-up
+
+Record the manual Orca screen-reader, high-contrast, and reduced-motion observations, then continue to sections 8.4 onward.
+
+---
+
+## Commit 031 - Move focus to new route content on navigation
+
+**Commit:** `231d332` - `Move focus to new route content on navigation`
+**Timestamp:** August 21, 2026 at 6:51:22 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Complete the remaining keyboard-campaign gap recorded in the accessibility architecture: intentional route changes must move keyboard and assistive-technology focus onto the requested content instead of leaving it on the activated control.
+
+### Important changes
+
+- The application shell now moves focus to the active route's level-one heading after every route change; the initial render keeps the document's natural focus start so the skip link remains the first stop.
+- Learn deep links now focus their targeted explanation card directly (negative tab index, programmatic focus) so assistive technology announces the exact explanation a contextual link selected, alongside the existing highlight.
+- Both keyboard-only sweeps (`routes.test.tsx` and `tests/e2e/fixture-catalog.spec.ts`) release heading focus between legs because forward Tab order intentionally starts from the content now.
+- Added assertions: end-to-end focus lands on the Usage heading after activation; the unit Learn deep-link test asserts the targeted card is the active element.
+
+### Decisions and assumptions
+
+- Heading-focused navigation is the standard SPA pattern; the visible outline does not appear for programmatic heading focus under Chromium's focus-visible heuristic, matching platform behavior.
+- Deep-link entries take precedence over the generic heading target because a specific card is the more precise announcement.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks, unit tests 203 passed across 27 files, integration tests 30 passed.
+- Full Playwright e2e suite after a fresh build: 22 passed.
+
+### Risks or limitations
+
+- None recorded beyond the standing screen-reader campaign follow-up.
+
+---
+
+## Commit 030 - Open section 8.3 with keyboard-only workflow evidence
+
+**Commit:** `3d89ea8` - `Open section 8.3 with keyboard-only workflow evidence`
+**Timestamp:** August 21, 2026 at 6:42:56 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -138,6 +211,8 @@ Prove that every primary workflow completes through raw keyboard events alone on
 ### Follow-up
 
 Continue section 8.3: integrate axe-core into the automated suites and remediate serious findings, then record the manual screen-reader, high-contrast, and reduced-motion campaign.
+
+---
 
 ---
 

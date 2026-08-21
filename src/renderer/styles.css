@@ -1122,12 +1122,11 @@ h3 {
   border-radius: var(--radius-input);
 }
 
-/* Present the diagnostics preview as bounded monospace text. */
+/* Present the diagnostics preview as bounded monospace text. Scrolling lives on the focusable
+   region around this block so keyboard users are never trapped outside a scrollable area. */
 .diagnostic-preview {
-  max-height: 22rem;
   margin: 0;
-  padding: 1rem;
-  overflow: auto;
+  padding: var(--space-md);
   color: var(--muted-strong);
   font-size: 0.82rem;
   line-height: 1.5;

@@ -437,7 +437,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 - [x] Complete keyboard-only navigation for onboarding, routes, refresh, settings, diagnostics, dialogs, tables, and chart alternatives.
 - [x] Provide visible focus and logical focus movement.
 - [ ] Verify semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements.
-- [ ] Run axe-core and review every serious result.
+- [x] Run axe-core and review every serious result.
 - [ ] Perform manual screen-reader testing on representative Linux environments.
 - [ ] Verify light and dark contrast, 200 percent zoom, high-contrast observation, and reduced motion.
 - [ ] Ensure countdowns and refresh updates do not create noisy repeated announcements.

@@ -201,11 +201,13 @@ describe('application navigation', () => {
     installBridge(createSnapshot());
     render(<App />);
 
-    // The Learn route renders directly with the targeted card highlighted.
+    // The Learn route renders directly with the targeted card highlighted and focused so
+    // assistive technology announces the explanation the contextual link selected.
     expect(await screen.findByRole('heading', { level: 1, name: 'Learn' })).not.toBeNull();
     const focusedCard = document.querySelector('[data-learn-entry="provenance"]');
     expect(focusedCard).not.toBeNull();
     expect(focusedCard?.className).toContain('learn-card--focused');
+    expect(document.activeElement).toBe(focusedCard);
   });
 
   it('falls back to the Learn top for an unknown deep-link identifier', async () => {
@@ -545,6 +547,10 @@ describe('keyboard route sweep', () => {
       expect(
         await screen.findByRole('heading', { level: 1, name: destination.heading }),
       ).not.toBeNull();
+
+      // Route changes now move focus to the content heading by design; release it so the next
+      // leg of the walk starts from the top of the tab order again.
+      (document.activeElement as HTMLElement | null)?.blur();
     }
   });
 });

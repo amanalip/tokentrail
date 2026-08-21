@@ -1,5 +1,5 @@
 // Import React hooks for hash-based navigation and preference-driven theming.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Import the icon-only export sized for the 44-pixel brand tile at two-times density so the
 // renderer bundle carries kilobytes instead of the full installer-scale master.
@@ -86,6 +86,22 @@ export function App() {
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
+
+  // Move keyboard and assistive-technology focus to the new route's heading after every
+  // intentional route change, so users land on the content they asked for instead of wherever
+  // focus happened to sit. The initial render keeps the document's natural focus start, and
+  // Learn deep links delegate attention to their targeted entry card inside the route.
+  const previousRouteRef = useRef<RouteId | null>(null);
+  useEffect(() => {
+    const isFirstRender = previousRouteRef.current === null;
+    previousRouteRef.current = target.route;
+    if (isFirstRender || target.learnEntryId !== null) return;
+
+    const heading = document.querySelector<HTMLElement>('#overview h1');
+    if (heading === null) return;
+    heading.setAttribute('tabindex', '-1');
+    heading.focus();
+  }, [target]);
 
   // Apply the explicit theme attribute at the document root so the reviewed palettes activate.
   useEffect(() => {

@@ -1,6 +1,6 @@
 # Accessibility Architecture
 
-**Status:** Implemented Phase 3 scope; Phase 4 keyboard and layout evidence recorded, screen-reader/axe-core campaigns in progress
+**Status:** Implemented Phase 3 scope; Phase 4 keyboard, layout, and axe-core evidence recorded; manual screen-reader campaign in progress
 **Last updated:** August 21, 2026
 
 This document explains the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts. The product specification (sections 8 and 10) controls required behavior; Phase 4 adds the full manual screen-reader campaign and axe-core review evidence.
@@ -59,9 +59,10 @@ This document explains the implemented semantic, keyboard, focus, announcement, 
 - `tests/e2e/keyboard-workflows.spec.ts` (Phase 4): every primary workflow — skip link, refresh, Usage chart/table toggle, focusable scroll regions, theme and motion preference changes via arrow keys, automatic-refresh toggle plus numeric interval, diagnostics preview build, and the two-step clear-data confirmation including its Cancel escape — completes through raw keyboard events alone on the built application.
 - Phase 4 keyboard additions: a first-in-document "Skip to content" link that moves focus into the main landmark without rewriting the hash (protecting deep links), covered in `routes.test.tsx`; focus remains visibly outlined through the reviewed focus-ring tokens.
 - Clear-data adoption fix (Phase 4): confirming the dialog now applies returned defaults immediately, so the visible interface matches the promised reset instead of waiting for a restart.
+- Route-change focus management (Phase 4): every intentional route change moves keyboard and assistive-technology focus to the new route's level-one heading, and Learn deep links focus their targeted explanation card directly. The initial render keeps the document's natural focus start. Covered by `routes.test.tsx` (active-element assertions) and `tests/e2e/keyboard-workflows.spec.ts`.
+- axe-core automated review (Phase 4): `tests/e2e/accessibility-audit.spec.ts` runs the pinned engine across all six routes, the settings diagnostics tab with a built preview, and light-theme rescans of Overview and Usage. The one serious finding ever produced — an unfocusable nested scroll container in the diagnostics preview — was fixed structurally by giving scrolling to the focusable region alone; the suite now gates on zero serious or critical violations while logging lesser impacts for review. Injection uses Playwright's debugger-channel init script because the packaged CSP correctly forbids inline page scripts.
 
 ## Known limitations
 
-- Route changes do not yet programmatically move focus to the new route heading; landmark navigation currently covers this. Focus management lands with the remaining Phase 4 keyboard campaign work.
-- Manual screen-reader verification (Orca), high-contrast observation, and axe-core automated review are scheduled Phase 4 evidence and have not been recorded yet.
+- Manual screen-reader verification (Orca), high-contrast observation, and reduced-motion observation remain scheduled Phase 4 evidence and have not been recorded yet.
 - Live-region announcements for background snapshot pushes are not yet distinguished from user-triggered refreshes.

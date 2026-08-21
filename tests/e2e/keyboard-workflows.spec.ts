@@ -112,6 +112,9 @@ test('completes every primary workflow through keyboard events alone', async () 
     await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { level: 1, name: 'Usage' })).toBeVisible();
 
+    // Route changes move keyboard focus onto the new route's heading by design.
+    expect(await readFocus(page)).toMatchObject({ tag: 'h1', text: 'Usage' });
+
     await tabUntil(page, (info) => info.tag === 'button' && info.text === 'Table');
     await page.keyboard.press('Enter');
     await expect(page.getByRole('region', { name: 'Daily usage table' })).toBeVisible();
