@@ -103,44 +103,44 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `ad7c97e`
-**Last updated:** August 21, 2026 at 7:25 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `9666a06`
+**Last updated:** August 21, 2026 at 7:40 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending section was cleared when the combined accessibility commit `cac92fb` landed. This entry records the automatable remainder of the assistive-technology campaign.
+The previously pending section was cleared when the assistive-technology observations landed as `9666a06`. This entry records the section 8.4 resilience and lifecycle campaign.
 
 ### Intent
 
-Record every machine-observable portion of the plan's screen-reader, reduced-motion, and high-contrast observation items on the built application, while leaving the human Orca session explicitly outstanding rather than simulating its evidence.
+Prove the plan's resilience claims on real transports rather than asserting them: owned-process termination boundaries, mid-session child exit handling, bounded resources under repeated use, timezone-change presentation integrity, and refresh-storm responsiveness — then open the resilience architecture document from that evidence.
 
 ### Important changes
 
-- Added `tests/accessibility/assistive-technology.spec.ts` with four observations on the built application:
-  - With platform accessibility support enabled, the real Chromium accessibility tree exposes each route's heading and named controls, the Usage chart image alternative, Learn's labeled search box, and Settings radios and checkbox.
-  - Under emulated `prefers-reduced-motion: reduce`, the shipped spinner computes as non-animated while animating at baseline, matching the stylesheet motion contract in rendered form.
-  - Under emulated forced colors, the user-agent palette replaces authored backgrounds while core controls keep geometry, visible text, and a readable foreground assignment.
-  - Countdown metrics sit outside all live-region ancestry and live status text excludes countdown content, so thirty-second clock ticks cannot create repeated announcements.
-- Updated the accessibility architecture document with these findings and narrowed its limitations to the genuinely manual remainder: the human Orca session on representative desktops.
-- Marked the plan's contrast/zoom/high-contrast/reduced-motion verification task and the announcement-noise task complete from this evidence.
+- Extended the Codex client integration suite with two cases: a mid-session child exit must reject pending work with the safe `codex-unavailable` category and keep refusing subsequent work; an unrelated long-lived process spawned beside a full start/stop cycle must survive shutdown untouched, proving termination targets only the owned handle.
+- Added `tests/e2e/resilience.spec.ts`: four Overview↔Usage rounds each observe exactly one live chart instance while mounted and zero leftover containers after leaving, one window after churn, and five consecutive refreshes returning to ready with visible status.
+- Added `tests/e2e/timezone.spec.ts`: two launches sharing one profile under `America/New_York` and `Asia/Tokyo` render the same fixed fixture instant differently, proving zone-aware presentation without stored-timestamp corruption.
+- Extended the launch helper with an opt-in extra-environment merge so timezone variation changes only the variable under test.
+- Created `docs/architecture/resilience-and-lifecycle.md` from implemented behavior with an evidence map per claim, and indexed it in the architecture guide; suspend/resume, display hot-plug, and long-idle soak remain honestly listed as Phase 6 soak-campaign scope.
+- Marked four section 8.4 plan tasks complete from this evidence; the suspend/resume/display-change task intentionally stays open.
 
 ### Decisions and assumptions
 
-- Automation records the machine-observable substrate a screen reader consumes; it is labeled as observation evidence, never as a substitute for the operator's Orca session.
-- Forced-colors and reduced-motion media emulation through Playwright changes only test-side media state; the application and its shipped policy are untouched.
+- Termination ownership is proven behaviorally (decoy survival) rather than by introspecting private handles, so the test cannot drift from implementation details.
+- Timezone evidence uses two far-apart zones against fixed fixture instants, making any ignored `TZ` deterministically detectable.
+- Suspend, resume, display change, and multi-day idle soak require desktop-session control this repository's automation lacks; they are deferred to soak rather than simulated here.
 
 ### Verification
 
-- `npm run check:docs`: 34 files scanned, no broken links.
-- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 30 passed.
-- Full accessibility plus e2e suites after a fresh build: 29 passed including the four new observations.
+- `npm run verify`: formatting, lint including the hoisted-type and no-console rules, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 32 passed including both new lifecycle cases.
+- Full accessibility plus e2e suites after a fresh build: 32 passed including the three new resilience and timezone cases.
+- `npm run check:docs`: 35 files scanned, no broken links after indexing the new architecture document.
 
 ### Risks or limitations
 
-- The Orca interaction pass (announcement order and quality, reading granularity, flat review) remains outstanding and cannot be produced by this repository alone.
+- Suspend/resume and display-change observations await the soak campaign; nothing in shipped code depends on continuous timers that would misbehave after resume, but that remains an argument, not yet recorded observation.
 
 ### Follow-up
 
-Perform the human Orca session when an operator is available and record it per the report rules; meanwhile proceed to section 8.4 resilience and lifecycle work.
+Begin section 8.5 performance work: packaged cold/warm startup, idle CPU and resident memory, bundle budget enforcement, and ECharts import profiling; then the section 8.6 desktop matrix.
 
 ---
 

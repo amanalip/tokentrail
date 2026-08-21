@@ -1,4 +1,5 @@
 // Import the Node executable path so tests launch only the checked-in fixture without a shell.
+import { spawn } from 'node:child_process';
 import process from 'node:process';
 
 // Import URL conversion for a stable fixture path.
@@ -172,5 +173,50 @@ describe('CodexProcessClient fixture integration', () => {
     // Stop only the exact owned client and require immediate sanitized rejection.
     cancellationClient.stop();
     await expect(unansweredRequest).rejects.toMatchObject({ category: 'codex-unavailable' });
+  });
+
+  it('rejects pending work with a safe category when the owned child exits mid-session', async () => {
+    // The app-server-exit fixture answers the account read, then terminates before quota data.
+    const client = createFixtureClient('app-server-exit');
+    try {
+      await client.start();
+      const account = accountReadResultSchema.parse(
+        await client.request('account/read', { refreshToken: false }),
+      );
+      expect(account.account).not.toBeNull();
+
+      // The mid-session exit must surface as the safe unavailable category, never as raw
+      // process details, and the dead connection must not silently accept new work.
+      await expect(client.request('account/rateLimits/read', undefined)).rejects.toMatchObject({
+        name: 'CodexProcessError',
+        category: 'codex-unavailable',
+      });
+      await expect(client.request('account/read', { refreshToken: false })).rejects.toBeInstanceOf(
+        CodexProcessError,
+      );
+    } finally {
+      client.stop();
+    }
+  });
+
+  it('terminates only its owned child and leaves unrelated processes running', async () => {
+    // Spawn an unrelated long-lived process whose lifetime must be untouched by client shutdown.
+    const decoy = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000);'], {
+      stdio: 'ignore',
+    });
+    try {
+      expect(decoy.pid).toBeGreaterThan(0);
+      const client = createFixtureClient('full');
+      await client.start();
+
+      // Shutdown signals the exact owned handle; the decoy shares no state with it.
+      client.stop();
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // Signal zero probes existence without affecting the decoy.
+      expect(() => process.kill(decoy.pid as number, 0)).not.toThrow();
+    } finally {
+      decoy.kill();
+    }
   });
 });

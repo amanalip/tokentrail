@@ -509,8 +509,10 @@ function DailyChart({
     return () => scheme.removeEventListener('change', onChange);
   }, [theme]);
   const palette = useMemo(() => {
-    // Reference the counter so a live scheme flip re-reads computed tokens.
+    // Reference both inputs so an explicit preference change or a live scheme flip re-reads
+    // computed tokens even though neither value is used directly in the body.
     void systemSchemeChangeCount;
+    void theme;
     return resolveDailyChartPalette();
   }, [theme, systemSchemeChangeCount]);
 

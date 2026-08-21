@@ -135,13 +135,13 @@ test('records no serious or critical axe violations across routes, tabs, and the
     for (const { where, violations } of findings) {
       for (const violation of violations) {
         totalFindings += 1;
-        console.log(
+        process.stdout.write(
           `[axe:${where}] ${violation.impact ?? 'unknown'} ${violation.id}: ${violation.help} ` +
-            `nodes=${JSON.stringify(violation.nodes.map((node) => node.target))}`,
+            `nodes=${JSON.stringify(violation.nodes.map((node) => node.target))}\n`,
         );
       }
     }
-    console.log(`[axe] total violations across all scans: ${totalFindings}`);
+    process.stdout.write(`[axe] total violations across all scans: ${totalFindings}\n`);
 
     // The phase gate: nothing serious or critical may remain unreviewed.
     const blocking = findings.flatMap(({ where, violations }) =>

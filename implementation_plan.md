@@ -444,11 +444,11 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 ### 8.4 Resilience and lifecycle
 
-- [ ] Test offline, signed-out, missing Codex, unsupported Codex, malformed response, slow response, process exit, and repeated restart behavior.
+- [x] Test offline, signed-out, missing Codex, unsupported Codex, malformed response, slow response, process exit, and repeated restart behavior.
 - [ ] Test suspend, resume, timezone change, display change, window close, reopen, and application shutdown.
-- [ ] Verify that child termination targets only a process owned by Token Trail.
-- [ ] Verify that listener, timer, query, and process counts remain bounded across repeated use.
-- [ ] Ensure one endpoint failure does not erase unrelated valid sections.
+- [x] Verify that child termination targets only a process owned by Token Trail.
+- [x] Verify that listener, timer, query, and process counts remain bounded across repeated use.
+- [x] Ensure one endpoint failure does not erase unrelated valid sections.
 
 ### 8.5 Performance
 

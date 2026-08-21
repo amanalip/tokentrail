@@ -79,10 +79,15 @@ export function createDisposableUserDataDirectory(): string {
 /**
  * Launch the built Token Trail application without a development URL so tests exercise the secure custom protocol.
  * Each launch receives its own isolated profile directory unless the caller supplies one deliberately.
+ * Extra environment entries merge last so scenarios such as timezone observation can vary only
+ * the variable under test while every other launch property stays identical.
  */
 export async function launchBuiltApplication(
   fixtureScenario?: string,
-  options?: { readonly userDataDirectory?: string },
+  options?: {
+    readonly userDataDirectory?: string;
+    readonly extraEnv?: Readonly<Record<string, string>>;
+  },
 ): Promise<ElectronApplication> {
   // Isolate every launch from other suites and from real user configuration by default.
   const profileDirectory = options?.userDataDirectory ?? createOwnedProfileDirectory();
@@ -99,6 +104,7 @@ export async function launchBuiltApplication(
         ? {}
         : { TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario }),
       TOKENTRAIL_TEST_USER_DATA_DIR: profileDirectory,
+      ...(options?.extraEnv ?? {}),
     },
   });
 }

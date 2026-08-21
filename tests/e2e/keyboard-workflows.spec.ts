@@ -1,5 +1,5 @@
 // Import Playwright's user-visible assertions and test lifecycle.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 // Import the shared built-application launcher.
 import { launchBuiltApplication } from '../helpers/launch-electron';
@@ -24,7 +24,7 @@ interface FocusInfo {
   readonly checked: boolean | null;
 }
 
-async function readFocus(page: import('@playwright/test').Page): Promise<FocusInfo> {
+async function readFocus(page: Page): Promise<FocusInfo> {
   return page.evaluate(() => {
     const element = document.activeElement;
     // Form controls carry their name on the wrapping label, not on their own textContent.
@@ -47,7 +47,7 @@ async function readFocus(page: import('@playwright/test').Page): Promise<FocusIn
 
 /** Press Tab (or Shift+Tab) until the focused element satisfies the predicate. */
 async function tabUntil(
-  page: import('@playwright/test').Page,
+  page: Page,
   predicate: (info: FocusInfo) => boolean,
   { reverse = false, maxSteps = 120 } = {},
 ): Promise<void> {
@@ -64,7 +64,7 @@ async function tabUntil(
  * Programmatic focus moves (such as the skip link landing on main, the last landmark) otherwise
  * leave forward Tab order pointing past every control.
  */
-async function restartTabOrder(page: import('@playwright/test').Page): Promise<void> {
+async function restartTabOrder(page: Page): Promise<void> {
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 }
 
@@ -89,7 +89,7 @@ test('completes every primary workflow through keyboard events alone', async () 
     // Keyboard focus must remain visibly outlined on this control.
     const focusOutline = await page.evaluate(() => {
       const style = getComputedStyle(document.activeElement as Element);
-      return { style: style.outlineStyle, width: style.outWidth };
+      return { style: style.outlineStyle, width: style.outlineWidth };
     });
     expect(focusOutline.style).not.toBe('none');
     await page.keyboard.press('Enter');

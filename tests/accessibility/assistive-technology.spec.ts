@@ -1,6 +1,9 @@
 // Import Playwright's user-visible assertions, test lifecycle, and page type.
 import { expect, test, type Page } from '@playwright/test';
 
+// Import the Electron application handle type for main-process evaluations.
+import type { ElectronApplication } from 'playwright';
+
 // Import the shared built-application launcher so observations run against the real application.
 import { launchBuiltApplication } from '../helpers/launch-electron';
 
@@ -25,10 +28,7 @@ interface AxNode {
 }
 
 /** Enable platform accessibility, then fetch the live Chromium accessibility tree. */
-async function getAxNodes(
-  page: Page,
-  electronApplication: import('playwright').ElectronApplication,
-) {
+async function getAxNodes(page: Page, electronApplication: ElectronApplication) {
   // Chromium only materializes its accessibility tree for an assistive technology once the
   // application announces support, which mirrors what launching alongside Orca does.
   await electronApplication.evaluate(({ app }) => {
