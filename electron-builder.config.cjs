@@ -24,7 +24,7 @@ module.exports = {
   // Package bundled production output, the runtime window icon, and metadata while excluding dependencies already bundled by Vite.
   files: [
     'dist/**/*',
-    'assets/branding/tokentrail-icon-v2-dark.png',
+    'assets/branding/exports/tokentrail-icon-256.png',
     'package.json',
     'LICENSE',
     '!node_modules/**/*',
@@ -47,7 +47,7 @@ module.exports = {
     target: ['AppImage'],
     category: 'Utility',
     executableName: 'tokentrail',
-    icon: 'assets/branding/tokentrail-icon-v2-dark.png',
+    icon: 'assets/branding/exports/tokentrail-icon-512.png',
     artifactName: '${productName}-${version}-${os}-${arch}.${ext}',
   },
 };

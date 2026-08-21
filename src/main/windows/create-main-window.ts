@@ -13,14 +13,16 @@ import { WINDOW_SECURITY_PREFERENCES } from '../security/window-security-prefere
 // Resolve the preload output beside the main output according to the reviewed build layout.
 const preloadPath = path.resolve(__dirname, '..', 'preload', 'index.cjs');
 
-// Resolve the application-owned window icon from the packaged assets, never from the launch directory.
+// Resolve the application-owned window icon from the packaged assets, never from the launch
+// directory. The 256-pixel export is the canonical runtime icon; desktop shells scale it down.
 const windowIconPath = path.resolve(
   __dirname,
   '..',
   '..',
   'assets',
   'branding',
-  'tokentrail-icon-v2-dark.png',
+  'exports',
+  'tokentrail-icon-256.png',
 );
 
 /**

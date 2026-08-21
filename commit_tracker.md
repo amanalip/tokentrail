@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 023 - Open Phase 4 with the production design-token layer](#commit-023---open-phase-4-with-the-production-design-token-layer)
 - [Commit 022 - Phase 3 verification gate closed with full evidence record](#commit-022---phase-3-verification-gate-closed-with-full-evidence-record)
 - [Commit 021 - Documentation lifecycle expanded and KDE proposal relocated](#commit-021---documentation-lifecycle-expanded-and-kde-proposal-relocated)
 - [Commit 020 - Architecture documentation expanded](#commit-020---architecture-documentation-expanded)
@@ -94,11 +95,57 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `26f73fe`
-**Last updated:** August 21, 2026 at 5:03 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `de3e336`
+**Last updated:** August 21, 2026 at 5:30 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending Phase 3 verification-gate entry was finalized as commit `26f73fe` (Close Phase 3 verification gate with full evidence record). This entry opens Phase 4.
+The previously pending design-token entry was finalized as commit `de3e336` (Open Phase 4 with the production design-token layer). This entry finalizes the section 8.2 visual identity.
+
+### Intent
+
+Complete the plan's "finalize production vector logo and required raster exports" task by reconstructing the approved icon mark as a maintained vector master, deriving every required raster deterministically from it, and repointing all runtime and packaging consumers at the canonical exports so future brand edits have exactly one source.
+
+### Important changes
+
+- Added `assets/branding/tokentrail-icon.svg`, a vector reconstruction of the approved `tokentrail-icon-v2-dark.png` mark. Geometry was fitted from pixel scanlines and connected-component analysis of the approved raster; rendering the SVG at 512x512 and comparing against the original shows under one percent of pixels differing beyond an eight percent color tolerance, concentrated in anti-aliased edges. Side-by-side 48-pixel renders were visually reviewed during fitting.
+- Added `scripts/export-brand-rasters.mjs` plus the `export:branding` command. The script renders sizes 16, 24, 32, 48, 64, 88, 128, 256, and 512 from the SVG through system `rsvg-convert`, deliberately kept outside npm so no package or install script is added for rarely run tooling, and fails loudly on partial export sets.
+- Generated `assets/branding/exports/tokentrail-icon-<size>.png` for every required size; the 512 export is 19.7 KB versus 201 KB for the historical concept raster.
+- Repointed consumers to canonical exports: the renderer brand tile now imports the 88-pixel export (44 CSS pixels at two-times density), `createMainWindow` resolves `exports/tokentrail-icon-256.png`, electron-builder's Linux metadata uses the 512 export, and the packaged-file allowlist ships only the runtime 256 asset.
+- Updated the window-identity Electron evidence and the packaged ASAR-content assertion to the new canonical names.
+- Historical approved art (`tokentrail-icon-v2-dark.png`, concept files) remains untouched as provenance for versioned test-report evidence.
+- Marked the plan's vector-logo task complete with the verification below.
+
+### Decisions and assumptions
+
+- The vector file is a faithful reconstruction, not a redesign; any intentional visual change requires new user-visible evidence per the plan's evidence rules.
+- librsvg is documented as a system requirement of a maintainer-invoked script rather than an npm dependency, honoring the smallest-dependency rule.
+- The renderer bundle now carries a 3 KB brand asset instead of a 202 KB one, which also serves the later Phase 5 renderer budget work.
+- The window icon ships inside the archive at 256 pixels because desktop shells scale window icons down; installer metadata reads the 512 export from build resources instead.
+
+### Verification
+
+- Pixel comparison: AE beyond eight percent fuzz = 2004 of 262144 pixels (0.76 percent) between the 512 render and the approved raster; RMSE recorded at 6.9 percent including anti-aliasing.
+- Visual review: original and vector side-by-side at 48 pixels confirmed indistinguishable identity.
+- `npm run verify` passed end-to-end: formatting, lint, strict type checks across five projects, unit tests 191 passed across 26 files, integration tests 30 passed.
+- `npm run build` followed by the complete Playwright e2e suite: 20 passed, including window-identity resolution from `assets/branding/exports/tokentrail-icon-256.png`.
+- `npm run test:packaged` passed: hardened unpackaged launch plus ASAR-header proof that `tokentrail-icon-256.png` ships inside the application archive.
+
+### Risks or limitations
+
+- KDE Wayland automation still cannot capture native window-chrome icons, so desktop-shell visual confirmation remains manual Phase 4 work.
+- The remaining sub-one-percent pixel delta is anti-aliasing, but any future brand revision must regenerate exports and rerun this verification chain.
+
+### Follow-up
+
+Document font and icon licensing decisions, then continue section 8.2 theme completion, responsive/zoom sweep, chart legibility patterns, and animation-budget cleanup before sections 8.3 onward.
+
+---
+
+## Commit 023 - Open Phase 4 with the production design-token layer
+
+**Commit:** `de3e336` - `Open Phase 4 with the production design-token layer`
+**Timestamp:** August 21, 2026 at 5:07:53 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -136,6 +183,8 @@ Open plan section 8.2 by converting the renderer stylesheet's scattered presenta
 ### Follow-up
 
 Continue section 8.2: production logo vectorization and raster exports, font and icon licensing documentation, light/dark/system theme completion, the responsive and zoom sweep, chart legibility patterns, then sections 8.3 onward.
+
+---
 
 ---
 

@@ -5,7 +5,8 @@ import { expect, test } from '@playwright/test';
 import { launchBuiltApplication } from '../helpers/launch-electron';
 
 // Name the application-owned branding asset every launch mode must resolve for its window icon.
-const WINDOW_ICON_ASSET = 'tokentrail-icon-v2-dark.png';
+// This is the same canonical 256-pixel export createMainWindow resolves in packaged mode.
+const WINDOW_ICON_ASSET = 'exports/tokentrail-icon-256.png';
 
 // Confirm the live window carries Token Trail identity independently of installer or package metadata.
 test('resolves the runtime window icon from an application-owned path', async () => {

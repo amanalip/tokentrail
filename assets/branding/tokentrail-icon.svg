@@ -1,0 +1,26 @@
+<!--
+  Token Trail production icon master.
+
+  Responsibility: single vector source of every Token Trail raster export. Trust level: static
+  application-owned branding data with no execution semantics. Dependencies: none; pure SVG 1.1
+  shapes readable by librsvg, Chromium, and electron-builder. Side effects: none.
+  Denied behavior: this file must never reference remote resources, scripts, or animations.
+
+  Provenance: authored as the vector reconstruction of the approved `tokentrail-icon-v2-dark.png`
+  mark. Geometry was fitted from pixel measurements of that asset and verified by rendering this
+  file at 512x512 and comparing against it: fewer than one percent of pixels differ beyond an
+  eight percent color tolerance, concentrated in anti-aliased edges. Regenerate raster exports
+  after any edit here with `npm run export:branding`, and re-run the window-identity evidence.
+
+  License: project-owned original artwork distributed under the repository's GPL-3.0-only license.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#02081b"/>
+  <rect x="88.5" y="82" width="338.5" height="345.5" rx="102" fill="#020610" stroke="#9087fe" stroke-width="19"/>
+  <polyline points="154.5,352.5 206.5,297 282.5,261 343.5,174.5" fill="none" stroke="#55f5de" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="206.5" cy="296" r="19" fill="#55f5de"/>
+  <circle cx="282.5" cy="260" r="20" fill="#55f5de"/>
+  <circle cx="343.5" cy="174.5" r="38" fill="none" stroke="#9087fe" stroke-width="15.5"/>
+  <circle cx="343.5" cy="174.5" r="19" fill="#55f5de"/>
+  <circle cx="154.5" cy="352.5" r="22" fill="#020610" stroke="#55f5de" stroke-width="13"/>
+</svg>

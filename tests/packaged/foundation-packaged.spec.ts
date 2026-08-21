@@ -85,5 +85,5 @@ test('packages the Token Trail window icon inside the application archive', asyn
   const headerText = asarBytes.toString('utf8', 0, Math.min(asarBytes.length, 1_048_576));
 
   // The window icon must be present by exact name so createMainWindow resolves it in packaged mode.
-  expect(headerText).toContain('tokentrail-icon-v2-dark.png');
+  expect(headerText).toContain('tokentrail-icon-256.png');
 });

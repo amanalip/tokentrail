@@ -1,8 +1,9 @@
 // Import React hooks for hash-based navigation and preference-driven theming.
 import { useEffect, useState } from 'react';
 
-// Import the icon-only asset so the product name remains accessible live text.
-import logoUrl from '../../assets/branding/tokentrail-icon-v2-dark.png';
+// Import the icon-only export sized for the 44-pixel brand tile at two-times density so the
+// renderer bundle carries kilobytes instead of the full installer-scale master.
+import logoUrl from '../../assets/branding/exports/tokentrail-icon-88.png';
 
 // Import the shared snapshot and preference hooks used by every route.
 import { useOverviewSnapshot, usePreferences } from './hooks';

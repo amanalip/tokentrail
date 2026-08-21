@@ -34,6 +34,7 @@
     "test:packaged": "npm run package:dir && playwright test tests/packaged",
     "test:performance": "npm run package:dir && playwright test tests/performance",
     "package:dir": "npm run build && electron-builder --dir --config electron-builder.config.cjs",
+    "export:branding": "node scripts/export-brand-rasters.mjs",
     "package:appimage": "npm run build && electron-builder --linux AppImage --config electron-builder.config.cjs",
     "verify": "npm run check:format && npm run lint && npm run typecheck && npm run test && npm run test:integration"
   },
