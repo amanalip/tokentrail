@@ -104,6 +104,59 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 ## Current uncommitted work
 
 **First recorded:** August 21, 2026 after commit `231d332`
+**Last updated:** August 21, 2026 at 7:15 PM EDT (`America/Toronto`, UTC-04:00)
+**State:** Clear; all previously pending work was finalized through commit `cac92fb`
+
+The keyboard-workflow evidence was finalized as commit `3d89ea8`, and the route-focus work together with the axe-core gate was finalized as combined commit `cac92fb` because a failed formatting check interrupted the intended separate commits and the amendment folded them together. No work is pending in this section right now; the next entry will record the manual assistive-technology campaign when it begins.
+
+---
+
+## Commit 031 - Move focus to new route content on navigation and gate accessibility on axe-core
+
+**Commit:** `cac92fb` - `Move focus to new route content on navigation` (combined commit also containing the axe-core gate described below)
+**Timestamp:** August 21, 2026 at 6:51:22 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+### Intent
+
+Complete two remaining accessibility-campaign gaps together: intentional route changes must move keyboard and assistive-technology focus onto the requested content, and the plan's axe-core review must become a permanent automated gate across routes, tabs, preview states, and themes.
+
+### Important changes
+
+- The application shell moves focus to the active route's level-one heading after every route change; the initial render keeps the document's natural focus start so the skip link remains first. Learn deep links focus their targeted explanation card directly alongside the existing highlight.
+- Both keyboard-only sweeps release heading focus between legs because forward Tab order intentionally starts from the content now; unit and end-to-end assertions pin the new focus behavior.
+- Added the pinned dev dependency `axe-core` 4.13.0 (MPL-2.0, test-context only, never bundled into application output) and documented it in the dependency rationale.
+- Added `tests/e2e/accessibility-audit.spec.ts`: nine scans over the built fixture application gating on zero serious or critical violations while logging every lesser impact for review.
+- Injection uses Playwright's debugger-channel init script plus one reload because the packaged CSP correctly blocks inline page scripts; the audit runs without weakening any production security property.
+- Remediation of the single serious finding: a nested unfocusable scroll container around the diagnostics preview was fixed structurally by moving scrolling entirely to the already-focusable region.
+- Updated the accessibility architecture evidence and limitations; marked the plan's axe-core task complete.
+
+### Decisions and assumptions
+
+- Heading-focused navigation is the standard SPA pattern; programmatic heading focus does not display an outline under Chromium's focus-visible heuristic, matching platform behavior.
+- The gate asserts zero serious and critical findings while minor and moderate results remain visible in run output for future reviews.
+- CSP bypass through the debugger channel is test-harness privilege, not an application change; the shipped policy is untouched.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks, unit tests 203 passed across 27 files, integration tests 30 passed.
+- Full e2e plus accessibility suites after a fresh build: 25 passed including the audit reporting zero violations across all scans.
+- `npm run check:docs` clean; `npm audit --omit=dev` reports zero known vulnerabilities.
+
+### Risks or limitations
+
+- axe covers rendered states reachable in this suite; future interactive states should add scans when they land.
+- Manual Orca screen-reader, high-contrast, and reduced-motion observations remain open Phase 4 evidence.
+
+### Follow-up
+
+Record the manual assistive-technology campaign, then continue to sections 8.4 onward.
+
+---
+
+## Current uncommitted work
+
+**First recorded:** August 21, 2026 after commit `231d332`
 **Last updated:** August 21, 2026 at 7:05 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
