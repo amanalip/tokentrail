@@ -1,8 +1,8 @@
 # Token Trail Design System and Theming
 
 **Status:** Implementation-in-progress (Phase 4 opened August 21, 2026)
-**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints
-**Still open inside this document's scope:** responsive and zoom sweep, chart legibility patterns wired to chart tokens, animation/idle-CPU budget
+**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints, automated width-and-zoom layout sweep
+**Still open inside this document's scope:** chart legibility patterns wired to chart tokens, animation/idle-CPU budget
 **Controlling documents:** [product_spec_electron.md](../../product_spec_electron.md), [implementation_plan.md](../../implementation_plan.md) section 8.2, [dependency-rationale.md](dependency-rationale.md)
 **Last updated:** August 21, 2026
 
@@ -84,6 +84,10 @@ Historical approved art stays untouched as provenance for versioned test-report 
 
 Security boundary: the SVG master must never reference remote resources, scripts, or animations. It is inert static markup parsed by librsvg and Chromium image decoders only; it is never fetched over the network because it ships inside the application.
 
+### Responsive and zoom behavior
+
+The shell supports compact widths, laptop sizes, large screens, and window zoom through two breakpoints (52rem collapses the navigation rail into a top row; 34rem stacks header controls) plus fluid clamps on display text. `tests/e2e/responsive.spec.ts` sweeps the enforced minimum window through large desktop sizes at 100/150/200 percent zoom — including the minimum window at 200 percent, which lays out near 360 CSS pixels — asserting no horizontal document overflow, visible unclipped navigation, a usable refresh control, and an unclipped page heading. The initial sweep found no layout defects; the suite now guards that result.
+
 ## 5. Motion
 
 Current implemented motion is limited to the loading spinner, which is disabled under `prefers-reduced-motion: reduce` and replaced by a static two-tone ring, plus class-based reduced-motion overrides honoring an explicit user preference even when the system allows motion. The remaining Phase 4 task is an idle-CPU review to remove any continuous or decorative animation that conflicts with reduced-motion or battery budgets; findings will be recorded here.
@@ -99,7 +103,6 @@ Final theme verification screenshots across the full matrix remain part of the P
 
 ## 7. Known limitations
 
-- The responsive and zoom sweep has not normalized off-scale spacing values or re-verified core actions at every supported width yet.
 - Chart series colors exist as tokens, but ECharts options do not yet consume them; wiring chart options to the tokens (and adding color-independent patterns) is part of the chart-legibility task.
 - Curated theme-matrix screenshots for the versioned test report are captured at phase close; automated suites already exercise both themes continuously.
 

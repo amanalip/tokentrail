@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 026 - Complete theme verification with WCAG remediation and theme-aware tints](#commit-026---complete-theme-verification-with-wcag-remediation-and-theme-aware-tints)
 - [Commit 025 - Document visual-system licensing decisions and open the design-system architecture record](#commit-025---document-visual-system-licensing-decisions-and-open-the-design-system-architecture-record)
 - [Commit 024 - Finalize production vector logo and required raster exports](#commit-024---finalize-production-vector-logo-and-required-raster-exports)
 - [Commit 023 - Open Phase 4 with the production design-token layer](#commit-023---open-phase-4-with-the-production-design-token-layer)
@@ -97,11 +98,50 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `ba98f23`
-**Last updated:** August 21, 2026 at 5:50 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `d17a25a`
+**Last updated:** August 21, 2026 at 5:55 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending licensing/design-system entry was finalized as commit `ba98f23` (Document visual-system licensing decisions and open the design-system architecture record). This entry completes theme verification with a contrast remediation.
+The previously pending theme-verification entry was finalized as commit `d17a25a` (Complete theme verification with WCAG remediation and theme-aware tints). This entry adds the automated responsive and zoom sweep.
+
+### Intent
+
+Complete the plan's "support compact widths, typical laptop sizes, large screens, and zoom without clipped core actions" task with permanent automated evidence rather than a one-time manual pass.
+
+### Important changes
+
+- Added `tests/e2e/responsive.spec.ts`: an eight-combination matrix covering the enforced minimum window (720x560), laptop (1024), desktop (1440), and large-screen (1920) sizes at 100, 150, and 200 percent zoom, including the minimum window at 200 percent zoom which lays out near 360 CSS pixels.
+- Each combination asserts zero horizontal document overflow, a visible brand link, all six navigation destinations visible inside the viewport, a refresh control with a usable target and unclipped label, and an unclipped page heading.
+- Navigation queries scope to the navigation landmark with exact names because contextual content links share label prefixes with nav destinations; the first draft of the sweep hit that strict-mode collision and was corrected before anything passed falsely.
+- The sweep found no layout defects in the existing breakpoint design; the suite now guards that result permanently.
+- Updated `docs/architecture/design-system-and-theming.md` with the sweep description and moved the task out of open limitations; marked the plan's responsive-support task complete from this evidence.
+
+### Decisions and assumptions
+
+- Zoom is treated as a layout concern because Electron zoom scales CSS pixels inside a fixed window, so each zoom level is effectively a narrower viewport at the same window size.
+- One application instance serves the whole matrix with per-combination geometry resets to keep runtime near two seconds; a failure still names its exact combination.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks, unit tests 193 passed across 26 files, integration tests 30 passed.
+- Full Playwright e2e suite after a fresh build: 21 passed, including the new responsive sweep.
+
+### Risks or limitations
+
+- The matrix exercises the loading-state shell plus Overview content; data-dense states such as full quota lists use the same containers and breakpoints but their densest layouts are additionally covered by component suites.
+- Fractional OS display scaling is not simulated here; it behaves like an effective zoom factor and remains part of Phase 6 scaling coverage.
+
+### Follow-up
+
+Continue section 8.2: wire ECharts options to the chart tokens with color-independent legibility patterns, then the animation/idle-CPU cleanup before section 8.3 accessibility work.
+
+---
+
+## Commit 026 - Complete theme verification with WCAG remediation and theme-aware tints
+
+**Commit:** `d17a25a` - `Complete theme verification with WCAG remediation and theme-aware tints`
+**Timestamp:** August 21, 2026 at 5:50:35 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -135,6 +175,8 @@ Complete the plan's "complete light, dark, and system themes" task by auditing W
 ### Follow-up
 
 Continue section 8.2: responsive and zoom sweep, ECharts wiring to chart tokens with color-independent patterns, then the animation/idle-CPU cleanup before moving to section 8.3 accessibility work.
+
+---
 
 ---
 
