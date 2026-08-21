@@ -1,7 +1,7 @@
 # Token Trail Dependency Rationale
 
-**Status:** Phase 1 selected and locked
-**Last updated:** August 14, 2026
+**Status:** Phase 1 selected and locked; Phase 3 added the charting runtime dependency; Phase 4 recorded font, icon, and raster-tooling licensing decisions
+**Last updated:** August 21, 2026
 
 Exact versions are committed in `package.json` and `package-lock.json`. Versions were selected from the current registry on August 14, 2026, then resolved through npm's peer-dependency checks rather than forced installation.
 
@@ -11,9 +11,18 @@ Exact versions are committed in `package.json` and `package-lock.json`. Versions
 | --- | --- | --- | --- | --- |
 | React | 19.2.8 | MIT | Renderer component model | Approved UI framework with a mature accessible testing ecosystem |
 | React DOM | 19.2.8 | MIT | Renderer mounting | Official React browser renderer |
-| Zod | 4.4.3 | MIT | Future boundary validation | Approved readable runtime schema system; installed before protocol contracts begin |
+| Zod | 4.4.3 | MIT | Boundary validation | Approved readable runtime schema system validating every protocol payload, preference document, snapshot, and diagnostic field at trust boundaries |
+| ECharts | 6.1.0 | Apache-2.0 | Usage route daily bar chart | Added in Phase 3 through tree-shaken `echarts/core` imports with only the bar chart, grid, tooltip, and SVG renderer components; no canvas backend is required |
 
 Vite bundles runtime dependencies into the reviewed process outputs. Raw runtime `node_modules` is excluded from the packaged ASAR to reduce size and exposed source.
+
+## Fonts, icons, and branding assets
+
+The visual system deliberately creates no third-party licensing obligations:
+
+- **Fonts:** no typeface file is bundled or fetched. The renderer declares a locally resolved stack (`Inter` first when installed, then system UI fonts) inside `--font-sans`, so there is no network request and no font license obligation. Bundling a typeface later would require the addition rule below, including an SIL Open Font License review.
+- **Icons:** there is no icon library or icon font. Interface glyphs are Unicode text styled by CSS, and the brand mark is project-owned original artwork (`assets/branding/tokentrail-icon.svg` plus its generated exports) distributed under this repository's GPL-3.0-only license.
+- **Raster tooling:** `npm run export:branding` shells out to the system `rsvg-convert` (librsvg). It is a maintainer-invoked build-time tool, not an npm dependency, and its PNG outputs are plain data assets with no third-party licensing claim.
 
 ## Foundation development dependencies
 

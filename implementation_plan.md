@@ -425,7 +425,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 ### 8.2 Visual system and responsiveness
 
 - [x] Finalize production vector logo and required raster exports.
-- [ ] Select and document production font and icon licenses.
+- [x] Select and document production font and icon licenses.
 - [x] Implement design tokens for color, spacing, type, radius, elevation, focus, chart, and status semantics.
 - [ ] Complete light, dark, and system themes without remote fonts or assets.
 - [ ] Support compact widths, typical laptop sizes, large screens, and zoom without clipped core actions.

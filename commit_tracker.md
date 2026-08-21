@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 024 - Finalize production vector logo and required raster exports](#commit-024---finalize-production-vector-logo-and-required-raster-exports)
 - [Commit 023 - Open Phase 4 with the production design-token layer](#commit-023---open-phase-4-with-the-production-design-token-layer)
 - [Commit 022 - Phase 3 verification gate closed with full evidence record](#commit-022---phase-3-verification-gate-closed-with-full-evidence-record)
 - [Commit 021 - Documentation lifecycle expanded and KDE proposal relocated](#commit-021---documentation-lifecycle-expanded-and-kde-proposal-relocated)
@@ -95,11 +96,51 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `de3e336`
-**Last updated:** August 21, 2026 at 5:30 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `cc8a666`
+**Last updated:** August 21, 2026 at 5:35 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending design-token entry was finalized as commit `de3e336` (Open Phase 4 with the production design-token layer). This entry finalizes the section 8.2 visual identity.
+The previously pending vector-identity entry was finalized as commit `cc8a666` (Finalize production vector logo and required raster exports). This entry records the Phase 4 font/icon licensing decision and opens the design-system architecture document.
+
+### Intent
+
+Resolve the plan's Phase 4 open question "production font and icon licenses" by documenting the deliberate no-obligation posture of the visual system, and open `docs/architecture/design-system-and-theming.md` as an implementation-in-progress record of the token layer, themes, typography stack, icon policy, motion state, and test evidence.
+
+### Important changes
+
+- Added `docs/architecture/design-system-and-theming.md` with honest implementation-in-progress status: implemented token groups and invariants, theme mechanics with recorded limitations (fixed rgba tints, pending contrast audit), the no-bundled-font decision and its license analysis, the no-icon-library policy, canonical asset wiring, current motion behavior, and the complete test-evidence map.
+- Updated the architecture index reading order and ownership table for the new document and removed it from the planned list.
+- Corrected stale dependency documentation: added the missing Phase 3 ECharts runtime row (tree-shaken core imports, Apache-2.0) and refreshed Zod's purpose to its actual boundary-validation role.
+- Added a fonts/icons/branding section to `dependency-rationale.md` covering the unlicensed-font posture (no file bundled or fetched), the project-owned GPL-3.0-only brand artwork, and librsvg as a maintainer-invoked build-time tool whose PNG outputs carry no third-party claim.
+- Marked the plan's "select and document production font and icon licenses" task complete.
+
+### Decisions and assumptions
+
+- The licensing question resolves to "no obligation by construction": nothing is bundled or fetched, so there is nothing to license; any future bundled typeface or icon set must pass the dependency addition rule including license review.
+- The design-system document lists pending scope items explicitly rather than describing intended behavior as current.
+
+### Verification
+
+- `npm run check:docs` passed with 34 files scanned and no broken links after the new cross-links.
+- `npm run verify` passed end-to-end: formatting, lint, strict type checks across five projects, unit tests 191 passed across 26 files, integration tests 30 passed.
+- No application code changed in this entry's diff; runtime suites were rerun only as regression confirmation.
+
+### Risks or limitations
+
+- Palette values remain subject to the pending contrast audit; the licensing decision does not freeze specific colors.
+- If a future revision bundles Inter or another face, the SIL Open Font License review path documented here becomes mandatory.
+
+### Follow-up
+
+Continue section 8.2: light/dark/system theme completion (rgba tint unification plus fresh screenshots), responsive and zoom sweep, chart-legibility patterns wired to chart tokens, and the animation/idle-CPU cleanup.
+
+---
+
+## Commit 024 - Finalize production vector logo and required raster exports
+
+**Commit:** `cc8a666` - `Finalize production vector logo and required raster exports`
+**Timestamp:** August 21, 2026 at 5:31:11 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -138,6 +179,8 @@ Complete the plan's "finalize production vector logo and required raster exports
 ### Follow-up
 
 Document font and icon licensing decisions, then continue section 8.2 theme completion, responsive/zoom sweep, chart legibility patterns, and animation-budget cleanup before sections 8.3 onward.
+
+---
 
 ---
 

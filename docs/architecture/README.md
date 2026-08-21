@@ -20,7 +20,8 @@ This directory explains how Token Trail works as a complete system. The product 
 11. [Runtime modes and CSP](runtime-modes-and-csp.md) — development, built-content, and packaged differences.
 12. [Testing architecture](testing-architecture.md) — which test layer proves each boundary.
 13. Phase 3 system documents: [calculations and precision](calculations-and-precision.md), [preferences and storage](preferences-and-storage.md), [diagnostics and redaction](diagnostics-and-redaction.md), [navigation and route composition](navigation-and-route-composition.md), and [accessibility architecture](accessibility-architecture.md).
-14. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
+14. Phase 4 product-quality documents as they enter implementation: [design system and theming](design-system-and-theming.md) is now implementation-in-progress.
+15. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
 
 ## Document ownership and status
 
@@ -43,6 +44,7 @@ This directory explains how Token Trail works as a complete system. The product 
 | `diagnostics-and-redaction.md` | Phase 3 diagnostics document and export | Schema field, preview/export flow, or canary change |
 | `navigation-and-route-composition.md` | Phase 3 route tree and data composition | Route, navigation rule, or contextual-link change |
 | `accessibility-architecture.md` | Implemented semantic/keyboard/chart contracts | Semantic, focus, announcement, chart-alternative, or motion change |
+| `design-system-and-theming.md` | Phase 4 implementation-in-progress: tokens, identity, typography licensing | Token, palette, asset, typography, or motion-policy change |
 | `data-flow.md` | Trust-boundary diagram | Data source, destination, or persistence change |
 | `data-inventory.md` | Approved data classes | Any new field or storage path |
 | `threat-model.md` | Threats and controls | New capability or trust boundary |
@@ -61,7 +63,7 @@ The five Phase 3 documents listed above are now implemented-system records maint
 
 Phase 4 creates the following from implemented product-quality behavior and test evidence:
 
-- `design-system-and-theming.md`;
+- `design-system-and-theming.md` (opened; tracks the implemented token layer, visual identity, and typography licensing);
 - `performance-and-resource-model.md`;
 - `resilience-and-lifecycle.md`;
 - `linux-desktop-integration.md`;
