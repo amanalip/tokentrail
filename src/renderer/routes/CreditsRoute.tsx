@@ -84,8 +84,11 @@ export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
             {credits.spendingControl === null
               ? 'No spending control was reported'
               : credits.spendingControl.reached
-                ? 'Reached state reported'
+                ? 'Reached state reported · '
                 : 'Codex-reported percentage'}
+            {credits.spendingControl !== null && credits.spendingControl.reached ? (
+              <a href="#learn/when-a-limit-is-hit">what this means</a>
+            ) : null}
           </small>
         </div>
         <div className="summary-card">

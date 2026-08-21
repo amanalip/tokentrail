@@ -1,7 +1,7 @@
 # Domain Model and Provenance
 
-**Status:** Phase 2 Overview domain implemented; Phase 3 extensions planned
-**Last updated:** August 14, 2026 at 11:28 AM EDT
+**Status:** Phase 3 complete domain vocabulary implemented
+**Last updated:** August 21, 2026
 
 ## Purpose
 
@@ -51,12 +51,12 @@ Protocol schemas retain only approved fields and strip email and unknown keys. N
 
 The renderer may receive a broad account kind and bounded plan label needed for presentation. It does not receive email, credential state beyond signed-in requirements, account IDs, request IDs, reset-credit identifiers, paths, or unknown future fields.
 
-## Phase 3 extension rule
+## Extension rule
 
-Usage, credits, reset-credit details, coverage, session baselines, preferences, and diagnostics receive their own closed contracts when implemented. Before adding a field, update the data inventory with source, purpose, lifetime, renderer exposure, persistence, and diagnostic treatment. Precision-sensitive integer or decimal values must not pass through unsafe JavaScript number conversion.
+Usage, credits, reset-credit details, coverage, session baselines, preferences, diagnostics, and sanitized health counters now have their own closed contracts under `src/shared/contracts/`. Before adding a field in the future, update the data inventory with source, purpose, lifetime, renderer exposure, persistence, and diagnostic treatment. Precision-sensitive integer or decimal values must not pass through unsafe JavaScript number conversion; aggregate counters cross boundaries as canonical decimal strings.
 
-Planned detailed calculations belong in `calculations-and-precision.md`, created during Phase 3 when those calculations exist. This document remains the shared vocabulary and provenance authority rather than duplicating every formula.
+Detailed implemented calculations live in `calculations-and-precision.md`. This document remains the shared vocabulary and provenance authority rather than duplicating every formula.
 
 ## Evidence and limitations
 
-Unit fixtures cover valid, null, missing, invalid, multiple-bucket, and unknown-field inputs. React tests verify explicit unavailable text and provenance labels. Aggregate usage and credit models are not implemented and are not described here as current.
+Unit fixtures cover valid, null, missing, invalid, multiple-bucket, unknown-field, credit-state, usage-bucket, duplicate-date, and beyond-safe-range inputs through the section 21.2 catalog. React tests verify explicit unavailable text and provenance labels on every route.

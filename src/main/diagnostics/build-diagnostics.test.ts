@@ -79,6 +79,14 @@ describe('buildDiagnosticsDocument', () => {
       },
       snapshot: createSnapshot(),
       preferences: createDefaultPreferences(),
+      health: {
+        refreshAttemptCount: 3,
+        refreshSuccessCount: 2,
+        refreshFailureCount: 1,
+        refreshNoDataCount: 0,
+        lastRefreshOutcome: 'failed',
+        lastRefreshDurationBucket: '250ms-to-1s',
+      },
       generatedAt: new Date('2026-08-14T07:00:00.000Z'),
     });
 
@@ -86,6 +94,15 @@ describe('buildDiagnosticsDocument', () => {
     expect(diagnosticsDocumentSchema.parse(document)).toBeDefined();
     expect(document.session.validSnapshotCount).toBe(4);
     expect(document.platform.sessionType).toBe('wayland');
+    // The sanitized health section carries counters and closed categories only.
+    expect(document.health).toEqual({
+      refreshAttemptCount: 3,
+      refreshSuccessCount: 2,
+      refreshFailureCount: 1,
+      refreshNoDataCount: 0,
+      lastRefreshOutcome: 'failed',
+      lastRefreshDurationBucket: '250ms-to-1s',
+    });
   });
 
   it('contains no seeded sensitive canaries anywhere in the serialized output', () => {
@@ -107,6 +124,14 @@ describe('buildDiagnosticsDocument', () => {
       },
       snapshot: createSnapshot(),
       preferences: createDefaultPreferences(),
+      health: {
+        refreshAttemptCount: 1,
+        refreshSuccessCount: 1,
+        refreshFailureCount: 0,
+        refreshNoDataCount: 0,
+        lastRefreshOutcome: 'succeeded',
+        lastRefreshDurationBucket: 'under-250ms',
+      },
       generatedAt: new Date('2026-08-14T07:00:00.000Z'),
     });
 

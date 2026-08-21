@@ -17,6 +17,7 @@ import { installOverviewIpc } from './ipc/overview-ipc';
 import { installApplicationIpc } from './ipc/application-ipc';
 import { PreferenceStore } from './preferences/preference-store';
 import { buildDiagnosticsDocument } from './diagnostics/build-diagnostics';
+import { DiagnosticsHealthRecorder } from './diagnostics/health-record';
 
 // Import the fixed main-to-renderer event channel without exposing it to renderer code.
 import { TOKEN_TRAIL_IPC_CHANNELS } from '../shared/contracts/token-trail-bridge';
@@ -42,7 +43,16 @@ registerApplicationScheme();
 // Set the human-readable desktop application name independently from the machine-safe package slug.
 app.setName('Token Trail');
 
-// Enumerate fixture scenarios that may activate only in an unpackaged test process.
+// Point unpackaged test processes at an isolated profile directory so repeated launches cannot inherit
+// persisted preferences from other runs or from a developer's real configuration. Packaged execution
+// always uses the platform default and ignores the variable completely.
+const testUserDataDirectory = process.env['TOKENTRAIL_TEST_USER_DATA_DIR'];
+if (!app.isPackaged && testUserDataDirectory !== undefined && testUserDataDirectory.length > 0) {
+  app.setPath('userData', testUserDataDirectory);
+}
+
+// Enumerate fixture scenarios that may activate only in an unpackaged test process. The typography
+// prefix covers the representative remaining-value evidence scenarios validated below.
 const APPROVED_TEST_FIXTURE_SCENARIOS = Object.freeze([
   'full',
   'missing-account',
@@ -55,7 +65,27 @@ const APPROVED_TEST_FIXTURE_SCENARIOS = Object.freeze([
   'method-not-found',
   'timeout',
   'app-server-exit',
+  'duplicate-id',
+  'primary-only',
+  'secondary-only',
+  'no-windows',
+  'unknown-values',
+  'sparse-update-before-full',
+  'sparse-update-after-full',
+  'reached-state',
+  'shared-reset-timestamps',
+  'credits-unlimited',
+  'credits-zero-balance',
+  'credits-decimal-balance',
+  'reset-credits-count-only',
+  'reset-credits-expiry-mix',
+  'usage-gaps',
+  'usage-sixty-days-zero-preceding',
+  'usage-huge-counters',
 ] as const);
+
+// Recognize the parameterized typography evidence scenarios against the fixed reviewed value set.
+const APPROVED_TYPOGRAPHY_REMAINING_VALUES = Object.freeze([11, 47, 48, 88, 100] as const);
 
 // Construct the controller with production discovery or one exact repository-owned fixture.
 function createOverviewController(): OverviewController {
@@ -64,10 +94,19 @@ function createOverviewController(): OverviewController {
     ? undefined
     : process.env['TOKENTRAIL_TEST_FIXTURE_SCENARIO'];
 
+  // Accept the parameterized typography scenarios only for the exact reviewed remaining values.
+  const isApprovedTypographyScenario =
+    requestedScenario !== undefined &&
+    requestedScenario.startsWith('typography-') &&
+    APPROVED_TYPOGRAPHY_REMAINING_VALUES.some(
+      (value) => requestedScenario === `typography-${value}`,
+    );
+
   // Use production Codex discovery unless the value exactly matches a reviewed scenario.
   if (
-    requestedScenario === undefined ||
-    !APPROVED_TEST_FIXTURE_SCENARIOS.some((scenario) => scenario === requestedScenario)
+    (requestedScenario === undefined ||
+      !APPROVED_TEST_FIXTURE_SCENARIOS.some((scenario) => scenario === requestedScenario)) &&
+    !isApprovedTypographyScenario
   ) {
     return new OverviewController();
   }
@@ -117,6 +156,9 @@ if (!hasSingleInstanceLock) {
   // Own the validated preferences store inside the Electron user-data directory.
   const preferenceStore = new PreferenceStore({ userDataDirectory: app.getPath('userData') });
 
+  // Accumulate sanitized local health counters from snapshot transitions for diagnostics support.
+  const healthRecorder = new DiagnosticsHealthRecorder();
+
   // Retain IPC cleanup once Electron installs the fixed handlers.
   let removeOverviewIpc: (() => void) | null = null;
   let removeApplicationIpc: (() => void) | null = null;
@@ -138,7 +180,10 @@ if (!hasSingleInstanceLock) {
     installWebContentsPolicy();
 
     // Install purpose-specific IPC before the renderer can request its initial snapshot.
-    removeOverviewIpc = installOverviewIpc(overviewController);
+    removeOverviewIpc = installOverviewIpc(overviewController, (durationMilliseconds) => {
+      // Feed only a coarsened millisecond measurement into the sanitized health record.
+      healthRecorder.observeRefreshDuration(durationMilliseconds);
+    });
 
     // Install preferences and diagnostics handlers backed by the privileged services.
     removeApplicationIpc = installApplicationIpc({
@@ -173,8 +218,14 @@ if (!hasSingleInstanceLock) {
           },
           snapshot: overviewController.getSnapshot(),
           preferences: await preferenceStore.load(),
+          health: healthRecorder.toSection(),
           generatedAt: new Date(),
         }),
+    });
+
+    // Observe snapshot transitions into sanitized health counters before renderer forwarding.
+    overviewController.subscribe((snapshot) => {
+      healthRecorder.observeSnapshot(snapshot);
     });
 
     // Forward only validated normalized snapshot changes to the current approved renderer.
@@ -187,8 +238,11 @@ if (!hasSingleInstanceLock) {
     // Create the one approved application window.
     mainWindow = createMainWindow(developmentUrl);
 
-    // Begin the first local read after the secure window and handlers exist.
-    void overviewController.refresh();
+    // Begin the first local read after the secure window and handlers exist, timing it for diagnostics.
+    const startupRefreshStartedAt = Date.now();
+    void overviewController
+      .refresh()
+      .finally(() => healthRecorder.observeRefreshDuration(Date.now() - startupRefreshStartedAt));
 
     // Recreate the window on platforms that keep an application active after its last window closes.
     app.on('activate', () => {

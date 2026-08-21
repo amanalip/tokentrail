@@ -42,6 +42,21 @@ The schema is `.strict()`: unknown fields fail validation on both read and write
 4. Writes to a temporary sibling (`preferences.json.tmp`) then renames atomically.
 5. Updates the in-memory cache only after a durable successful write.
 
+```mermaid
+flowchart TD
+    C["Renderer save call"] --> V["Zod preferences schema"]
+    V -->|invalid| Rj["Reject; nothing written"]
+    V -->|valid| Q["Write queue (serialized)"]
+    Q --> T["Write preferences.json.tmp"]
+    T --> RN["Atomic rename"]
+    RN --> CACHE["Update in-memory cache"]
+    L["load() at startup"] --> RV{"Valid?"}
+    RV -->|yes| OK["Serve document"]
+    RV -->|no| QU["Rename to .corrupt"]
+    QU --> DEF["Persist reviewed defaults"]
+    DEF --> OK
+```
+
 ## Read path
 
 `load()` reads once per process, validates strictly, and caches. Any failure — missing file, malformed JSON, schema drift — follows the same path:

@@ -22,12 +22,12 @@ Channel names remain an internal shared constant imported only by privileged cod
 
 ## Sender authorization
 
-Every invoke requires a live top-level frame and one exact root document:
+Every invoke requires a live top-level frame and one exact approved document:
 
-- packaged: `tokentrail://app/`;
-- development: `http://127.0.0.1:5173/`.
+- packaged: `tokentrail://app/` with any `#fragment`;
+- development: `http://127.0.0.1:5173/` with any `#fragment`.
 
-Subframes, malformed URLs, lookalike hosts, alternate ports, non-root paths, queries, and fragments fail closed. Authorization uses parsed URL components and Electron frame identity, not string prefixes supplied by the caller.
+The fragment is deliberately ignored during authorization because Token Trail's reviewed hash navigation stores route identifiers there; a fragment never leaves the renderer, cannot select different content, and carries no trust meaning. Subframes, malformed URLs, lookalike hosts, alternate ports, non-root paths, and queries still fail closed. Authorization uses parsed URL components and Electron frame identity, not string prefixes supplied by the caller.
 
 ## Snapshot contract
 
@@ -39,6 +39,7 @@ Raw protocol envelopes, emails, request IDs, executable details, stderr, filesys
 
 - Preferences cross IPC only as complete schema-valid documents; partial updates are rejected so every stored document is fully valid.
 - Diagnostics cross IPC only through the closed preview/export flow: export writes exactly the retained previewed document and returns no filesystem path.
+- The diagnostics document carries a `health` section of sanitized local counters (refresh attempt, success, failure, and no-data counts plus one closed outcome category and a coarsened duration bucket). The recorder observes only already-normalized snapshot transitions and retains no timestamps or identifiers.
 - Clear-data accepts no argument and returns reviewed defaults; it removes only Token Trail-owned preference files.
 
 ## Subscription lifecycle

@@ -33,8 +33,23 @@ The schema is `.strict()`: any field not explicitly named cannot survive parsing
 - Environment facts come from process metadata (`app.getVersion()`, `process.versions`, `process.platform`, `process.arch`) and the safely detectable `XDG_SESSION_TYPE`.
 - Connection facts come from controller state: discovery booleans and capability names from the closed allowlist — never paths.
 - Coverage and session facts come from the normalized snapshot's counters; raw buckets, quota values, credit strings, and delta bodies have no input parameter at all.
+- Sanitized health counters come from the in-memory recorder that observes snapshot transitions only.
 
 Because sensitive values are absent from the function's inputs, they cannot leak through formatting bugs. The final parse through the boundary schema prevents privileged-only fields from being added later without a schema change.
+
+```mermaid
+flowchart LR
+    A["Normalized snapshot transitions"] --> R["HealthRecorder<br/>(counters + closed categories)"]
+    S["Snapshot"] --> B["buildDiagnosticsDocument"]
+    E["Process metadata"] --> B
+    C["Controller connection facts"] --> B
+    R --> B
+    B --> V["Boundary schema parse"]
+    V --> P["Renderer preview (full JSON)"]
+    P -->|user confirms| X["exportDiagnostics"]
+    X --> D["Native save dialog"]
+    D --> W["writeFile mode 0600"]
+```
 
 ## Preview-before-export
 

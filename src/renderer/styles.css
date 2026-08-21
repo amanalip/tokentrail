@@ -420,11 +420,11 @@ h3 {
   display: grid;
 }
 
-/* Make the primary value readable at a glance. */
+/* Make the primary value readable at a glance. The responsive size stays here, but glyph spacing
+   and line height defer to the .display-number token so dense pairs such as 48% and 88% remain
+   distinct; the earlier negative tracking squeezed digits together at display sizes. */
 .remaining-value strong {
   font-size: clamp(2.8rem, 7vw, 5rem);
-  line-height: 0.9;
-  letter-spacing: -0.07em;
 }
 
 /* Keep the hero unit quieter. */
@@ -973,6 +973,23 @@ h3 {
   color: var(--muted-strong);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+/* Mark the deep-linked explanation card so contextual navigation has a visible landing point. */
+.learn-card--focused {
+  border-color: var(--mint);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 35%, transparent);
+}
+
+/* Keep links inside status pills readable without inheriting pill emphasis styles. */
+.pill-link {
+  color: inherit;
+  font-weight: 600;
+}
+
+/* Present corrective-action links inside state panels as a calm follow-up row. */
+.state-actions {
+  margin-top: 0.5rem;
 }
 
 /* Group preference controls with accessible fieldsets. */

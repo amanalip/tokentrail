@@ -14,9 +14,12 @@ import { formatRefreshTime } from '../formatting';
 export function SettingsDiagnosticsRoute({
   snapshot,
   preferences,
+  savePreferences,
 }: {
   snapshot: OverviewSnapshot;
   preferences: Preferences;
+  // Adopt the shared hook updater so every save applies immediately instead of waiting for a restart.
+  savePreferences: (next: Preferences) => Promise<void>;
 }) {
   // Track which tab is visible; both concern local application state.
   const [tab, setTab] = useState<'preferences' | 'diagnostics'>('preferences');
@@ -27,11 +30,6 @@ export function SettingsDiagnosticsRoute({
 
   // Track the two-step clear-data confirmation so a single click can never delete data.
   const [confirmingClear, setConfirmingClear] = useState(false);
-
-  // Persist one complete replacement through the frozen bridge.
-  const savePreferences = async (next: Preferences): Promise<void> => {
-    await window.tokenTrail.setPreferences(next);
-  };
 
   // Clear only Token Trail-owned data after explicit confirmation and adopt returned defaults.
   const clearOwnedData = async (): Promise<void> => {

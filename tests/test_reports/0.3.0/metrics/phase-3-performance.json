@@ -1,0 +1,10 @@
+{
+  "playwrightController": "chromium",
+  "coldStartupMilliseconds": 413.5,
+  "warmStartupMilliseconds": 341.8,
+  "idleCpuPercent": 0.39,
+  "residentMegabytes": 802.5,
+  "proportionalMegabytes": 302.6,
+  "observedProcessCount": 7,
+  "idleObservationSeconds": 5.105
+}

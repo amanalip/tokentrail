@@ -67,6 +67,34 @@ export const diagnosticsSessionSchema = z
   })
   .strict();
 
+// Describe sanitized local health counters used only for troubleshooting support requests.
+// Every field is a bounded counter or closed category; no timestamps, identifiers, or paths exist here.
+export const diagnosticsHealthSchema = z
+  .object({
+    // Count refresh attempts observed since process open, regardless of outcome.
+    refreshAttemptCount: z.number().int().safe().nonnegative(),
+    // Count attempts that produced a ready or partial snapshot.
+    refreshSuccessCount: z.number().int().safe().nonnegative(),
+    // Count attempts that ended in a stale or error state.
+    refreshFailureCount: z.number().int().safe().nonnegative(),
+    // Count attempts that completed without account data, such as signed-out or unsupported states.
+    refreshNoDataCount: z.number().int().safe().nonnegative(),
+    // Carry the outcome of the most recent attempt as one closed category.
+    lastRefreshOutcome: z.enum(['none', 'succeeded', 'failed', 'no-data']),
+    // Coarsen refresh timing into reviewed buckets so support sees magnitude without a detailed history.
+    lastRefreshDurationBucket: z.enum([
+      'not-measured',
+      'under-250ms',
+      '250ms-to-1s',
+      '1s-to-3s',
+      'over-3s',
+    ]),
+  })
+  .strict();
+
+// Derive the renderer-safe health section type shared by main and renderer.
+export type DiagnosticsHealthSection = Readonly<z.infer<typeof diagnosticsHealthSchema>>;
+
 // Describe the complete closed diagnostic document eligible for preview and export.
 export const diagnosticsDocumentSchema = z
   .object({
@@ -79,6 +107,7 @@ export const diagnosticsDocumentSchema = z
     connection: diagnosticsConnectionSchema,
     coverage: diagnosticsCoverageSchema,
     session: diagnosticsSessionSchema,
+    health: diagnosticsHealthSchema,
   })
   .strict();
 

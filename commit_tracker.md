@@ -93,82 +93,85 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `bfdbcc7`
-**Last updated:** August 21, 2026 at 8:53:36 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `3667476`
+**Last updated:** August 21, 2026 at 10:52 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending documentation entry was finalized as commit `bfdbcc7` (Document timezone-aware test evidence and changelog policy).
+The previously pending Phase 3 implementation entry was finalized as commit `3667476` (Implement Phase 3 complete v1 product).
 
 ### Intent
 
-Implement the Phase 3 complete v1 product: the shared domain and calculation library, all six product routes over the proven Phase 2 boundary, validated preferences with safe persistence, redacted diagnostics with preview-before-export, runtime window identity, large-number typography, and the five scheduled Phase 3 architecture documents.
+Close the Phase 3 gate from the plan's section 7.8: execute the complete required fixture catalog, verify every formula edge-case family, prove keyboard-visible operation of all six routes, capture runtime window-identity and numeric-readability evidence, add sanitized diagnostics health categories, expand contextual navigation, refresh architecture documents to implemented-system status with diagrams and an automated link/terminology gate, and record everything in a versioned `0.3.0` test report.
 
 ### Important changes
 
-- Added shared domain contracts for usage (exact decimal-string counters), credits/reset credits, session observations, preferences, diagnostics, and a standalone metric module that removes contract-layer import cycles.
-- Added the dependency-free calculation library: strict calendar-date parsing/arithmetic, exact bigint formatting, statistics, complete-period comparisons, heatmap classification, coverage accounting, reset-timeline ordering, quota attention ordering, primary-window selection, reset-credit expiry classification, combined-capacity clause selection, and in-memory session-delta derivation with reset-transition rebasing.
-- Extended the protocol layer with the approved `account/usage/read` schema plus availability-aware usage and credits normalization; invalid records are counted in coverage and never silently participate.
-- Extended `OverviewController` to perform the aggregate-usage read without erasing quota data on its failure, to derive session deltas against an in-memory process baseline, and to rebase baselines across reset transitions.
-- Built the six-route renderer shell (Overview, Quota Windows, Usage, Credits, Learn, Settings & Diagnostics) with hash-based navigation, one shared snapshot subscription, render-safe clock hook, ECharts SVG chart with accessible table alternative, calendar heatmap distinguishing zero/positive/missing, statistics/comparisons/coverage panels, expiry-grouped credit list, searchable local Learn content, theme/motion/time-format preferences, and a two-step clear-data confirmation.
-- Added the privileged preference store (atomic writes, restrictive permissions, quarantine-on-corruption), the closed diagnostics document schema with allowlist-built preview and user-selected export, and four new purpose-specific IPC handlers behind sender validation.
-- Set the runtime `BrowserWindow` icon explicitly from an application-owned packaged path and added display-number typography tokens with tabular numerals and explicit letter spacing.
-- Created the five Phase 3 architecture documents (calculations-and-precision, preferences-and-storage, diagnostics-and-redaction, navigation-and-route-composition, accessibility-architecture) and updated the index plus stale IPC/renderer-state documents.
-- Fixed a test-environment defect where `ELECTRON_FORCE_IS_PACKAGED` leaked from maintainer shells into Electron test processes, silently bypassing fixture scenarios and pointing built-app tests at a real Codex account; launch helpers now strip forced packaging switches.
+- Extended the checked-in app-server fixture with sixteen new scenarios covering the remaining product-spec section 21.2 requirements: window-shape variants (`primary-only`, `secondary-only`, `no-windows`), unknown limit and plan values, sparse updates before and after a full snapshot, credit unlimited/zero/decimal states, reset-credit count-only and five-row expiry mixes, gapped/zero/duplicate daily buckets, sixty-date spans with a zero preceding period, counters beyond safe integer range, shared reset timestamps, reached-state reports, duplicate response correlation IDs, and parameterized `typography-*` scenarios.
+- Added `tests/integration/fixture-catalog.test.ts` executing the whole catalog through the real owned-process transport plus six end-to-end renderer cases and a real-Electron keyboard-only route sweep.
+- Added contextual navigation throughout the renderer: error panels offer corrective actions, capacity clauses link to Quota Windows/Credits detail, reached pills and coverage/session notes deep-link to reviewed Learn entries via validated `#learn/<entry-id>` hashes with safe fallback for unknown identifiers.
+- Added the sanitized diagnostics `health` document section (bounded refresh attempt/success/failure/no-data counters, one closed outcome category, coarsened duration buckets) recorded in process memory only by observing snapshot transitions; wired through IPC timing and documented in contracts, inventory, and the IPC architecture page.
+- Fixed three latent defects found by this verification (see Fact-check report): sender authorization denied all post-navigation IPC because it required an empty URL fragment; settings selections persisted but did not apply live; and `.remaining-value strong` overrode the display-number typography token with negative tracking.
+- Isolated built-app tests from persisted state with disposable per-launch profile directories behind an unpackaged-only `TOKENTRAIL_TEST_USER_DATA_DIR` seam.
+- Added `tests/e2e/window-identity.spec.ts` (runtime icon resolution proof) and `tests/e2e/typography.spec.ts` (geometry assertions plus twenty curated matrix captures across themes, zoom, and narrowest width).
+- Added `scripts/check-doc-links.mjs` and the `check:docs` command validating local links, heading fragments, and Token Trail product-copy terminology across all Markdown.
+- Updated seven architecture documents to implemented-system status, corrected stale facts (bridge method count, usage-read activation, data-inventory rows, fragment authorization rule), and added compact flow diagrams to the diagnostics and preferences pages.
+- Produced `tests/test_reports/0.3.0/test_report.md` with timezone-aware execution times, the full matrix results, defect-disposition records, performance measurements, and curated evidence; bumped the package version to 0.3.0.
 
 ### Decisions and assumptions
 
-- Aggregate counters cross IPC as canonical decimal strings and are calculated as `bigint`; only chart geometry converts to numbers, clamped at the safe-integer maximum while text stays exact.
-- TanStack Query remains unused: the Phase 2 controller already provides bounded asynchronous state, so adding it would grow dependencies without improving freshness or retry clarity.
-- The seven-day expiry notice, attention order, and capacity clauses are interface rules computed from reported values; no forecast, score, or cross-unit arithmetic exists.
-- Session deltas exist only in main-process memory, clear at exit, and are never persisted, logged, or exported.
-- Clear-data removes exactly the preference document and any quarantined sibling after explicit renderer-side confirmation.
-- The package version stays 0.2.0 until the versioned 0.3.0 evidence record exists.
+- URL fragments are treated as client-side route state of the already-trusted top-level document, not an authorization component; scheme, host, path, query, subframe, and malformed-input checks remain strict.
+- Diagnostics health recording observes only already-normalized snapshots so no timestamp history, identifier, or raw value can enter the export surface.
+- The version moves to 0.3.0 now that the versioned evidence record exists, matching the tracker rule that candidates change version when their code changes.
+- echarts was upgraded within its pinned exact-version policy from 6.0.0 to 6.1.0 to remediate moderate advisory GHSA-fgmj-fm8m-jvvx rather than documenting an accepted risk.
 
 ### Verification
 
-- `npm run verify` passes: formatting, lint, strict type checks across five projects, 165 unit/component tests, and 13 real-process integration tests.
-- Playwright suites pass: 10 end-to-end (fixture-backed), 3 security (including the extended eight-method bridge-surface enumeration), 2 accessibility, 2 development-mode, 1 packaged, 1 performance.
-- New coverage includes calendar/bignum/statistics/comparison/ordering/expiry/clause/delta unit tests, usage and credits normalization tests, controller usage-read and baseline tests, preference-store corruption/atomicity/clear tests, diagnostics canary scans, and renderer route tests for navigation, usage honesty, credits capping copy, settings persistence, preview-before-export, and clear-data confirmation.
-- Documentation local links were checked during writing; a full repository-wide link sweep before phase close remains open.
+- `npm run verify`: passed August 21, 2026 at 10:39:21–10:39:35 AM EDT — formatting, lint, five strict TypeScript projects, 184 unit/component tests across 25 files, 30 integration tests across 3 files using real fixture processes.
+- Combined Playwright run (E2E, security, accessibility, development): 27 tests passed at 10:39:49–10:40:27 AM EDT.
+- Packaged smoke and identity: 2 tests passed at 10:40:27–10:40:33 AM EDT; performance measurement passed at 10:40:33–10:40:50 AM EDT (cold 413.5 ms, warm 341.8 ms, idle CPU 0.39%, memory ceiling miss carried openly to Phase 4).
+- Coverage: 77.6% statements / 70.32% branches / 80.93% functions / 79.09% lines.
+- `npm audit`: zero known vulnerabilities after the echarts upgrade.
+- `npm run check:docs`: 33 files scanned, zero broken local links or fragments, zero terminology violations.
 
 ### Fact-check report
 
-- All listed suites were executed locally on August 21, 2026 and passed; counts above come from the run output.
-- The environment defect was reproduced empirically: with `ELECTRON_FORCE_IS_PACKAGED=true` present, `app.isPackaged` returned true inside launched processes, the fixture branch never activated, and built-app tests displayed live account data; HEAD (before this work) failed identically, confirming the defect pre-existed this change.
-- No real account values are stored in the repository; fixtures remain synthetic.
+- Defect 1 reproduced empirically before fixing: clicking Dark in Settings produced `Error invoking remote method 'token-trail:preferences:set': Denied Token Trail IPC sender.` in the built app; root cause was the `hash === ''` requirement colliding with hash navigation. The fix is covered by new unit cases accepting fragments on approved documents while still rejecting combined path/query+fragment variants.
+- Defect 2 confirmed via probe: radio clicks never changed `document.documentElement.dataset.theme`; the settings route shadowed the hook updater. The fix is covered by a live-application E2E asserting computed background tokens change immediately and persist across restart.
+- Defect 3 measured directly: computed letter-spacing on the primary metric was -5.6px from the `.remaining-value strong` override; after the fix the geometry assertions read positive token tracking in all twenty matrix positions.
+- Dark-theme captures were verified as genuinely dark (mean pixel brightness ≈ 48/255) after regeneration.
+- All counts and timestamps above come from captured run output recorded during execution, not reconstructed afterward.
 
 ### Sanity-check report
 
-- No write, prompt, task, repository, filesystem, credential, telemetry, update, or release capability was added; the Codex allowlist is unchanged.
-- Raw protocol data stops in main; the renderer receives only schema-validated normalized DTOs, now including usage, credits, and session sections with their own availability states.
-- Missing data never becomes zero: heatmap cells, comparisons, statistics, and deltas preserve explicit unavailability.
-- The bridge grew from three to eight reviewed methods and the security surface test was updated to enumerate them exactly; frozen-object and sender-validation guarantees are unchanged.
-- Phase 3 is not declared closed: remaining §7.8 verification items stay visibly unchecked.
+- No write capability, prompt/task/repository access, credential handling, telemetry, network behavior, update check, or publication entered the codebase; the Codex allowlist is unchanged.
+- The sender-authorization relaxation is scoped exactly to the fragment component of the two approved root documents; lookalike hosts, ports, paths, queries, and subframes still fail closed, with tests proving both directions.
+- Missing data never becomes zero anywhere in the newly exercised surfaces; unavailable statistics render explicit language.
+- Phase 3 is declared closed locally against plan sections 7.8/7.10 with the `preview-only` recommendation recorded in the versioned report; nothing here publishes or releases anything.
 
 ### User lessons
 
-- A shell environment variable can silently redirect desktop-app tests from fixtures to a real account; test harnesses must sanitize inherited environments.
-- Exact arithmetic needs one representation decision made early: decimal strings at the boundary, bigint in calculations, floats only for drawn geometry.
+- A security boundary written before a UI mechanism exists can silently deny the entire feature layer later; integration seams need one real end-to-end invocation per handler before they can be called proven.
+- Persisted-state leakage between test suites only becomes visible once persistence actually works; isolation belongs in the harness, not in suite ordering luck.
+- Typography tokens lose to higher-specificity legacy rules silently; computed-style assertions catch what screenshots hide.
 
 ### Agent lessons
 
-- React compiler lint rules reject impure clock reads during render; sample time in effects through a bounded-interval hook instead.
-- Contract modules that re-export shared primitives must import them from a leaf module to avoid initialization cycles.
-- A queue-based store must not call its own queued save from inside a queued operation; inline the write to avoid deadlock.
-- When a security enumeration test fails on new bridge keys, extending the reviewed list is the intended flow — but each added method needs sender validation, schema boundaries, and documentation in the same change.
+- Playwright's Electron evaluate context has neither `require`, dynamic `import`, nor CJS globals like `__dirname`; destructure needed modules from the electron object and derive paths from `app.getAppPath()` instead.
+- React controlled radios ignore clicks when the underlying state never updates; "it worked in jsdom" proves rendering, not live application.
+- GitHub heading slugs do not collapse repeated spaces and deduplicate with numeric suffixes; link checkers must match that exact algorithm to avoid false findings.
 
 ### Risks or limitations
 
-- Remaining Phase 3 verification: full section 21.2 fixture catalog, keyboard-visible route sweep, runtime window-icon evidence, typography visual matrix (`11%`, `47%`, `48%`, `88%`, `100%`), repository-wide link check, and the versioned 0.3.0 test report.
-- Diagnostics connection section does not yet carry the observed CLI version string; sanitized health categories beyond last-refresh remain Phase 4 work.
-- Route changes do not yet move focus programmatically; landmark navigation currently covers keyboard users.
-- ECharts raises the renderer bundle above 500 kB minified; code-splitting and budget enforcement belong to Phase 4 performance work.
+- Native window-chrome/desktop-shell icon capture remains impossible under KDE Wayland automation; visual desktop-shell confirmation is deferred honestly to Phase 4 manual work.
+- Manual screen-reader, contrast, high-contrast, and reduced-motion evidence is absent until Phase 4.
+- Provisional resident-memory ceiling is missed (~802.5 MB process-tree sum); budget profiling and revision belong to Phase 4.
+- GNOME, X11, arm64, fractional scaling, clean-distribution, and installer-format coverage waits for Phases 4–6.
 
 ### Follow-up
 
-Complete the remaining §7.8 verification items and produce `tests/test_reports/0.3.0/test_report.md` before marking the Phase 3 gate complete; do not publish a release.
+Commit this work, then begin Phase 4 per the approved plan: design tokens and theming, the accessibility campaign with manual screen-reader evidence, performance budgets including the memory investigation, and Linux desktop compatibility coverage. No release activity is authorized by this entry.
 
 ---
+
 
 ## Commit 021 - Documentation lifecycle expanded and KDE proposal relocated
 

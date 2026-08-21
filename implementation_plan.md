@@ -1,8 +1,8 @@
 # Token Trail Implementation Plan
 
-**Status:** Approved plan; Phases 1 through 3 implementation complete locally, Phase 3 verification evidence partially captured
+**Status:** Approved plan; Phases 1 through 3 complete, Phase 3 verification evidence recorded in `tests/test_reports/0.3.0/test_report.md` with a `preview-only` recommendation
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 3 implemented with shared domain library, six routes, preferences, diagnostics, and architecture documents; remaining Phase 3 verification items are listed unchecked in section 7.8
+**Current phase:** Phase 3 closed locally with the shared domain library, six routes, contextual navigation, live preferences, sanitized diagnostics health counters, runtime icon identity, the typography matrix, the complete section 21.2 fixture catalog, and expanded architecture documents; Phase 4 is next
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
 **Last updated:** August 21, 2026
 
@@ -333,19 +333,19 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [x] Build Credits with balance, unlimited state, spending limits, reached state, reset credits, expiry, and read-only explanations.
 - [x] Build Learn with quota, token, credit, provenance, privacy, statistics, and completeness explanations.
 - [x] Build Settings and Diagnostics with themes, refresh choices, redacted preview, export, clear-data confirmation, and support information.
-- [ ] Add contextual navigation from metrics and errors to the relevant explanation or corrective action.
+- [x] Add contextual navigation from metrics and errors to the relevant explanation or corrective action.
 
 ### 7.4 Phase 3 identity and metric readability corrections
 
 - [x] Set the main `BrowserWindow` icon explicitly to a Token Trail icon so development launches do not display Electron's default lightning-bolt icon in the title bar, task switcher, dock, or desktop shell.
 - [x] Resolve the icon from an application-owned path that works in development, built-content tests, and packaged execution without reading the launch directory.
 - [x] Keep electron-builder and Linux desktop metadata pointed at the same Token Trail identity while preserving the machine-safe executable name `tokentrail`.
-- [ ] Test the runtime window icon independently from package metadata because a correct installer icon does not prove the live development window uses it.
-- [ ] Capture window-chrome or desktop-shell evidence where the available compositor exposes the icon; record environments where automated capture cannot include native chrome.
+- [x] Test the runtime window icon independently from package metadata because a correct installer icon does not prove the live development window uses it.
+- [x] Capture window-chrome or desktop-shell evidence where the available compositor exposes the icon; record environments where automated capture cannot include native chrome.
 - [x] Improve large-percentage typography so adjacent digits and the percent sign remain visually distinct, especially for dense shapes such as `48%` and `88%`.
 - [x] Use explicit numeric typography tokens, tabular numerals where suitable, and reviewed letter spacing rather than relying on the font's default display-size kerning.
-- [ ] Test representative values `11%`, `47%`, `48%`, `88%`, and `100%` in light and dark themes, at normal scaling and 200 percent zoom, and at the narrowest supported Overview width.
-- [ ] Add visual-regression or screenshot evidence that detects merged, clipped, overlapping, or ambiguous primary metric glyphs.
+- [x] Test representative values `11%`, `47%`, `48%`, `88%`, and `100%` in light and dark themes, at normal scaling and 200 percent zoom, and at the narrowest supported Overview width.
+- [x] Add visual-regression or screenshot evidence that detects merged, clipped, overlapping, or ambiguous primary metric glyphs.
 
 ### 7.5 State and preference behavior
 
@@ -363,36 +363,36 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 - [x] Exclude email, IDs, paths, prompts, responses, raw protocol data, environment variables, session baselines, and unknown fields.
 - [x] Seed canaries for every sensitive class and fail tests if any canary appears.
 - [x] Use a user-selected export destination and safe file-writing behavior.
-- [ ] Record only sanitized local health categories needed for troubleshooting.
+- [x] Record only sanitized local health categories needed for troubleshooting.
 
 ### 7.7 Architecture documentation expansion
 
 - [x] Maintain `docs/architecture/README.md` as the entry point, current-system map, document ownership table, and recommended reading order.
-- [ ] Keep separate detailed documents for the Electron process model, Codex adapter/lifecycle, normalization and data contracts, IPC/preload boundary, renderer state model, development-versus-production runtime, and testing architecture.
+- [x] Keep separate detailed documents for the Electron process model, Codex adapter/lifecycle, normalization and data contracts, IPC/preload boundary, renderer state model, development-versus-production runtime, and testing architecture.
 - [x] Create `docs/architecture/calculations-and-precision.md` with the implemented arithmetic, coverage, date, bigint/decimal, unavailable-state, and formula-test contracts.
 - [x] Create `docs/architecture/preferences-and-storage.md` with the implemented schema, defaults, migrations, corruption behavior, persistence exclusions, and clear-data ownership.
 - [x] Create `docs/architecture/diagnostics-and-redaction.md` with the implemented safe schema, canary strategy, preview/export flow, filesystem boundary, and prohibited fields.
 - [x] Create `docs/architecture/navigation-and-route-composition.md` with the implemented route tree, data dependencies, loading boundaries, focus behavior, and contextual navigation.
 - [x] Create `docs/architecture/accessibility-architecture.md` with the implemented semantic, keyboard, focus, announcement, chart/table, zoom, theme, and reduced-motion contracts.
-- [ ] Keep those five documents marked planned or implementation-in-progress until their corresponding Phase 3 systems and tests exist; never present intended behavior as current evidence.
+- [x] Keep those five documents marked planned or implementation-in-progress until their corresponding Phase 3 systems and tests exist; never present intended behavior as current evidence.
 - [x] Record packaging/release/update architecture in Phase 5 rather than describing unimplemented release behavior as current behavior.
 - [x] Give each architecture document status, scope, invariants, failure behavior, security/privacy boundaries, test evidence, known limitations, and links to controlling decisions.
 - [x] Update architecture documents in the same change as any material boundary or lifecycle modification; stale architecture text is a defect.
-- [ ] Include compact diagrams where process ownership, data transformation, event order, or failure recovery would otherwise be difficult to reconstruct.
-- [ ] Run local-link and terminology checks across the architecture set before Phase 3 closes.
+- [x] Include compact diagrams where process ownership, data transformation, event order, or failure recovery would otherwise be difficult to reconstruct.
+- [x] Run local-link and terminology checks across the architecture set before Phase 3 closes.
 
 ### 7.8 Phase 3 verification
 
-- [ ] Run every required fixture listed in product-spec section 21.2.
-- [ ] Test every formula at boundary, missing, zero, duplicate, invalid, reset, and oversized cases.
-- [ ] Test all routes through keyboard-visible user behavior.
-- [ ] Confirm chart and table values match from the same normalized source.
-- [ ] Confirm no unavailable state becomes zero or an invented label.
-- [ ] Confirm clear-data removes only Token Trail-owned data.
-- [ ] Confirm diagnostics contain no seeded sensitive value.
-- [ ] Verify the native runtime window uses the Token Trail icon rather than Electron's default icon in every locally testable launch mode.
-- [ ] Review the primary percentage values `11%`, `47%`, `48%`, `88%`, and `100%` for readable glyph separation in the required theme, zoom, and width matrix.
-- [ ] Review the architecture index and linked topic documents against the implemented Phase 3 system; no current boundary may exist only in source code.
+- [x] Run every required fixture listed in product-spec section 21.2.
+- [x] Test every formula at boundary, missing, zero, duplicate, invalid, reset, and oversized cases.
+- [x] Test all routes through keyboard-visible user behavior.
+- [x] Confirm chart and table values match from the same normalized source.
+- [x] Confirm no unavailable state becomes zero or an invented label.
+- [x] Confirm clear-data removes only Token Trail-owned data.
+- [x] Confirm diagnostics contain no seeded sensitive value.
+- [x] Verify the native runtime window uses the Token Trail icon rather than Electron's default icon in every locally testable launch mode.
+- [x] Review the primary percentage values `11%`, `47%`, `48%`, `88%`, and `100%` for readable glyph separation in the required theme, zoom, and width matrix.
+- [x] Review the architecture index and linked topic documents against the implemented Phase 3 system; no current boundary may exist only in source code.
 
 ### 7.9 Phase 3 deliverables
 
@@ -406,15 +406,15 @@ Implement every required v1 screen, domain calculation, preference, and diagnost
 
 ### 7.10 Phase 3 exit criteria
 
-- [ ] Every v1-required feature has a working implementation and automated coverage at the appropriate layer.
-- [ ] All product-correctness rules in section 25.1 pass against fixtures.
-- [ ] All diagnostics and privacy canary tests pass.
-- [ ] All routes support normal, loading, partial, stale, unavailable, and error behavior where applicable.
-- [ ] No feature reads or stores data beyond the approved inventory.
-- [ ] Optional background features have not entered scope without an explicit decision.
-- [ ] Development, built, and packaged windows use Token Trail identity wherever the tested desktop environment exposes it.
-- [ ] Primary metric numerals remain distinct and unclipped across the representative-value visual matrix.
-- [ ] The architecture index gives a new contributor a complete path through every implemented trust boundary, process, state model, and test layer.
+- [x] Every v1-required feature has a working implementation and automated coverage at the appropriate layer.
+- [x] All product-correctness rules in section 25.1 pass against fixtures.
+- [x] All diagnostics and privacy canary tests pass.
+- [x] All routes support normal, loading, partial, stale, unavailable, and error behavior where applicable.
+- [x] No feature reads or stores data beyond the approved inventory.
+- [x] Optional background features have not entered scope without an explicit decision.
+- [x] Development, built, and packaged windows use Token Trail identity wherever the tested desktop environment exposes it.
+- [x] Primary metric numerals remain distinct and unclipped across the representative-value visual matrix.
+- [x] The architecture index gives a new contributor a complete path through every implemented trust boundary, process, state model, and test layer.
 
 ## 8. Phase 4 - Product quality
 

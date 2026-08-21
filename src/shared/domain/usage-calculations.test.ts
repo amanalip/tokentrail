@@ -125,6 +125,33 @@ describe('computeUsageStatistics', () => {
     expect(statistics.activeDayCount.displayValue).toBe('0');
     expect(statistics.total.displayValue).toBe('0');
   });
+
+  it('collapses every statistic to the same supplied day at the one-day boundary', () => {
+    // One positive day is the smallest complete statistics input.
+    const statistics = computeUsageStatistics([day('2026-08-11', '42000')]);
+
+    // Total, average, median, and highest all describe exactly that day without invention.
+    expect(statistics.total.displayValue).toBe('42000');
+    expect(statistics.dailyAverage.displayValue).toBe('42000');
+    expect(statistics.activeDayAverage.displayValue).toBe('42000');
+    expect(statistics.median.displayValue).toBe('42000');
+    expect(statistics.highestSuppliedDay.displayValue).toBe('42000');
+    expect(statistics.highestSuppliedDay.tiedDates).toEqual(['2026-08-11']);
+    expect(statistics.activeDayCount.displayValue).toBe('1');
+  });
+
+  it('computes exact statistics for values beyond safe integer precision', () => {
+    // Two huge odd values exercise bigint summation and even-count median division.
+    const days = [
+      day('2026-08-11', '123456789012345678901234567891'),
+      day('2026-08-12', '123456789012345678901234567893'),
+    ];
+    const statistics = computeUsageStatistics(days);
+
+    // The total and median keep full precision that JavaScript numbers would corrupt.
+    expect(statistics.total.displayValue).toBe('246913578024691357802469135784');
+    expect(statistics.median.displayValue).toBe('123456789012345678901234567892');
+  });
 });
 
 // Group behavior around complete-period comparisons.
@@ -219,6 +246,12 @@ describe('classifyHeatmapCell', () => {
     expect(classifyHeatmapCell('2026-08-11', byKey)).toBe('low');
     expect(classifyHeatmapCell('2026-08-12', byKey)).toBe('medium');
     expect(classifyHeatmapCell('2026-08-13', byKey)).toBe('high');
+
+    // A value beyond safe integer precision still classifies without float conversion.
+    const oversized = new Map(
+      [day('2026-08-11', '99999999999999999999')].map((entry) => [entry.date, entry]),
+    );
+    expect(classifyHeatmapCell('2026-08-11', oversized)).toBe('high');
   });
 });
 

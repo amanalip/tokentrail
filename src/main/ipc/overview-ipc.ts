@@ -23,8 +23,15 @@ export function isApprovedOverviewIpcSender(event: IpcMainInvokeEvent): boolean 
   );
 }
 
-/** Install two purpose-specific no-argument Overview handlers. */
-export function installOverviewIpc(controller: OverviewController): () => void {
+/**
+ * Install two purpose-specific no-argument Overview handlers. When `onRefreshComplete` is supplied, each
+ * renderer-triggered refresh reports its measured duration to privileged diagnostics code; the callback
+ * receives a millisecond count only, never renderer input or protocol content.
+ */
+export function installOverviewIpc(
+  controller: OverviewController,
+  onRefreshComplete?: (durationMilliseconds: number) => void,
+): () => void {
   // Return the current validated snapshot only to the approved top-level frame.
   ipcMain.handle(TOKEN_TRAIL_IPC_CHANNELS.getOverviewSnapshot, (event) => {
     if (!isApprovedOverviewIpcSender(event)) {
@@ -41,8 +48,15 @@ export function installOverviewIpc(controller: OverviewController): () => void {
       throw new Error('Denied Token Trail IPC sender.');
     }
 
-    // Validate the asynchronous result before Electron serializes it to preload.
-    return overviewSnapshotSchema.parse(await controller.refresh());
+    // Measure the bounded refresh so sanitized duration buckets stay factual for support.
+    const startedAt = Date.now();
+    try {
+      // Validate the asynchronous result before Electron serializes it to preload.
+      return overviewSnapshotSchema.parse(await controller.refresh());
+    } finally {
+      // Report timing even when the read failed, because failures are diagnostic facts too.
+      onRefreshComplete?.(Date.now() - startedAt);
+    }
   });
 
   // Return exact cleanup for application shutdown and isolated tests.

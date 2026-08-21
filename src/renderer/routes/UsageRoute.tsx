@@ -77,7 +77,8 @@ export function UsageRoute({
             <h2 id="usage-empty-title">Aggregate usage is unavailable</h2>
             <p>
               Connect to Codex and refresh to read approved aggregate token activity. Token totals
-              do not directly determine quota percentage.
+              do not directly determine quota percentage;{' '}
+              <a href="#learn/tokens-vs-quota">read why these measurements differ</a>.
             </p>
           </div>
         </section>
@@ -177,7 +178,8 @@ export function UsageRoute({
           </div>
         )}
         <p className="panel-note">
-          Token totals do not directly determine quota percentage. <a href="#learn">Learn why</a>.
+          Token totals do not directly determine quota percentage.{' '}
+          <a href="#learn/tokens-vs-quota">Learn why</a>.
         </p>
       </section>
 
@@ -304,7 +306,8 @@ export function UsageRoute({
           <p className="panel-note">
             Missing dates inside the supplied span:{' '}
             {snapshot.usage.coverage.missingDates.join(', ')}
-            {snapshot.usage.coverage.missingDatesTruncated ? ' … (list truncated)' : ''}
+            {snapshot.usage.coverage.missingDatesTruncated ? ' … (list truncated)' : ''}{' '}
+            <a href="#learn/missing-days-statistics">How missing days are handled</a>.
           </p>
         ) : null}
         <p className="panel-note">

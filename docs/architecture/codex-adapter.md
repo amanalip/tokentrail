@@ -1,7 +1,7 @@
 # Codex Adapter Architecture
 
-**Status:** Phase 2 account and quota reads implemented  
-**Last updated:** August 14, 2026 at 11:16 AM EDT
+**Status:** Phase 3 account, quota, and aggregate-usage reads implemented  
+**Last updated:** August 21, 2026
 
 ## Boundary
 
@@ -9,7 +9,7 @@ The adapter is Token Trail's most sensitive module. It converts a broad experime
 
 ## Outbound authorization
 
-The closed request allowlist contains initialization, account read, rate-limit read, and the approved Phase 3 aggregate-usage read. The latter is not called by Phase 2. Rate-limit updates live in an independently closed notification allowlist.
+The closed request allowlist contains initialization, account read, rate-limit read, and the approved Phase 3 aggregate-usage read, which the controller calls on every refresh. Rate-limit updates live in an independently closed notification allowlist; the controller treats a valid sparse update as a trigger for one full approved read because merge completeness is uncertain across versions.
 
 Every request method is checked at runtime immediately before serialization, even though TypeScript also restricts trusted callers. Renderer input cannot select a method or supply params.
 

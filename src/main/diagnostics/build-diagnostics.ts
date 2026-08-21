@@ -1,7 +1,9 @@
 // Import the closed diagnostics document schema and its section types.
 import {
   diagnosticsDocumentSchema,
+  diagnosticsHealthSchema,
   type DiagnosticsDocument,
+  type DiagnosticsHealthSection,
 } from '../../shared/contracts/diagnostics';
 import type { OverviewSnapshot } from '../../shared/contracts/overview-snapshot';
 import type { Preferences } from '../../shared/contracts/preferences';
@@ -35,6 +37,7 @@ export function buildDiagnosticsDocument(input: {
   readonly connection: DiagnosticsConnectionInput;
   readonly snapshot: OverviewSnapshot;
   readonly preferences: Preferences;
+  readonly health: DiagnosticsHealthSection;
   readonly generatedAt: Date;
 }): DiagnosticsDocument {
   // Map the closed theme preference into the diagnostic theme mode.
@@ -77,5 +80,6 @@ export function buildDiagnosticsDocument(input: {
       startedAtIso: input.snapshot.sessionObservation.startedAtIso,
       validSnapshotCount: input.snapshot.sessionObservation.validSnapshotCount,
     },
+    health: diagnosticsHealthSchema.parse(input.health),
   });
 }

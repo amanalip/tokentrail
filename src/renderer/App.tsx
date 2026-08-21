@@ -12,7 +12,7 @@ import { OverviewRoute } from './routes/OverviewRoute';
 import { QuotaWindowsRoute } from './routes/QuotaWindowsRoute';
 import { UsageRoute } from './routes/UsageRoute';
 import { CreditsRoute } from './routes/CreditsRoute';
-import { LearnRoute } from './routes/LearnRoute';
+import { LEARN_ENTRY_IDS, LearnRoute } from './routes/LearnRoute';
 import { SettingsDiagnosticsRoute } from './routes/SettingsDiagnosticsRoute';
 
 // Enumerate the closed route identifiers mapped one-to-one onto navigation hashes.
@@ -39,25 +39,49 @@ const NAV_ITEMS: Readonly<Record<RouteId, { readonly label: string; readonly hin
     settings: { label: 'Settings & Diagnostics', hint: 'Preferences and local diagnostics' },
   });
 
-// Parse the current location hash into a known route, defaulting to Overview.
-function parseRoute(hash: string): RouteId {
-  // Strip the leading fragment marker and compare exact route identifiers.
+// Describe one resolved navigation target: the route plus an optional validated Learn entry focus.
+interface ResolvedRoute {
+  readonly route: RouteId;
+  readonly learnEntryId: string | null;
+}
+
+/**
+ * Parse the current location hash into a known route, defaulting to Overview. Deep links of the form
+ * `#learn/<entry-id>` are accepted only when the entry identifier exactly matches the reviewed list, so
+ * protocol or user data can never select arbitrary content.
+ */
+function parseRoute(hash: string): ResolvedRoute {
+  // Strip the leading fragment marker and split the optional two-segment form.
   const candidate = hash.replace(/^#/u, '');
-  return ROUTES.some((route) => route === candidate) ? (candidate as RouteId) : 'overview';
+  const [routePart, entryPart] = candidate.split('/');
+
+  // Reject unknown routes entirely; every fallback lands on Overview with no focused entry.
+  if (!ROUTES.some((route) => route === routePart)) {
+    return { route: 'overview', learnEntryId: null };
+  }
+
+  // Accept a Learn deep link only when its identifier is on the closed reviewed list.
+  const learnEntryCandidate = routePart === 'learn' ? (entryPart ?? '') : '';
+  if (LEARN_ENTRY_IDS.some((id) => id === learnEntryCandidate)) {
+    return { route: 'learn', learnEntryId: learnEntryCandidate };
+  }
+
+  // Return the exact known route without carrying unvalidated segment data.
+  return { route: routePart as RouteId, learnEntryId: null };
 }
 
 /** Render the accessible application shell with stable navigation and the active route. */
 export function App() {
   // Track the active route from the location hash so navigation works without a router dependency.
-  const [route, setRoute] = useState<RouteId>(() => parseRoute(window.location.hash));
+  const [target, setTarget] = useState<ResolvedRoute>(() => parseRoute(window.location.hash));
 
   // Share one snapshot subscription and one preferences document across all routes.
   const { snapshot, refresh, isRefreshing } = useOverviewSnapshot();
-  const { preferences } = usePreferences();
+  const { preferences, savePreferences } = usePreferences();
 
   // Follow hash changes so keyboard and assistive navigation stay first-class.
   useEffect(() => {
-    const onHashChange = (): void => setRoute(parseRoute(window.location.hash));
+    const onHashChange = (): void => setTarget(parseRoute(window.location.hash));
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
@@ -89,11 +113,11 @@ export function App() {
           {ROUTES.map((id) => (
             <a
               key={id}
-              className={`nav-item ${route === id ? 'nav-item--active' : ''}`}
+              className={`nav-item ${target.route === id ? 'nav-item--active' : ''}`}
               href={`#${id}`}
-              aria-current={route === id ? 'page' : undefined}
+              aria-current={target.route === id ? 'page' : undefined}
             >
-              <span aria-hidden="true">{route === id ? '◉' : '○'}</span>
+              <span aria-hidden="true">{target.route === id ? '◉' : '○'}</span>
               {NAV_ITEMS[id].label}
             </a>
           ))}
@@ -105,7 +129,7 @@ export function App() {
       </aside>
 
       <main className="overview" id="overview">
-        {route === 'overview' && (
+        {target.route === 'overview' && (
           <OverviewRoute
             snapshot={snapshot}
             preferences={preferences}
@@ -113,12 +137,18 @@ export function App() {
             isRefreshing={isRefreshing}
           />
         )}
-        {route === 'windows' && <QuotaWindowsRoute snapshot={snapshot} preferences={preferences} />}
-        {route === 'usage' && <UsageRoute snapshot={snapshot} preferences={preferences} />}
-        {route === 'credits' && <CreditsRoute snapshot={snapshot} />}
-        {route === 'learn' && <LearnRoute />}
-        {route === 'settings' && (
-          <SettingsDiagnosticsRoute snapshot={snapshot} preferences={preferences} />
+        {target.route === 'windows' && (
+          <QuotaWindowsRoute snapshot={snapshot} preferences={preferences} />
+        )}
+        {target.route === 'usage' && <UsageRoute snapshot={snapshot} preferences={preferences} />}
+        {target.route === 'credits' && <CreditsRoute snapshot={snapshot} />}
+        {target.route === 'learn' && <LearnRoute focusEntryId={target.learnEntryId} />}
+        {target.route === 'settings' && (
+          <SettingsDiagnosticsRoute
+            snapshot={snapshot}
+            preferences={preferences}
+            savePreferences={savePreferences}
+          />
         )}
       </main>
     </div>

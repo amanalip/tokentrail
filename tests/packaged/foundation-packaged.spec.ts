@@ -1,6 +1,15 @@
 // Import Playwright's assertions and lifecycle for the unpacked Linux package.
 import { expect, test } from '@playwright/test';
 
+// Import filesystem access so packaged identity assets can be verified from the test process.
+import { readFile } from 'node:fs/promises';
+
+// Import path helpers to locate the packaged archive beside this checked-in suite.
+import path from 'node:path';
+
+// Import URL conversion so package paths never depend on the test working directory.
+import { fileURLToPath } from 'node:url';
+
 // Import the launcher that targets electron-builder output instead of the development Electron binary.
 import { launchPackagedApplication } from '../helpers/launch-packaged-application';
 
@@ -63,4 +72,18 @@ test('launches the hardened unpacked Linux package', async () => {
     // Close the packaged process owned by this test.
     await packagedApplication.close();
   }
+});
+
+// Confirm the runtime window icon asset shipped inside the packaged application archive.
+test('packages the Token Trail window icon inside the application archive', async () => {
+  // Resolve the ASAR archive produced by electron-builder beside this suite's repository root.
+  const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const asarPath = path.join(repositoryRoot, 'release', 'linux-unpacked', 'resources', 'app.asar');
+
+  // Read the archive bytes and locate its JSON header, which lists every packaged file name.
+  const asarBytes = await readFile(asarPath);
+  const headerText = asarBytes.toString('utf8', 0, Math.min(asarBytes.length, 1_048_576));
+
+  // The window icon must be present by exact name so createMainWindow resolves it in packaged mode.
+  expect(headerText).toContain('tokentrail-icon-v2-dark.png');
 });

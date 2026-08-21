@@ -46,10 +46,13 @@ Every route renders from the single normalized snapshot delivered by the shared 
 
 ## Contextual navigation
 
-- Overview explains that tokens and quota percentages measure different things and links to Learn.
-- Usage repeats the token-vs-quota explanation with its own Learn link.
-- Capacity clauses reference their sections: quota details live in Quota Windows, credit details in Credits.
-- Learn entries explain provenance, session changes versus history, statistics completeness, and why capacity is not scored — matching the metric surfaces that raise them.
+- Overview explains that tokens and quota percentages measure different things and deep-links to the Learn entry (`#learn/tokens-vs-quota`).
+- Every error and signed-out state offers a corrective action: a link to the Settings & Diagnostics connection details and to `#learn/what-is-read`.
+- Reached-state pills on bucket cards and the attention list link to `#learn/when-a-limit-is-hit` instead of leaving an unexplained warning label.
+- Capacity clauses reference their sections: quota details link to Quota Windows, credit clauses link to Credits.
+- Usage links its token-vs-quota note and missing-day coverage notes to their exact Learn entries; Credits' reached spending control links to the limit explanation.
+- The session-changes panel links to `#learn/session-changes-vs-history`.
+- Deep-link hashes of the form `#learn/<entry-id>` are validated against the closed reviewed entry list before rendering; unknown identifiers fall back to the Learn top with no focused card. The matched entry card is highlighted and scrolled into view.
 
 ## Route-level behaviors
 
@@ -70,10 +73,11 @@ Every route renders from the single normalized snapshot delivered by the shared 
 
 ## Test evidence
 
-- `routes.test.tsx`: fragment-link navigation between routes, Usage statistics/table/comparison honesty, Credits balance and capping copy, settings persistence payload, preview-before-export flow, local Learn filtering.
-- `tests/e2e/overview.spec.ts`: fixture-backed end-to-end coverage of Overview states and multi-bucket completeness.
+- `routes.test.tsx`: fragment-link navigation between routes, validated Learn deep links with focus fallback, contextual clause/error/reached/coverage links, Usage statistics/table/comparison honesty, chart-and-table same-source consistency, unavailable-never-zero statistics, Credits balance and capping copy, settings persistence payload, preview-before-export flow, clear-data confirmation, local Learn filtering, and a keyboard-only sweep activating all six destinations.
+- `tests/e2e/fixture-catalog.spec.ts`: fixture-backed end-to-end coverage of the section 21.2 catalog including reached-state explanations, gapped usage, huge counters, sparse updates, and the keyboard route sweep in real Electron.
+- `tests/e2e/preferences.spec.ts`: live theme application through real radio controls plus persistence across restart.
+- `tests/e2e/window-identity.spec.ts` and `tests/e2e/typography.spec.ts`: runtime icon and numeric readability matrix evidence.
 
 ## Known limitations
 
-- Route transitions do not yet move focus to the new heading (scheduled accessibility work); screen users currently rely on landmark navigation.
-- Deep links to individual Learn entries are not yet wired to the contextual links; they currently land at the Learn top.
+- Route transitions do not yet move focus to the new heading (scheduled Phase 4 accessibility work); screen users currently rely on landmark navigation.

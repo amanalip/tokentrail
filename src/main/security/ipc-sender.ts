@@ -13,22 +13,23 @@ export function isApprovedApplicationFrameUrl(frameUrl: string, isTopLevelFrame:
     // Parse structurally so prefix lookalikes and malformed input cannot pass authorization.
     const parsedUrl = new URL(frameUrl);
 
-    // Accept only the exact packaged scheme, host, root path, and empty query or fragment.
+    // Accept only the exact packaged scheme, host, root path, and empty query. The URL fragment is
+    // deliberately ignored because Token Trail's reviewed hash navigation keeps route identifiers
+    // there; a fragment never leaves the renderer, cannot select a different document, and carries
+    // no authorization meaning, so requiring an empty hash would deny every post-navigation call.
     const isPackagedApplication =
       parsedUrl.protocol === `${APPLICATION_SCHEME}:` &&
       parsedUrl.host === APPLICATION_HOST &&
       parsedUrl.pathname === '/' &&
-      parsedUrl.search === '' &&
-      parsedUrl.hash === '';
+      parsedUrl.search === '';
 
     // Accept only the exact Vite origin and its root document during unpackaged development.
     const isDevelopmentApplication =
       parsedUrl.origin === DEVELOPMENT_RENDERER_ORIGIN &&
       parsedUrl.pathname === '/' &&
-      parsedUrl.search === '' &&
-      parsedUrl.hash === '';
+      parsedUrl.search === '';
 
-    // Deny every other port, host, scheme, path, query, and fragment.
+    // Deny every other port, host, scheme, path, and query regardless of fragment.
     return isPackagedApplication || isDevelopmentApplication;
   } catch {
     // Malformed URLs are untrusted and therefore denied.

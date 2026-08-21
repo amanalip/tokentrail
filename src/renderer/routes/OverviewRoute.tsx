@@ -67,7 +67,16 @@ function QuotaBucketCard({ bucket }: { bucket: QuotaBucket }) {
           <p className="eyebrow">Reported quota</p>
           <h3 id={`quota-${bucket.id}`}>{bucket.name}</h3>
         </div>
-        {bucket.reached ? <span className="pill pill--warning">Limit reached</span> : null}
+        {bucket.reached ? (
+          <span className="pill pill--warning">
+            Limit reached ·{' '}
+            {
+              <a href="#learn/when-a-limit-is-hit" className="pill-link">
+                what this means
+              </a>
+            }
+          </span>
+        ) : null}
       </header>
 
       {bucket.windows.length === 0 ? (
@@ -143,7 +152,8 @@ function StatePanel({ snapshot }: { snapshot: OverviewSnapshot }) {
           <h2 id="signed-out-title">Codex is not signed in</h2>
           <p>
             Sign in through Codex, then return here and refresh. Token Trail never handles your
-            credentials.
+            credentials. After signing in, use the Refresh button above or read{' '}
+            <a href="#learn/what-is-read">what Token Trail reads</a>.
           </p>
         </div>
       </section>
@@ -173,6 +183,11 @@ function StatePanel({ snapshot }: { snapshot: OverviewSnapshot }) {
             {snapshot.errorCategory
               ? ERROR_COPY[snapshot.errorCategory]
               : 'No supported quota window was returned for this account.'}
+          </p>
+          {/* Offer the corrective path: sanitized connection facts live in the diagnostics tab. */}
+          <p className="state-actions">
+            Check connection details in <a href="#settings">Settings &amp; Diagnostics</a>, or read{' '}
+            <a href="#learn/what-is-read">what Token Trail reads</a>.
           </p>
         </div>
       </section>
@@ -387,7 +402,12 @@ export function OverviewRoute({
                 <h3>
                   {group.bucket.name}
                   {group.reached ? (
-                    <span className="pill pill--warning">Reached state reported</span>
+                    <span className="pill pill--warning">
+                      Reached state reported ·{' '}
+                      <a href="#learn/when-a-limit-is-hit" className="pill-link">
+                        what this means
+                      </a>
+                    </span>
                   ) : null}
                 </h3>
                 <ul>
@@ -413,11 +433,20 @@ export function OverviewRoute({
           </div>
         </div>
         <ul className="clause-list">
-          {capacityClauses.map((clause, index) => (
-            <li key={`${clause.clauseKey}:${index}`}>
-              {(CLAUSE_COPY[clause.clauseKey] ?? CLAUSE_FALLBACK)(clause.values ?? {})}
-            </li>
-          ))}
+          {capacityClauses.map((clause, index) => {
+            // Resolve the reviewed follow-up destination for this clause family, when one exists.
+            const clauseTarget = CLAUSE_TARGETS[clause.clauseKey] ?? null;
+            return (
+              <li key={`${clause.clauseKey}:${index}`}>
+                {(CLAUSE_COPY[clause.clauseKey] ?? CLAUSE_FALLBACK)(clause.values ?? {})}{' '}
+                {clauseTarget === null ? null : (
+                  <a href={`#${clauseTarget.route}`}>
+                    {clauseTarget.route === 'windows' ? 'See window details' : 'See credit details'}
+                  </a>
+                )}
+              </li>
+            );
+          })}
         </ul>
         <p className="panel-note">
           Quota, credits, spending controls, and reset credits are displayed together but never
@@ -466,7 +495,7 @@ export function OverviewRoute({
           </ul>
           <p className="panel-note">
             Local observation only. This is not retained account history. Values clear when Token
-            Trail exits.
+            Trail exits. <a href="#learn/session-changes-vs-history">Why this is not history</a>.
           </p>
         </section>
       ) : null}
@@ -496,7 +525,8 @@ export function OverviewRoute({
           <h2 id="measurement-title">Tokens and quota percentage measure different things</h2>
           <p>
             Token totals describe activity. Quota percentages are reported separately by Codex, so
-            Token Trail never converts one into the other. <a href="#learn">Learn more</a>.
+            Token Trail never converts one into the other.{' '}
+            <a href="#learn/tokens-vs-quota">Learn more</a>.
           </p>
         </div>
       </section>
@@ -519,6 +549,22 @@ const CLAUSE_COPY: Readonly<Record<string, (values: Readonly<Record<string, stri
     'reset-credits-available': (values) => `${values['count'] ?? '0'} reset credits available.`,
     'reset-credit-expires-within-seven-days': () => 'One reset credit expires within 7 days.',
     'no-reset-credit-information': () => 'No reset-credit count was reported.',
+  });
+
+// Map each clause family to the route holding its full detail so every summary offers a follow-up path.
+const CLAUSE_TARGETS: Readonly<Record<string, { readonly route: 'windows' | 'credits' }>> =
+  Object.freeze({
+    'no-reached-limit-reported': { route: 'windows' },
+    'reached-limit-reported': { route: 'windows' },
+    'no-quota-data': { route: 'windows' },
+    'credit-balance-reported': { route: 'credits' },
+    'credit-unlimited-reported': { route: 'credits' },
+    'no-credit-information': { route: 'credits' },
+    'spending-control-remaining-reported': { route: 'credits' },
+    'spending-control-reached': { route: 'credits' },
+    'reset-credits-available': { route: 'credits' },
+    'reset-credit-expires-within-seven-days': { route: 'credits' },
+    'no-reset-credit-information': { route: 'credits' },
   });
 
 // Render an explicit fallback for any future clause key so unknown values cannot render as blank.
