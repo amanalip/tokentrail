@@ -1,8 +1,8 @@
 # Token Trail Design System and Theming
 
 **Status:** Implementation-in-progress (Phase 4 opened August 21, 2026)
-**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy
-**Still open inside this document's scope:** contrast audit revisions, per-theme tint unification, responsive and zoom sweep, chart legibility patterns, animation/idle-CPU budget, final theme verification screenshots
+**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints
+**Still open inside this document's scope:** responsive and zoom sweep, chart legibility patterns wired to chart tokens, animation/idle-CPU budget
 **Controlling documents:** [product_spec_electron.md](../../product_spec_electron.md), [implementation_plan.md](../../implementation_plan.md) section 8.2, [dependency-rationale.md](dependency-rationale.md)
 **Last updated:** August 21, 2026
 
@@ -29,7 +29,7 @@ Invariants:
 - The three palettes declare identical color-role sets. A role missing from one theme would silently fall back to another theme's value.
 - Statuses and charts alias primitives rather than redefining hex values.
 
-Failure behavior: violations fail the renderer unit suite (`src/renderer/design-tokens.test.ts`), which locks required groups, exact alias wiring, palette parity, radius discipline, the absence of any remote reference, and the literal `--mint: #54e5c1;` development smoke-test replacement contract used by `tests/development/development-renderer.spec.ts`.
+Failure behavior: violations fail the renderer unit suite (`src/renderer/design-tokens.test.ts`), which locks required groups, exact alias wiring, palette parity, radius and color-literal discipline, the programmatic WCAG contrast audit, the absence of any remote reference, and the literal `--mint: #54e5c1;` development smoke-test replacement contract used by `tests/development/development-renderer.spec.ts`.
 
 ## 2. Themes
 
@@ -41,10 +41,18 @@ Three modes exist and are driven by the validated preferences document:
 
 The duplication between the explicit light theme and the system fallback is deliberate CSS: an attribute selector cannot share declarations with a media query without preprocessors. The token-contract test enforces byte-identical synchronization instead of hoping two hand-maintained lists agree.
 
-Known limitations recorded for the remaining Phase 4 theme work:
+### Contrast audit
 
-- Some translucent tints (banner backgrounds, connection-dot halos, state-icon fills) are fixed rgba literals derived from the dark palette's warning and mint hues. They render acceptably in both themes today, but unifying them with their status roles through `color-mix()` changes light-theme rendering slightly and therefore belongs to the theme-completion task with fresh screenshot evidence, not to a refactor.
-- No WCAG contrast audit revision has been applied yet; the audit may revise specific palette entries through the same tokens.
+The audit computes WCAG 2 relative-luminance contrast for every functional pair from the authored palettes, and the same computation runs as a unit test so future value revisions cannot silently regress:
+
+- Text roles (`--text`, `--muted`, `--muted-strong`, `--violet`, `--mint`, `--warning`) require at least 4.5:1 against all four surfaces in every theme. Small accent labels such as the eyebrow (0.72rem) and provenance pills render through these roles, so they are text, not decoration.
+- The focus indicator requires at least 3:1 against all four surfaces.
+
+The audit's one remediation: light-theme mint was revised from `#0a9f7e` (3.1–3.4:1, below the 4.5:1 text requirement) to `#087c68` (at least 4.77:1 on every light surface). The dark palette already passed everywhere; its worst pair is muted-on-surface-raised at 6.7:1. After the revision, the tightest remaining pair is light muted-on-background at 5.06:1.
+
+### Theme-aware status tints
+
+Translucent tints behind warnings, provenance pills, banners, state icons, connection halos, the privacy note, and the primary-card glow are computed with `color-mix()` from status roles and palette primitives instead of fixed rgba literals, so each theme derives its tints from its own colors. A component-discipline test strips the three palette layers and fails if any raw hex literal or rgb/rgba function appears in a component rule.
 
 ## 3. Typography stack and license decision
 
@@ -82,7 +90,7 @@ Current implemented motion is limited to the loading spinner, which is disabled 
 
 ## 6. Test evidence
 
-- Unit: `src/renderer/design-tokens.test.ts` — token groups, alias wiring, palette parity, radius discipline, offline-only references, development smoke contract.
+- Unit: `src/renderer/design-tokens.test.ts` — token groups, alias wiring, palette parity, radius and color-literal discipline, the programmatic WCAG contrast audit, offline-only references, and the development smoke contract.
 - End-to-end: `tests/e2e/typography.spec.ts` — display-numeral geometry across the theme, zoom, and width matrix; `tests/e2e/window-identity.spec.ts` — runtime icon resolution from the canonical export; `tests/e2e/preferences.spec.ts` — live theme switching and persistence.
 - Development: `tests/development/development-renderer.spec.ts` — proves live theming by replacing the literal `--mint` declaration and observing computed style changes.
 - Packaged: `tests/packaged/foundation-packaged.spec.ts` — proves the window icon asset ships inside the ASAR archive.
@@ -91,8 +99,8 @@ Final theme verification screenshots across the full matrix remain part of the P
 
 ## 7. Known limitations
 
-- Contrast, high-contrast observation, and zoom sweeps are pending; no accessibility-audit revision has been applied to palette values yet.
-- Fixed rgba tints noted in section 2 are scheduled for unification during theme completion.
+- The responsive and zoom sweep has not normalized off-scale spacing values or re-verified core actions at every supported width yet.
 - Chart series colors exist as tokens, but ECharts options do not yet consume them; wiring chart options to the tokens (and adding color-independent patterns) is part of the chart-legibility task.
+- Curated theme-matrix screenshots for the versioned test report are captured at phase close; automated suites already exercise both themes continuously.
 
 When any item above lands, this document and its controlling tests change in the same commit, per the architecture-maintenance rule.

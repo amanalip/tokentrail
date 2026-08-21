@@ -61,6 +61,24 @@ function extractBlock(start: number): string {
 }
 
 /**
+ * Return the complete selector-plus-block span starting at `start`, used to strip whole palette
+ * layers from the stylesheet before scanning component rules.
+ */
+function blockSpan(start: number): string {
+  const open = stylesheet.indexOf('{', start);
+  let depth = 0;
+  for (let cursor = open; cursor < stylesheet.length; cursor += 1) {
+    const character = stylesheet[cursor];
+    if (character === '{') depth += 1;
+    if (character === '}') {
+      depth -= 1;
+      if (depth === 0) return stylesheet.slice(start, cursor + 1);
+    }
+  }
+  throw new Error('Unterminated CSS block while locating a palette layer span.');
+}
+
+/**
  * Parse custom-property declarations from one block. Comments are stripped first, then the block
  * is split on semicolons so multi-line values such as the font stack stay single entries.
  */
@@ -212,5 +230,80 @@ describe('design tokens', () => {
     // this exact declaration to prove live theming; changing the dark mint value requires a
     // deliberate update there too, which this guard makes impossible to miss.
     expect(stylesheet).toContain('--mint: #54e5c1;');
+  });
+
+  it('keeps every functional color pair at or above its WCAG 2 requirement in both themes', () => {
+    // Roles rendered as text (including small accent labels such as the eyebrow and provenance
+    // pills) must reach 4.5:1 against each surface they appear on; the focus indicator is a
+    // non-text boundary and must reach 3:1. Computing this from the authored palettes keeps the
+    // audit honest through future value revisions instead of relying on a stale manual table.
+    const surfaces = ['--background', '--sidebar', '--surface', '--surface-raised'] as const;
+    const textRoles = [
+      '--text',
+      '--muted',
+      '--muted-strong',
+      '--violet',
+      '--mint',
+      '--warning',
+    ] as const;
+
+    const relativeLuminance = (hex: string): number => {
+      const channels = [0, 2, 4].map((offset) => {
+        const value = Number.parseInt(hex.slice(1 + offset, 3 + offset), 16) / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
+    };
+
+    const contrastRatio = (foreground: string, background: string): number => {
+      const lighter = Math.max(relativeLuminance(foreground), relativeLuminance(background));
+      const darker = Math.min(relativeLuminance(foreground), relativeLuminance(background));
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+
+    for (const [themeName, palette] of [
+      ['dark', baseLayer],
+      ['light', lightTheme],
+      ['system light fallback', systemLight],
+    ] as const) {
+      for (const role of [...textRoles]) {
+        const foreground = palette.get(role);
+        if (!foreground) continue;
+        for (const surface of surfaces) {
+          const background = palette.get(surface);
+          if (!background) continue;
+          const ratio = contrastRatio(foreground, background);
+          expect(
+            ratio,
+            `${themeName} ${role} on ${surface} is ${ratio.toFixed(2)}:1, below 4.5:1`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+      const focusSurface = palette.get('--focus');
+      if (focusSurface) {
+        for (const surface of surfaces) {
+          const background = palette.get(surface);
+          if (!background) continue;
+          const ratio = contrastRatio(focusSurface, background);
+          expect(
+            ratio,
+            `${themeName} --focus on ${surface} is ${ratio.toFixed(2)}:1, below 3:1`,
+          ).toBeGreaterThanOrEqual(3);
+        }
+      }
+    }
+  });
+
+  it('declares no raw color values in component rules outside the palette layers', () => {
+    // Every color in a component rule must arrive through a token or a color-mix of one, so
+    // theme-aware tints stay impossible to bypass with a fixed literal. Palette definitions
+    // themselves are the reviewed exception and are removed before scanning. The lookbehind in
+    // the rgba guard prevents matching the "srgb" text inside color-mix() calls.
+    const withoutPalettes = stylesheet
+      .replace(blockSpan(selectorIndex(':root')), '')
+      .replace(blockSpan(selectorIndex(":root[data-theme='light']")), '')
+      .replace(blockSpan(stylesheet.indexOf(':root:not', systemFallbackStart)), '');
+    expect(withoutPalettes).not.toMatch(/#[0-9a-fA-F]{3,8}\b/u);
+    expect(withoutPalettes).not.toMatch(/(?<!\w)rgba?\(/u);
   });
 });

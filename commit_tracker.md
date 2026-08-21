@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 025 - Document visual-system licensing decisions and open the design-system architecture record](#commit-025---document-visual-system-licensing-decisions-and-open-the-design-system-architecture-record)
 - [Commit 024 - Finalize production vector logo and required raster exports](#commit-024---finalize-production-vector-logo-and-required-raster-exports)
 - [Commit 023 - Open Phase 4 with the production design-token layer](#commit-023---open-phase-4-with-the-production-design-token-layer)
 - [Commit 022 - Phase 3 verification gate closed with full evidence record](#commit-022---phase-3-verification-gate-closed-with-full-evidence-record)
@@ -96,11 +97,52 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `cc8a666`
-**Last updated:** August 21, 2026 at 5:35 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `ba98f23`
+**Last updated:** August 21, 2026 at 5:50 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending vector-identity entry was finalized as commit `cc8a666` (Finalize production vector logo and required raster exports). This entry records the Phase 4 font/icon licensing decision and opens the design-system architecture document.
+The previously pending licensing/design-system entry was finalized as commit `ba98f23` (Document visual-system licensing decisions and open the design-system architecture record). This entry completes theme verification with a contrast remediation.
+
+### Intent
+
+Complete the plan's "complete light, dark, and system themes" task by auditing WCAG contrast from the authored palettes, remediating the one failing pair, unifying all status tints into theme-aware color-mix expressions, and locking both outcomes into automated tests so future revisions cannot regress them silently.
+
+### Important changes
+
+- Computed WCAG 2 relative-luminance contrast for every functional pair across dark and light palettes: text roles against all four surfaces at 4.5:1, focus indicator at 3:1.
+- Remediation applied: light-theme mint revised `#0a9f7e` to `#087c68`, raising small-text pairs (eyebrow labels, provenance pills) from about 3.1 to 4.8-5.1:1. The dark palette passed everywhere; its tightest pair is muted-on-surface-raised at 6.7:1.
+- Replaced thirteen fixed rgba literals in component rules with color-mix() expressions derived from status roles and palette primitives, so banner washes, pill fills, state-icon backgrounds, connection halos, the privacy note, navigation washes, and the primary-card glow now follow each theme's own colors.
+- Extended `src/renderer/design-tokens.test.ts` (now nine cases): a programmatic contrast audit over all three palettes and a component-discipline guard that strips palette layers and fails on any raw hex literal or rgb/rgba function.
+- Updated `docs/architecture/design-system-and-theming.md`: audit results, remediation record, tint-unification note, and refreshed limitations; marked the plan's theme-completion task done from this evidence.
+
+### Decisions and assumptions
+
+- Accent-colored small text is treated as text requiring 4.5:1 rather than decoration; the audit encodes that interpretation so it stays deliberate.
+- The light mint revision intentionally affects heatmap intensity, progress gradients, focus-adjacent accents, and success dots in light mode; all move toward better contrast and keep the same hue family.
+- Dark-theme mint remains exactly `#54e5c1` because the development smoke test's replacement contract depends on that literal and the value already passes everywhere.
+
+### Verification
+
+- `npm run check:docs`: 34 files scanned, no broken links.
+- `npm run verify`: formatting, lint, strict type checks, unit tests 193 passed across 26 files including the two new token cases, integration tests 30 passed.
+- Full Playwright e2e plus development suites after a fresh build: 22 passed, including live theme switching, the typography matrix in both themes, and the packaged window-identity evidence.
+
+### Risks or limitations
+
+- The audit covers authored palette pairs; composite cases such as text over translucent tints are approximated by their near-white or near-dark effective backgrounds and were checked manually during remediation.
+- Curated theme-matrix screenshots for the versioned report are still captured at phase close.
+
+### Follow-up
+
+Continue section 8.2: responsive and zoom sweep, ECharts wiring to chart tokens with color-independent patterns, then the animation/idle-CPU cleanup before moving to section 8.3 accessibility work.
+
+---
+
+## Commit 025 - Document visual-system licensing decisions and open the design-system architecture record
+
+**Commit:** `ba98f23` - `Document visual-system licensing decisions and open the design-system architecture record`
+**Timestamp:** August 21, 2026 at 5:36:24 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -133,6 +175,8 @@ Resolve the plan's Phase 4 open question "production font and icon licenses" by 
 ### Follow-up
 
 Continue section 8.2: light/dark/system theme completion (rgba tint unification plus fresh screenshots), responsive and zoom sweep, chart-legibility patterns wired to chart tokens, and the animation/idle-CPU cleanup.
+
+---
 
 ---
 

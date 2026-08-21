@@ -427,7 +427,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 - [x] Finalize production vector logo and required raster exports.
 - [x] Select and document production font and icon licenses.
 - [x] Implement design tokens for color, spacing, type, radius, elevation, focus, chart, and status semantics.
-- [ ] Complete light, dark, and system themes without remote fonts or assets.
+- [x] Complete light, dark, and system themes without remote fonts or assets.
 - [ ] Support compact widths, typical laptop sizes, large screens, and zoom without clipped core actions.
 - [ ] Keep charts legible with color-independent patterns and equivalent tables.
 - [ ] Remove continuous or decorative animation that conflicts with reduced motion or idle CPU budgets.
