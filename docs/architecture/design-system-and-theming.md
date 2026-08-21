@@ -1,8 +1,8 @@
 # Token Trail Design System and Theming
 
 **Status:** Implementation-in-progress (Phase 4 opened August 21, 2026)
-**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints, automated width-and-zoom layout sweep, theme-wired chart presentation
-**Still open inside this document's scope:** animation/idle-CPU review beyond the implemented chart and spinner decisions
+**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints, automated width-and-zoom layout sweep, theme-wired chart presentation, completed motion and idle-CPU review
+**Still open inside this document's scope:** curated theme-matrix screenshots for the versioned report (captured at phase close); later revisions from the section 8.3 accessibility campaign
 **Controlling documents:** [product_spec_electron.md](../../product_spec_electron.md), [implementation_plan.md](../../implementation_plan.md) section 8.2, [dependency-rationale.md](dependency-rationale.md)
 **Last updated:** August 21, 2026
 
@@ -100,7 +100,15 @@ The Usage route's daily bar chart consumes the design tokens instead of ECharts 
 
 ## 5. Motion
 
-Current implemented motion is limited to the loading spinner, which is disabled under `prefers-reduced-motion: reduce` and replaced by a static two-tone ring, plus class-based reduced-motion overrides honoring an explicit user preference even when the system allows motion. The remaining Phase 4 task is an idle-CPU review to remove any continuous or decorative animation that conflicts with reduced-motion or battery budgets; findings will be recorded here.
+The idle-CPU and reduced-motion review is complete. Findings:
+
+- The stylesheet declares exactly one animation: the loading spinner's bounded rotation, which is functional feedback while a refresh is in flight rather than decoration. It unmounts with the loading state, so it never runs at idle.
+- Under `prefers-reduced-motion: reduce` the spinner stops entirely and a static two-tone ring communicates loading; under an explicit reduced preference the renderer applies near-zero duration overrides even when the system allows motion, and the media-query kill switch also covers the system and full classes.
+- No CSS transition shorthand exists anywhere in the stylesheet.
+- ECharts animation is disabled outright (section 4), so snapshot refreshes never replay entrance motion.
+- The only script-driven timer in renderer code is a 30-second clock sample backing countdown freshness; it is cleared on unmount and costs one small state update per interval.
+
+A four-case motion contract in `src/renderer/design-tokens.test.ts` locks these findings: exactly one animation declaration plus its reduced-motion `none`, both neutralization mechanisms, and zero transition shorthands. Any future animation must join that contract deliberately with its own reduced-motion story and idle-CPU justification.
 
 ## 6. Test evidence
 

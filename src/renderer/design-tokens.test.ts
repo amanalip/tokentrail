@@ -307,3 +307,37 @@ describe('design tokens', () => {
     expect(withoutPalettes).not.toMatch(/(?<!\w)rgba?\(/u);
   });
 });
+
+describe('motion contract', () => {
+  it('declares exactly one animation: the bounded loading spinner', () => {
+    // The spinner is functional feedback while a refresh is in flight, not decoration. Any new
+    // continuous or decorative animation must join this list deliberately with reduced-motion
+    // coverage and an idle-CPU justification.
+    const animationDeclarations = [
+      ...stylesheet.matchAll(/(?:^|[{;]\s*)animation:\s*([^;}]+);/gmu),
+    ].map((match) => match[1]?.trim());
+    expect(animationDeclarations).toEqual(['spin 900ms linear infinite', 'none']);
+  });
+
+  it('neutralizes the spinner when the system requests reduced motion', () => {
+    // Under prefers-reduced-motion the rotation stops entirely and a static two-tone ring
+    // communicates loading state instead.
+    const reducedMedia = /prefers-reduced-motion[\s\S]*?\.spinner\s*\{[^}]*animation:\s*none/u;
+    expect(stylesheet).toMatch(reducedMedia);
+  });
+
+  it('forces near-zero motion durations under the explicit preference classes', () => {
+    // The explicit renderer preference must neutralize movement even when the system allows it,
+    // and the media-query kill switch must also cover the system and full classes.
+    expect(stylesheet).toMatch(/\.motion-reduced[^{]*\{[^}]*animation-duration:\s*0\.01ms/su);
+    expect(stylesheet).toMatch(
+      /prefers-reduced-motion[\s\S]*\.motion-system[\s\S]*animation-duration:\s*0\.01ms/su,
+    );
+  });
+
+  it('declares no transition shorthand anywhere in the stylesheet', () => {
+    // Transitions are a second path to persistent visual movement. None exist today; any future
+    // transition needs an explicit reduced-motion story before this guard is revised.
+    expect(stylesheet).not.toMatch(/(?:^|[{;]\s*)transition:(?!\s*-)/mu);
+  });
+});

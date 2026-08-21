@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 028 - Wire the daily chart to design tokens with animation disabled](#commit-028---wire-the-daily-chart-to-design-tokens-with-animation-disabled)
 - [Commit 027 - Add the responsive width and zoom layout sweep](#commit-027---add-the-responsive-width-and-zoom-layout-sweep)
 - [Commit 026 - Complete theme verification with WCAG remediation and theme-aware tints](#commit-026---complete-theme-verification-with-wcag-remediation-and-theme-aware-tints)
 - [Commit 025 - Document visual-system licensing decisions and open the design-system architecture record](#commit-025---document-visual-system-licensing-decisions-and-open-the-design-system-architecture-record)
@@ -99,11 +100,49 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `5700f76`
-**Last updated:** August 21, 2026 at 6:05 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `de36e15`
+**Last updated:** August 21, 2026 at 6:16 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending responsive-sweep entry was finalized as commit `5700f76` (Add the responsive width and zoom layout sweep). This entry wires the daily chart to the design tokens and completes the chart-legibility task.
+The previously pending chart-token entry was finalized as commit `de36e15` (Wire the daily chart to design tokens with animation disabled). This entry closes section 8.2 with the animation and idle-CPU review.
+
+### Intent
+
+Complete the final section 8.2 task by reviewing every continuous or decorative motion source against the reduced-motion contract and idle-CPU budgets, and locking the findings into automated guards instead of a one-time manual note.
+
+### Important changes
+
+- Inventoried all renderer motion: one CSS keyframe (the loading spinner's bounded rotation), zero transition shorthands, no ECharts entrance animation since the previous commit, and one 30-second clock interval backing countdown freshness with cleanup on unmount.
+- Conclusion recorded in the design-system document: no decorative or continuous idle animation exists; the spinner is functional feedback that stops under reduced motion via both the system media query and the explicit preference classes.
+- Added a four-case motion contract to `src/renderer/design-tokens.test.ts`: exactly one animation declaration plus its reduced-motion `none`, neutralization through the media query and the near-zero duration override classes, and a stylesheet-wide ban on transition shorthands so future movement needs a deliberate reduced-motion story.
+- Marked the plan's final section 8.2 task complete; the design-system document now lists only phase-close screenshot capture and later accessibility-campaign revisions as open scope.
+
+### Decisions and assumptions
+
+- The loading spinner is classified as functional state feedback rather than decoration because it communicates an in-flight request and exists only while that request runs.
+- A future transition or animation requires revising the motion contract in the same change, keeping the reduced-motion guarantee enforceable rather than aspirational.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 202 passed across 27 files including the four new motion cases, integration tests 30 passed.
+- Full Playwright e2e suite after a fresh build: 21 passed.
+- `npm run check:docs`: 34 files scanned, no broken links after the document update.
+
+### Risks or limitations
+
+- Idle-CPU numbers are deferred to the Phase 5 packaged performance measurements; this review guarantees the absence of continuous idle motion rather than producing new CPU figures.
+
+### Follow-up
+
+Section 8.2 is closed. Begin section 8.3 accessibility work: axe-core integration into the component or end-to-end suites, then keyboard-only completion checks, then the manual screen-reader campaign record.
+
+---
+
+## Commit 028 - Wire the daily chart to design tokens with animation disabled
+
+**Commit:** `de36e15` - `Wire the daily chart to design tokens with animation disabled`
+**Timestamp:** August 21, 2026 at 6:08:16 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -138,6 +177,8 @@ Complete the plan's "keep charts legible with color-independent patterns and equ
 ### Follow-up
 
 Close section 8.2 with the animation/idle-CPU review, then begin section 8.3 accessibility work starting with axe-core integration.
+
+---
 
 ---
 
