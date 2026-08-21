@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 027 - Add the responsive width and zoom layout sweep](#commit-027---add-the-responsive-width-and-zoom-layout-sweep)
 - [Commit 026 - Complete theme verification with WCAG remediation and theme-aware tints](#commit-026---complete-theme-verification-with-wcag-remediation-and-theme-aware-tints)
 - [Commit 025 - Document visual-system licensing decisions and open the design-system architecture record](#commit-025---document-visual-system-licensing-decisions-and-open-the-design-system-architecture-record)
 - [Commit 024 - Finalize production vector logo and required raster exports](#commit-024---finalize-production-vector-logo-and-required-raster-exports)
@@ -98,11 +99,53 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `d17a25a`
-**Last updated:** August 21, 2026 at 5:55 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `5700f76`
+**Last updated:** August 21, 2026 at 6:05 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending theme-verification entry was finalized as commit `d17a25a` (Complete theme verification with WCAG remediation and theme-aware tints). This entry adds the automated responsive and zoom sweep.
+The previously pending responsive-sweep entry was finalized as commit `5700f76` (Add the responsive width and zoom layout sweep). This entry wires the daily chart to the design tokens and completes the chart-legibility task.
+
+### Intent
+
+Complete the plan's "keep charts legible with color-independent patterns and equivalent tables" task by consuming the chart tokens inside the ECharts option, removing decorative animation, and locking the option contract in pure-function tests.
+
+### Important changes
+
+- Extracted `buildDailyChartOption` and `resolveDailyChartPalette` in the Usage route: the series fill reuses `--chart-series-b` (the same hue as progress tracks and heatmap cells), while axis labels, axis lines, grid lines, and tooltip surfaces resolve from muted, border, surface, and text tokens.
+- Chart colors now follow live theme changes, including operating-system scheme flips while the "system" preference is active; the media-query subscription only updates state from its callback because synchronous effect-body updates are a cascading-render defect.
+- Disabled ECharts animation outright so snapshot refreshes never replay entrance motion, serving reduced motion and idle-CPU budgets at once.
+- Added bounded chart margins with contained axis labels for narrow widths.
+- Added `src/renderer/routes/daily-chart.test.ts` with five cases: palette wiring, disabled animation, day mapping, reported-zero geometry, and safe-integer clamping.
+- Guarded the system-scheme subscription against environments without matchMedia after jsdom component suites exposed that crash.
+- Updated the design-system document's implemented scope and removed the completed item from limitations; marked the plan task done from this evidence.
+
+### Decisions and assumptions
+
+- Color independence is satisfied structurally for a single-series chart: hue never separates categories, axis labels identify bars, and exact values live in tooltips plus the equivalent table view rendered from one normalized source.
+- Chart geometry clamps oversized counters at the safe integer maximum by prior design; the new unit test pins that behavior beside the exact bigint table presentation.
+- jsdom's missing matchMedia is treated as an environment capability gap, not an application defect; absence only disables live scheme-flip re-resolution.
+
+### Verification
+
+- `npm run verify`: formatting, lint including the react-hooks set-state rule that caught the first draft, strict type checks, unit tests 198 passed across 27 files, integration tests 30 passed.
+- Full Playwright e2e suite after a fresh build: 21 passed, confirming real chart rendering through the built application.
+
+### Risks or limitations
+
+- The tooltip surface uses opaque token fills; translucent blur styling was rejected as decoration with battery cost.
+- Heatmap intensity bands remain opacity-based on one hue with legend and table alternatives rather than patterned fills; pattern textures can be revisited if manual Phase 4 accessibility review finds a need.
+
+### Follow-up
+
+Close section 8.2 with the animation/idle-CPU review, then begin section 8.3 accessibility work starting with axe-core integration.
+
+---
+
+## Commit 027 - Add the responsive width and zoom layout sweep
+
+**Commit:** `5700f76` - `Add the responsive width and zoom layout sweep`
+**Timestamp:** August 21, 2026 at 5:56:51 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -134,6 +177,8 @@ Complete the plan's "support compact widths, typical laptop sizes, large screens
 ### Follow-up
 
 Continue section 8.2: wire ECharts options to the chart tokens with color-independent legibility patterns, then the animation/idle-CPU cleanup before section 8.3 accessibility work.
+
+---
 
 ---
 

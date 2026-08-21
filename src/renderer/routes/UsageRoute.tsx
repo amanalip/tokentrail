@@ -42,6 +42,81 @@ function toChartNumber(tokens: string): number | null {
   return parsed <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(parsed) : Number.MAX_SAFE_INTEGER;
 }
 
+/** The resolved theme colors one daily chart consumes for series, axes, and tooltip surfaces. */
+export interface DailyChartPalette {
+  /** Series fill; reuses the same data hue as progress tracks and heatmap cells. */
+  readonly series: string;
+  /** Axis tick label text. */
+  readonly axisLabel: string;
+  /** Axis baseline strokes. */
+  readonly axisLine: string;
+  /** Horizontal grid lines kept quieter than baselines. */
+  readonly splitLine: string;
+  /** Tooltip surface fill. */
+  readonly tooltipBackground: string;
+  /** Tooltip surface border. */
+  readonly tooltipBorder: string;
+  /** Tooltip text color. */
+  readonly tooltipText: string;
+}
+
+/**
+ * Resolve the chart palette from the reviewed CSS custom properties so the chart, tracks, and
+ * heatmap always describe the same data in the same theme language. Reading computed properties
+ * keeps this component declarative: themes change by updating document attributes only.
+ */
+export function resolveDailyChartPalette(): DailyChartPalette {
+  const token = (name: string): string =>
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return {
+    series: token('--chart-series-b'),
+    axisLabel: token('--muted-strong'),
+    axisLine: token('--border'),
+    splitLine: token('--border-soft'),
+    tooltipBackground: token('--surface-raised'),
+    tooltipBorder: token('--border'),
+    tooltipText: token('--text'),
+  };
+}
+
+/**
+ * Build the complete ECharts option for the daily bar chart from exact values and a resolved
+ * palette. Animation stays off permanently: a dashboard refresh must not replay decorative
+ * motion on every snapshot update, which serves both the reduced-motion contract and the idle
+ * CPU budget. Color independence holds by construction: one series means hue never separates
+ * categories, axis labels identify every bar, and the equivalent table view carries all values.
+ */
+export function buildDailyChartOption(
+  palette: DailyChartPalette,
+  days: OverviewSnapshot['usage']['days'],
+) {
+  // Map each day into category/value pairs using safe numbers for geometry only.
+  const categories = days.map((day) => formatDateKey(day.date));
+  const values = days.map((day) => toChartNumber(day.tokens) ?? 0);
+  return {
+    animation: false as const,
+    tooltip: {
+      trigger: 'axis' as const,
+      backgroundColor: palette.tooltipBackground,
+      borderColor: palette.tooltipBorder,
+      textStyle: { color: palette.tooltipText },
+    },
+    grid: { left: 8, right: 8, top: 16, bottom: 8, containLabel: true },
+    xAxis: {
+      type: 'category' as const,
+      data: categories,
+      axisLabel: { color: palette.axisLabel },
+      axisLine: { lineStyle: { color: palette.axisLine } },
+    },
+    yAxis: {
+      type: 'value' as const,
+      axisLabel: { color: palette.axisLabel },
+      splitLine: { lineStyle: { color: palette.splitLine } },
+    },
+    series: [{ type: 'bar' as const, data: values, itemStyle: { color: palette.series } }],
+  };
+}
+
 /** Render aggregate token activity with chart, accessible table, heatmap, statistics, and coverage. */
 export function UsageRoute({
   snapshot,
@@ -153,7 +228,7 @@ export function UsageRoute({
         {days.length === 0 ? (
           <p className="empty-detail">No dated buckets were supplied in this response.</p>
         ) : view === 'chart' ? (
-          <DailyChart days={days} />
+          <DailyChart days={days} theme={preferences.theme} />
         ) : (
           <div className="table-scroll" tabIndex={0} role="region" aria-label="Daily usage table">
             <table className="data-table">
@@ -409,22 +484,38 @@ function ComparisonBlock({
 }
 
 // Render the daily bar chart through ECharts with an SVG renderer and a text alternative nearby.
-function DailyChart({ days }: { days: OverviewSnapshot['usage']['days'] }) {
+function DailyChart({
+  days,
+  theme,
+}: {
+  days: OverviewSnapshot['usage']['days'];
+  theme: Preferences['theme'];
+}) {
   // Own the chart container through a stable ref for deterministic lifecycle management.
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Construct the option object from exact values once per data change.
-  const option = useMemo(() => {
-    // Map each day into category/value pairs using safe numbers for geometry only.
-    const categories = days.map((day) => formatDateKey(day.date));
-    const values = days.map((day) => toChartNumber(day.tokens) ?? 0);
-    return {
-      tooltip: { trigger: 'axis' as const },
-      xAxis: { type: 'category' as const, data: categories },
-      yAxis: { type: 'value' as const },
-      series: [{ type: 'bar' as const, data: values }],
-    };
-  }, [days]);
+  // Re-resolve theme colors when the explicit preference changes and when the operating system
+  // flips its scheme under the "system" preference. The memo derives during render from the
+  // theme input; the effect only subscribes to the external media-query system, never calling
+  // setState synchronously in its body.
+  const [systemSchemeChangeCount, bumpSystemScheme] = useState(0);
+  useEffect(() => {
+    // jsdom-based component suites provide no matchMedia; live scheme flips are a real-browser
+    // capability, so absence simply means the explicit-preference path still re-resolves.
+    if (theme !== 'system' || typeof window.matchMedia !== 'function') return;
+    const scheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (): void => bumpSystemScheme((count) => count + 1);
+    scheme.addEventListener('change', onChange);
+    return () => scheme.removeEventListener('change', onChange);
+  }, [theme]);
+  const palette = useMemo(() => {
+    // Reference the counter so a live scheme flip re-reads computed tokens.
+    void systemSchemeChangeCount;
+    return resolveDailyChartPalette();
+  }, [theme, systemSchemeChangeCount]);
+
+  // Construct the option object from exact values and the resolved palette.
+  const option = useMemo(() => buildDailyChartOption(palette, days), [palette, days]);
 
   // Attach one ECharts instance to the container with deterministic cleanup.
   useEffect(() => {

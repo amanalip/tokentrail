@@ -1,8 +1,8 @@
 # Token Trail Design System and Theming
 
 **Status:** Implementation-in-progress (Phase 4 opened August 21, 2026)
-**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints, automated width-and-zoom layout sweep
-**Still open inside this document's scope:** chart legibility patterns wired to chart tokens, animation/idle-CPU budget
+**Implemented so far:** design-token layer, production vector identity with raster export pipeline, typography stack and licensing decision, icon and glyph policy, complete light/dark/system palettes with a programmatic WCAG audit and theme-aware status tints, automated width-and-zoom layout sweep, theme-wired chart presentation
+**Still open inside this document's scope:** animation/idle-CPU review beyond the implemented chart and spinner decisions
 **Controlling documents:** [product_spec_electron.md](../../product_spec_electron.md), [implementation_plan.md](../../implementation_plan.md) section 8.2, [dependency-rationale.md](dependency-rationale.md)
 **Last updated:** August 21, 2026
 
@@ -88,6 +88,16 @@ Security boundary: the SVG master must never reference remote resources, scripts
 
 The shell supports compact widths, laptop sizes, large screens, and window zoom through two breakpoints (52rem collapses the navigation rail into a top row; 34rem stacks header controls) plus fluid clamps on display text. `tests/e2e/responsive.spec.ts` sweeps the enforced minimum window through large desktop sizes at 100/150/200 percent zoom — including the minimum window at 200 percent, which lays out near 360 CSS pixels — asserting no horizontal document overflow, visible unclipped navigation, a usable refresh control, and an unclipped page heading. The initial sweep found no layout defects; the suite now guards that result.
 
+### Chart legibility
+
+The Usage route's daily bar chart consumes the design tokens instead of ECharts defaults:
+
+- The series fill reuses `--chart-series-b`, the same data hue as progress tracks and heatmap cells, so one measurement speaks one visual language across the product.
+- Axis labels, axis lines, grid lines, and tooltip surfaces resolve from muted, border, surface, and text tokens, keeping the chart legible in dark, light, and live-switching system themes (including OS scheme flips while the "system" preference is active).
+- Animation is disabled outright: a dashboard refresh never replays decorative motion, which serves reduced motion and idle-CPU budgets simultaneously.
+- Color independence holds by construction: a single series means hue never separates categories; every bar is identified by its axis label; exact values live in the tooltip and in the equivalent accessible table view rendered from the same normalized source. Heatmap intensity adds a legend distinguishing positive, reported-zero, and missing states.
+- `src/renderer/routes/daily-chart.test.ts` locks palette wiring, disabled animation, day-to-category mapping, reported-zero behavior, and safe-integer clamping as pure-function contracts.
+
 ## 5. Motion
 
 Current implemented motion is limited to the loading spinner, which is disabled under `prefers-reduced-motion: reduce` and replaced by a static two-tone ring, plus class-based reduced-motion overrides honoring an explicit user preference even when the system allows motion. The remaining Phase 4 task is an idle-CPU review to remove any continuous or decorative animation that conflicts with reduced-motion or battery budgets; findings will be recorded here.
@@ -103,7 +113,6 @@ Final theme verification screenshots across the full matrix remain part of the P
 
 ## 7. Known limitations
 
-- Chart series colors exist as tokens, but ECharts options do not yet consume them; wiring chart options to the tokens (and adding color-independent patterns) is part of the chart-legibility task.
 - Curated theme-matrix screenshots for the versioned test report are captured at phase close; automated suites already exercise both themes continuously.
 
 When any item above lands, this document and its controlling tests change in the same commit, per the architecture-maintenance rule.
