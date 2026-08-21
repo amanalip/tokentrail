@@ -1,5 +1,5 @@
 // Import React hooks for hash-based navigation and preference-driven theming.
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 
 // Import the icon-only export sized for the 44-pixel brand tile at two-times density so the
 // renderer bundle carries kilobytes instead of the full installer-scale master.
@@ -8,13 +8,27 @@ import logoUrl from '../../assets/branding/exports/tokentrail-icon-88.png';
 // Import the shared snapshot and preference hooks used by every route.
 import { useOverviewSnapshot, usePreferences } from './hooks';
 
-// Import the six approved v1 destinations.
+// Import the six approved v1 destinations. Usage carries the only heavyweight chart runtime, so
+// it loads as a separate chunk on first visit; every other route stays on the initial path.
 import { OverviewRoute } from './routes/OverviewRoute';
 import { QuotaWindowsRoute } from './routes/QuotaWindowsRoute';
-import { UsageRoute } from './routes/UsageRoute';
 import { CreditsRoute } from './routes/CreditsRoute';
 import { LEARN_ENTRY_IDS, LearnRoute } from './routes/LearnRoute';
 import { SettingsDiagnosticsRoute } from './routes/SettingsDiagnosticsRoute';
+
+// Defer the chart-bearing route so ECharts never delays first paint of the other five routes.
+const UsageRoute = lazy(async () => ({
+  default: (await import('./routes/UsageRoute')).UsageRoute,
+}));
+
+// Present a bounded, honest loading panel while the chart chunk streams in from local media.
+function UsageFallback() {
+  return (
+    <div className="panel" role="status">
+      Loading usage…
+    </div>
+  );
+}
 
 // Enumerate the closed route identifiers mapped one-to-one onto navigation hashes.
 const ROUTES = Object.freeze([
@@ -170,7 +184,11 @@ export function App() {
         {target.route === 'windows' && (
           <QuotaWindowsRoute snapshot={snapshot} preferences={preferences} />
         )}
-        {target.route === 'usage' && <UsageRoute snapshot={snapshot} preferences={preferences} />}
+        {target.route === 'usage' && (
+          <Suspense fallback={<UsageFallback />}>
+            <UsageRoute snapshot={snapshot} preferences={preferences} />
+          </Suspense>
+        )}
         {target.route === 'credits' && <CreditsRoute snapshot={snapshot} />}
         {target.route === 'learn' && <LearnRoute focusEntryId={target.learnEntryId} />}
         {target.route === 'settings' && (

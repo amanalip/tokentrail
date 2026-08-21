@@ -257,7 +257,20 @@ test('records packaged foundation performance', async ({ browserName }, testInfo
     // Enforce the same ceiling for the immediately repeated warm launch.
     expect(performanceEvidence.warmStartupMilliseconds).toBeLessThanOrEqual(3_000);
 
-    // Confirm total resident memory was collected; Phase 4 owns optimization and final budget enforcement.
+    // Phase 4 idle-CPU gate: settled idle use must stay near zero against one core. The two
+    // percent ceiling leaves headroom for slower reference machines while still catching any
+    // continuous-animation or polling regression, which would push this well past five percent.
+    expect(performanceEvidence.idleCpuPercent).toBeLessThanOrEqual(2);
+
+    // Phase 4 memory gate on proportional set size, which apportions shared Chromium pages once
+    // and measured 302.6 megabytes at Phase 3. The 450-megabyte ceiling adds roughly fifty
+    // percent headroom over observed behavior while still bounding real growth.
+    expect(performanceEvidence.proportionalMegabytes).toBeLessThanOrEqual(450);
+
+    // Resident-set tree sums double-count shared pages across Chromium helpers and measured
+    // about 800 megabytes across Phases 1 through 3. The recorded informational revision sets
+    // the RSS ceiling at 1000 megabytes with PSS carrying the enforcing gate above.
+    expect(performanceEvidence.residentMegabytes).toBeLessThanOrEqual(1_000);
     expect(performanceEvidence.residentMegabytes).toBeGreaterThan(0);
 
     // Permit proportional memory to be unavailable on hardened kernels while rejecting an invalid negative value.

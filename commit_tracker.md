@@ -103,44 +103,47 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `9666a06`
-**Last updated:** August 21, 2026 at 7:40 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `29a74a0`
+**Last updated:** August 21, 2026 at 8:05 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending section was cleared when the assistive-technology observations landed as `9666a06`. This entry records the section 8.4 resilience and lifecycle campaign.
+The previously pending section was cleared when the resilience evidence landed as `29a74a0`. This entry records the section 8.5 performance campaign: enforced budgets, lazy chart loading, and measured interactions.
 
 ### Intent
 
-Prove the plan's resilience claims on real transports rather than asserting them: owned-process termination boundaries, mid-session child exit handling, bounded resources under repeated use, timezone-change presentation integrity, and refresh-storm responsiveness — then open the resilience architecture document from that evidence.
+Convert Phase 1's provisional performance observations into enforcing Phase 4 gates, remove the largest avoidable cost from first paint by deferring ECharts onto its own route chunk, and measure real interaction feedback against fixture data.
 
 ### Important changes
 
-- Extended the Codex client integration suite with two cases: a mid-session child exit must reject pending work with the safe `codex-unavailable` category and keep refusing subsequent work; an unrelated long-lived process spawned beside a full start/stop cycle must survive shutdown untouched, proving termination targets only the owned handle.
-- Added `tests/e2e/resilience.spec.ts`: four Overview↔Usage rounds each observe exactly one live chart instance while mounted and zero leftover containers after leaving, one window after churn, and five consecutive refreshes returning to ready with visible status.
-- Added `tests/e2e/timezone.spec.ts`: two launches sharing one profile under `America/New_York` and `Asia/Tokyo` render the same fixed fixture instant differently, proving zone-aware presentation without stored-timestamp corruption.
-- Extended the launch helper with an opt-in extra-environment merge so timezone variation changes only the variable under test.
-- Created `docs/architecture/resilience-and-lifecycle.md` from implemented behavior with an evidence map per claim, and indexed it in the architecture guide; suspend/resume, display hot-plug, and long-idle soak remain honestly listed as Phase 6 soak-campaign scope.
-- Marked four section 8.4 plan tasks complete from this evidence; the suspend/resume/display-change task intentionally stays open.
+- Made the Usage route a lazily loaded chunk: ECharts left the initial path entirely, cutting first-paint renderer JavaScript from 825,991 to 314,367 bytes (62 percent) while other routes never download chart code. A bounded local Suspense panel with status semantics covers the brief load.
+- Added `scripts/check-bundle-budget.mjs` wired into `npm run build`, gating initial raw and gzip sizes, the chart chunk, and total renderer JavaScript at ceilings derived from post-split measurements plus roughly ten percent headroom; failures name their own numbers and demand a recorded revision before limits rise.
+- Promoted packaged runtime gates in `tests/performance/foundation-performance.spec.ts`: idle CPU at or below two percent of one core (measured zero), proportional set size at or below 450 megabytes (measured 333.2), cold and warm startup unchanged at three seconds (measured 410.6 and 401.5).
+- Recorded the resident-memory budget revision: the enforcing contract moved to proportional set size because tree-summed VmRSS double-counts shared Chromium pages; RSS stays reported under a revised 1,000-megabyte informational ceiling against 863.9 observed.
+- Added `tests/e2e/performance-interactions.spec.ts` measuring role-based readiness on built fixture data: first Usage visit including the lazy chunk at 339.1 milliseconds against a two-second gate, view toggles near thirty milliseconds against five hundred, and five refresh round trips all under 119 milliseconds against five thousand.
+- Created `docs/architecture/performance-and-resource-model.md` with methods, full budget tables, the memory revision record, and the lazy-loading rationale; indexed it across the architecture guide.
+- Marked every section 8.5 plan task complete from this evidence.
 
 ### Decisions and assumptions
 
-- Termination ownership is proven behaviorally (decoy survival) rather than by introspecting private handles, so the test cannot drift from implementation details.
-- Timezone evidence uses two far-apart zones against fixed fixture instants, making any ignored `TZ` deterministically detectable.
-- Suspend, resume, display change, and multi-day idle soak require desktop-session control this repository's automation lacks; they are deferred to soak rather than simulated here.
+- Bundle ceilings use raw bytes for enforcement plus gzip for the initial path, matching what local media actually loads while keeping CI deterministic.
+- Interaction timing observes user-visible readiness through standard roles rather than production instrumentation hooks, so shipped code carries no measurement machinery.
+- The packaged harness intentionally runs without the fixture seam; interaction timings therefore come from the built application with fixture data, and packaged runs own startup, CPU, and memory.
 
 ### Verification
 
-- `npm run verify`: formatting, lint including the hoisted-type and no-console rules, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 32 passed including both new lifecycle cases.
-- Full accessibility plus e2e suites after a fresh build: 32 passed including the three new resilience and timezone cases.
-- `npm run check:docs`: 35 files scanned, no broken links after indexing the new architecture document.
+- `npm run build` now ends with the bundle-budget check reporting satisfied ceilings.
+- `npm run test:performance` passed with all new gates active; `tests/e2e/performance-interactions.spec.ts` passed twice including an evidence-file override run.
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 32 passed.
+- `npm run check:docs`: 36 files scanned, no broken links.
 
 ### Risks or limitations
 
-- Suspend/resume and display-change observations await the soak campaign; nothing in shipped code depends on continuous timers that would misbehave after resume, but that remains an argument, not yet recorded observation.
+- Measurements reflect the development reference machine; low-end confirmation belongs to Phase 6.
+- The chart-ready figure includes one-time chunk materialization from warm page cache; cold-cache media timing joins the soak campaign.
 
 ### Follow-up
 
-Begin section 8.5 performance work: packaged cold/warm startup, idle CPU and resident memory, bundle budget enforcement, and ECharts import profiling; then the section 8.6 desktop matrix.
+Begin section 8.6 Linux desktop behavior: packaged-shell identity checks under KDE Wayland, X11 where available, GNOME as available, and window restoration observation; then complete section 8.7 documentation.
 
 ---
 

@@ -452,13 +452,13 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 ### 8.5 Performance
 
-- [ ] Measure cold and warm startup in packaged builds.
-- [ ] Measure idle CPU and resident memory after settling.
-- [ ] Measure Overview interaction feedback and chart updates.
-- [ ] Measure repeated refresh and window lifecycle for leaks.
-- [ ] Set and enforce a renderer bundle budget from Phase 1 and Phase 4 evidence.
-- [ ] Profile ECharts imports and render only visible routes.
-- [ ] Record approved budget revisions with evidence instead of silently weakening targets.
+- [x] Measure cold and warm startup in packaged builds.
+- [x] Measure idle CPU and resident memory after settling.
+- [x] Measure Overview interaction feedback and chart updates.
+- [x] Measure repeated refresh and window lifecycle for leaks.
+- [x] Set and enforce a renderer bundle budget from Phase 1 and Phase 4 evidence.
+- [x] Profile ECharts imports and render only visible routes.
+- [x] Record approved budget revisions with evidence instead of silently weakening targets.
 
 ### 8.6 Linux behavior
 
