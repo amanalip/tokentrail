@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 022 - Phase 3 verification gate closed with full evidence record](#commit-022---phase-3-verification-gate-closed-with-full-evidence-record)
 - [Commit 021 - Documentation lifecycle expanded and KDE proposal relocated](#commit-021---documentation-lifecycle-expanded-and-kde-proposal-relocated)
 - [Commit 020 - Architecture documentation expanded](#commit-020---architecture-documentation-expanded)
 - [Commit 019 - Phase 3 requirements and test evidence reorganized](#commit-019---phase-3-requirements-and-test-evidence-reorganized)
@@ -93,11 +94,56 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `3667476`
-**Last updated:** August 21, 2026 at 10:52 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `26f73fe`
+**Last updated:** August 21, 2026 at 5:03 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending Phase 3 implementation entry was finalized as commit `3667476` (Implement Phase 3 complete v1 product).
+The previously pending Phase 3 verification-gate entry was finalized as commit `26f73fe` (Close Phase 3 verification gate with full evidence record). This entry opens Phase 4.
+
+### Intent
+
+Open plan section 8.2 by converting the renderer stylesheet's scattered presentation values into one reviewed design-token layer without changing any computed appearance, so later theme, responsiveness, accessibility, and performance work revises named tokens instead of raw values.
+
+### Important changes
+
+- Restructured `src/renderer/styles.css` into documented token groups: typography (`--font-sans` and the display-number pair), an eight-step spacing scale, a component-role radius scale, elevation (`--shadow` plus a reserved `--glow-brand`), keyboard-focus ring geometry, chart series/track semantics, and status success/warning/accent aliases mapped onto palette primitives.
+- Replaced every border-radius outside the token layer with scale references, moved structural gaps, margins, and one panel padding onto spacing steps, wired progress tracks and heatmap intensity to chart series roles, and routed connection, banner, pill, state-icon, and explanation-icon colors through status aliases; every replacement is value-identical to the verified Phase 3 appearance.
+- Documented the three intentional remaining primitive-color uses inline (eyebrow brand flourish, spinner motion accent, Learn landing highlight) so no unexplained raw color survives in the file.
+- Removed the duplicated display-number `:root` block by consolidating those tokens into the main token layer.
+- Added `src/renderer/design-tokens.test.ts` locking required token groups, exact alias wiring, exact light/system palette parity against the fourteen dark color roles, radius-token discipline outside the layer, zero remote `url()`, `@import`, or protocol references, and the literal `--mint: #54e5c1;` development smoke-test contract.
+- Excluded `*.test.ts` and `*.test.tsx` files from `tsconfig.renderer.json` so renderer production type checking keeps its deliberate Node-free boundary while test files retain Node types through `tsconfig.tests.json`.
+- Recorded Phase 4 start (August 21, 2026, from commit `26f73fe`) in the implementation plan header and marked the section 8.2 design-token task complete.
+
+### Decisions and assumptions
+
+- Token values reproduce the tested Phase 3 appearance exactly; visual revisions belong to dedicated tasks with fresh screenshot evidence rather than riding along on this refactor.
+- Pixel radii became rem-based tokens, identical at the default root size, so every length now tracks root font scaling uniformly.
+- Light-theme rgba tints tied to fixed dark-palette literals remain literal because changing them would alter light-theme rendering; unifying them belongs to the theme-completion task with visual evidence.
+- jsdom's `URL` global shadows Node's and resolves relative URLs against the jsdom page origin, so the new test resolves the stylesheet path by passing the module URL string directly to `fileURLToPath` instead of constructing a relative URL.
+
+### Verification
+
+- `npx prettier --write` was applied to the changed files before verification.
+- `npm run verify` passed end-to-end: formatting check, lint, strict type checks across five projects, unit tests 191 passed across 26 files including the 7 new token-contract cases, and integration tests 30 passed.
+- `npm run check:docs` passed with 33 files scanned and no broken links.
+- Development smoke and packaged suites were not rerun because computed styles are unchanged by design; they run again when visual revisions land.
+
+### Risks or limitations
+
+- The token layer documents today's values; the upcoming contrast audit may still revise specific palette entries through the same tokens.
+- Spacing values outside the reviewed scale, such as compact control gaps, stay intentionally literal until the responsive and zoom sweep normalizes them.
+
+### Follow-up
+
+Continue section 8.2: production logo vectorization and raster exports, font and icon licensing documentation, light/dark/system theme completion, the responsive and zoom sweep, chart legibility patterns, then sections 8.3 onward.
+
+---
+
+## Commit 022 - Phase 3 verification gate closed with full evidence record
+
+**Commit:** `26f73fe` - `Close Phase 3 verification gate with full evidence record`
+**Timestamp:** August 21, 2026 at 11:11:10 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -172,6 +218,7 @@ Commit this work, then begin Phase 4 per the approved plan: design tokens and th
 
 ---
 
+---
 
 ## Commit 021 - Documentation lifecycle expanded and KDE proposal relocated
 

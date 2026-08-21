@@ -1,8 +1,8 @@
 # Token Trail Implementation Plan
 
-**Status:** Approved plan; Phases 1 through 3 complete, Phase 3 verification evidence recorded in `tests/test_reports/0.3.0/test_report.md` with a `preview-only` recommendation
+**Status:** Approved plan; Phases 1 through 3 complete, Phase 3 verification evidence recorded in `tests/test_reports/0.3.0/test_report.md` with a `preview-only` recommendation; Phase 4 started August 21, 2026 from commit `26f73fe902d54713d6f128ba0e6424adb08c6efa`
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 3 closed locally with the shared domain library, six routes, contextual navigation, live preferences, sanitized diagnostics health counters, runtime icon identity, the typography matrix, the complete section 21.2 fixture catalog, and expanded architecture documents; Phase 4 is next
+**Current phase:** Phase 3 closed locally with the shared domain library, six routes, contextual navigation, live preferences, sanitized diagnostics health counters, runtime icon identity, the typography matrix, the complete section 21.2 fixture catalog, and expanded architecture documents; Phase 4 (Product quality) opened August 21, 2026 and begins with the section 8.2 visual system
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
 **Last updated:** August 21, 2026
 
@@ -426,7 +426,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 - [ ] Finalize production vector logo and required raster exports.
 - [ ] Select and document production font and icon licenses.
-- [ ] Implement design tokens for color, spacing, type, radius, elevation, focus, chart, and status semantics.
+- [x] Implement design tokens for color, spacing, type, radius, elevation, focus, chart, and status semantics.
 - [ ] Complete light, dark, and system themes without remote fonts or assets.
 - [ ] Support compact widths, typical laptop sizes, large screens, and zoom without clipped core actions.
 - [ ] Keep charts legible with color-independent patterns and equivalent tables.

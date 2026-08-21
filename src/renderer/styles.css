@@ -1,16 +1,36 @@
-/* Define local design tokens without remote fonts or runtime dependencies. */
+/*
+ * Token Trail renderer stylesheet.
+ *
+ * Responsibility: all presentational styling for the renderer. Trust level: unprivileged
+ * renderer content with no Node, Electron, or network capability. Dependencies: local branding
+ * assets referenced from markup and the token layer defined below. Side effects: none beyond
+ * this document. Denied behavior: no remote font, image, or stylesheet load; every visual value
+ * resolves from reviewed local tokens so light, dark, and system themes stay complete offline.
+ */
+
+/*
+ * Design tokens are the single source of truth for color, typography, spacing, radius,
+ * elevation, focus, chart, and status presentation. Component rules below must reference these
+ * tokens instead of repeating raw values so theme palettes remain complete and reviewable in one
+ * place. Values reproduce the verified Phase 3 appearance; later Phase 4 revisions change specific
+ * values only alongside fresh visual evidence.
+ */
 :root {
+  /* Dark is the authored default palette; [data-theme] and the system media query override it. */
   color-scheme: dark;
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+
+  /*
+   * Typography uses locally installed families with system fallbacks only. Inter improves results
+   * when the user already has it installed, but no font file is bundled or fetched, so there is
+   * deliberately no font license obligation and no network dependency.
+   */
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  /* Dark palette primitives with semantic role names rather than raw hue names. */
   --background: #090d14;
   --sidebar: #0d121c;
   --surface: #121925;
@@ -25,9 +45,74 @@
   --warning: #f4bf69;
   --focus: #8cc8ff;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+
+  /*
+   * Display-number tokens keep dense digit pairs such as 48% and 88% visually distinct at large
+   * sizes through explicit tracking, tabular numerals, and a bounded line height instead of the
+   * font's default display kerning. The size is overridden responsively where hero metrics need it.
+   */
+  --display-number-size: 3.25rem;
+  --display-number-tracking: 0.04em;
+
+  /* Status semantics map state roles onto palette primitives so state colors cannot drift apart. */
+  --status-success: var(--mint);
+  --status-warning: var(--warning);
+  --status-accent: var(--violet);
+
+  /*
+   * Chart semantics shared by progress tracks and ECharts option wiring. Series colors reuse the
+   * accent primitives so charts, bars, and badges describe the same data with the same hues, while
+   * the track color stays a neutral tint independent of any status meaning.
+   */
+  --chart-series-a: var(--violet);
+  --chart-series-b: var(--mint);
+  --chart-track: rgba(154, 168, 187, 0.14);
+
+  /* Elevation: one ambient card shadow plus a decorative glow reserved for the brand tile. */
+  --glow-brand: 0 8px 24px rgba(84, 229, 193, 0.08);
+
+  /*
+   * Keyboard focus ring contract. Width and offset are named because focus visibility is an
+   * accessibility requirement, not a styling detail; components must not restate raw pixels.
+   */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+
+  /*
+   * Spacing scale on a rem base so window zoom and root font scaling move the whole layout
+   * coherently. Components pick the nearest reviewed step; steps outside this scale are
+   * intentionally unused so layout rhythm stays predictable.
+   */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.35rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+
+  /*
+   * Radius scale by component role. Earlier pixel literals are expressed in rem so they track
+   * root font scaling identically to every other length in this document.
+   */
+  --radius-cell: 0.1875rem; /* heatmap cells and other tiny data glyphs */
+  --radius-input: 0.5rem; /* text inputs, grouped toggles, and scroll regions */
+  --radius-control: 0.7rem; /* buttons and navigation items */
+  --radius-inset: 0.8rem; /* banners, notes, and icons nested inside cards */
+  --radius-card-small: 0.75rem; /* summary and learn cards */
+  --radius-tile: 0.9rem; /* brand icon tile and similar raised glyphs */
+  --radius-panel: 1rem; /* generic content panels beneath primary cards */
+  --radius-card: 1.1rem; /* primary cards and panels */
+  --radius-pill: 999px; /* pills and progress tracks */
+  --radius-circle: 50%; /* dots, spinners, and circular icons */
 }
 
-/* Supply a calm explicit light palette. */
+/*
+ * Supply the explicit light palette. It must override exactly the same color roles as the dark
+ * default so neither theme can silently miss a role; non-color tokens stay defined once above
+ * because spacing, radius, elevation, and focus geometry do not change between themes.
+ */
 :root[data-theme='light'] {
   color-scheme: light;
   --background: #f4f7fb;
@@ -72,10 +157,10 @@ button {
   font: inherit;
 }
 
-/* Keep keyboard focus highly visible. */
+/* Keep keyboard focus highly visible through the reviewed focus-ring contract. */
 :focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+  outline: var(--focus-ring-width) solid var(--focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* Create the desktop navigation rail and content canvas. */
@@ -101,7 +186,7 @@ button {
 /* Present icon and live product text as one home link. */
 .brand {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   align-items: center;
   color: var(--text);
   font-size: 1.05rem;
@@ -110,12 +195,12 @@ button {
   text-decoration: none;
 }
 
-/* Keep the single icon-only mark crisp. */
+/* Keep the single icon-only mark crisp behind its reserved decorative glow. */
 .brand img {
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 0.9rem;
-  box-shadow: 0 8px 24px rgba(84, 229, 193, 0.08);
+  border-radius: var(--radius-tile);
+  box-shadow: var(--glow-brand);
 }
 
 /* Separate navigation from product identity. */
@@ -126,11 +211,11 @@ button {
 /* Style the implemented Overview route. */
 .nav-item {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   align-items: center;
   padding: 0.75rem 0.9rem;
   color: var(--muted-strong);
-  border-radius: 0.7rem;
+  border-radius: var(--radius-control);
   text-decoration: none;
 }
 
@@ -160,7 +245,7 @@ button {
   color: var(--muted);
   background: rgba(84, 229, 193, 0.055);
   border: 1px solid rgba(84, 229, 193, 0.12);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-inset);
 }
 
 /* Keep privacy copy compact. */
@@ -181,13 +266,14 @@ button {
 .page-header {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: var(--space-lg);
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-2xl);
 }
 
-/* Use one consistent supporting label. */
+/* Use one consistent supporting label. The mint primitive is a brand flourish here, not a
+   status signal, so it intentionally references the palette directly. */
 .eyebrow {
   margin: 0 0 0.4rem;
   color: var(--mint);
@@ -216,7 +302,7 @@ h3 {
 .header-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   align-items: center;
 }
 
@@ -229,19 +315,19 @@ h3 {
   font-size: 0.82rem;
 }
 
-/* Paint the default attention-state dot. */
+/* Paint the default attention-state dot from the warning status role. */
 .connection > span {
   width: 0.55rem;
   height: 0.55rem;
-  background: var(--warning);
-  border-radius: 50%;
+  background: var(--status-warning);
+  border-radius: var(--radius-circle);
   box-shadow: 0 0 0 4px rgba(244, 191, 105, 0.1);
 }
 
 /* Use success color for current data. */
 .connection--ready > span,
 .connection--partial > span {
-  background: var(--mint);
+  background: var(--status-success);
   box-shadow: 0 0 0 4px rgba(84, 229, 193, 0.1);
 }
 
@@ -253,7 +339,7 @@ h3 {
   color: var(--text);
   background: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: 0.7rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
 }
 
@@ -271,14 +357,14 @@ h3 {
 .explanation {
   background: linear-gradient(145deg, var(--surface-raised), var(--surface));
   border: 1px solid var(--border);
-  border-radius: 1.1rem;
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow);
 }
 
 /* Center state explanations with readable spacing. */
 .state-panel {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: center;
   min-height: 11rem;
   padding: clamp(1.25rem, 4vw, 2rem);
@@ -297,26 +383,27 @@ h3 {
   border-color: rgba(244, 191, 105, 0.35);
 }
 
-/* Size the local state glyph. */
+/* Size the local state glyph from the warning status role. */
 .state-icon {
   display: grid;
   flex: 0 0 auto;
   width: 2.7rem;
   height: 2.7rem;
   place-items: center;
-  color: var(--warning);
+  color: var(--status-warning);
   background: rgba(244, 191, 105, 0.1);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-inset);
   font-weight: 800;
 }
 
-/* Render a CSS-only loading indicator. */
+/* Render a CSS-only loading indicator. The mint accent is decorative motion feedback rather
+   than a status result, so it references the palette primitive directly. */
 .spinner {
   width: 2.6rem;
   height: 2.6rem;
   border: 3px solid var(--border);
   border-top-color: var(--mint);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: spin 900ms linear infinite;
 }
 
@@ -327,19 +414,19 @@ h3 {
   }
 }
 
-/* Present stale and partial state prominently. */
+/* Present stale and partial state prominently through the warning status role. */
 .stale-banner,
 .partial-banner {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
   padding: 0.9rem 1rem;
-  color: var(--warning);
+  color: var(--status-warning);
   background: rgba(244, 191, 105, 0.08);
   border: 1px solid rgba(244, 191, 105, 0.25);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-inset);
 }
 
 /* Stack stale timestamps below the warning. */
@@ -374,7 +461,7 @@ h3 {
 .section-heading {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -386,22 +473,23 @@ h3 {
   font-size: 0.82rem;
 }
 
-/* Render bounded metadata labels. */
+/* Render bounded metadata labels from the success status role because provenance is a
+   confirmation of reported data, not decoration. */
 .pill {
   display: inline-flex;
   padding: 0.38rem 0.65rem;
-  color: var(--mint);
+  color: var(--status-success);
   background: rgba(84, 229, 193, 0.08);
   border: 1px solid rgba(84, 229, 193, 0.2);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 750;
   text-transform: capitalize;
 }
 
-/* Distinguish explicitly reported reached state. */
+/* Distinguish explicitly reported reached state with the warning status role. */
 .pill--warning {
-  color: var(--warning);
+  color: var(--status-warning);
   background: rgba(244, 191, 105, 0.08);
   border-color: rgba(244, 191, 105, 0.25);
 }
@@ -410,7 +498,7 @@ h3 {
 .primary-metric {
   display: grid;
   grid-template-columns: minmax(9rem, 0.32fr) minmax(15rem, 1fr);
-  gap: 2rem;
+  gap: var(--space-2xl);
   align-items: end;
   margin-top: 2.2rem;
 }
@@ -437,15 +525,15 @@ h3 {
 .progress-track {
   height: 0.8rem;
   overflow: hidden;
-  background: rgba(154, 168, 187, 0.14);
-  border-radius: 999px;
+  background: var(--chart-track);
+  border-radius: var(--radius-pill);
 }
 
-/* Paint the clamped visual value. */
+/* Paint the clamped visual value through the shared chart series roles. */
 .progress-track > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--violet), var(--mint));
+  background: linear-gradient(90deg, var(--chart-series-a), var(--chart-series-b));
   border-radius: inherit;
 }
 
@@ -467,7 +555,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
-  margin: 2rem 0 0;
+  margin: var(--space-2xl) 0 0;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border-soft);
 }
@@ -505,7 +593,7 @@ h3 {
 
 /* Separate the complete bucket list. */
 .all-quotas {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
 }
 
 /* Style the reported count. */
@@ -518,7 +606,7 @@ h3 {
 .quota-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: var(--space-md);
   margin-top: 1rem;
 }
 
@@ -530,8 +618,8 @@ h3 {
 /* Separate supported windows. */
 .window-list {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.25rem;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 /* Divide multiple windows without nested cards. */
@@ -543,7 +631,7 @@ h3 {
 /* Align window identity and value. */
 .window-row__summary {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.65rem;
@@ -566,23 +654,23 @@ h3 {
 /* Keep the measurement distinction persistent. */
 .explanation {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: flex-start;
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
   padding: 1.2rem;
   box-shadow: none;
 }
 
-/* Draw a compact local information glyph. */
+/* Draw a compact local information glyph from the accent status role. */
 .explanation__icon {
   display: grid;
   flex: 0 0 auto;
   width: 1.7rem;
   height: 1.7rem;
   place-items: center;
-  color: var(--violet);
-  border: 1px solid var(--violet);
-  border-radius: 50%;
+  color: var(--status-accent);
+  border: 1px solid var(--status-accent);
+  border-radius: var(--radius-circle);
   font-size: 0.8rem;
   font-weight: 800;
 }
@@ -610,7 +698,7 @@ h3 {
     position: static;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--space-md);
     align-items: center;
     min-height: auto;
     max-height: none;
@@ -630,7 +718,7 @@ h3 {
   }
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    gap: var(--space-md);
   }
   .metric-line,
   .metric-line:first-child {
@@ -685,13 +773,8 @@ h3 {
   }
 }
 
-/* Provide the dedicated display token for large percentage metrics with explicit glyph spacing. */
-:root {
-  --display-number-size: 3.25rem;
-  --display-number-tracking: 0.04em;
-}
-
-/* Keep dense digit shapes such as 48% and 88% visually distinct at display sizes. */
+/* Keep dense digit shapes such as 48% and 88% visually distinct at display sizes. The tokens
+   live in the main token layer so themes and future responsive overrides change them in one place. */
 .display-number {
   font-size: var(--display-number-size);
   font-weight: 750;
@@ -709,11 +792,11 @@ h3 {
 
 /* Present generic content panels consistently beneath the primary card. */
 .panel {
-  margin-top: 1.5rem;
-  padding: 1.25rem 1.5rem;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg) var(--space-xl);
   background: var(--surface);
   border: 1px solid var(--border-soft);
-  border-radius: 16px;
+  border-radius: var(--radius-panel);
 }
 
 /* Keep panel notes calm and secondary. */
@@ -727,15 +810,15 @@ h3 {
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
 }
 
 .summary-card {
   padding: 1rem 1.15rem;
   background: var(--surface-raised);
   border: 1px solid var(--border-soft);
-  border-radius: 12px;
+  border-radius: var(--radius-card-small);
 }
 
 .summary-card strong {
@@ -819,7 +902,7 @@ h3 {
 .credit-list li {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0;
@@ -841,7 +924,7 @@ h3 {
   display: inline-flex;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
 }
 
 .view-toggle button {
@@ -863,7 +946,7 @@ h3 {
   margin-top: 1rem;
   overflow: auto;
   border: 1px solid var(--border-soft);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
 }
 
 .data-table {
@@ -905,7 +988,7 @@ h3 {
 .heatmap-cell {
   aspect-ratio: 1;
   min-width: 0.9rem;
-  border-radius: 3px;
+  border-radius: var(--radius-cell);
   background: var(--surface-raised);
   border: 1px solid var(--border-soft);
 }
@@ -916,9 +999,10 @@ h3 {
   border: 1px dashed var(--muted);
 }
 
-/* Positive intensity bands use the progress trail hue with increasing opacity. */
+/* Positive intensity bands reuse the chart series hue with increasing opacity so calendar
+   cells and bar charts describe the same measurement in the same language. */
 .heatmap-cell--positive {
-  background: color-mix(in srgb, var(--mint) 55%, transparent);
+  background: color-mix(in srgb, var(--chart-series-b) 55%, transparent);
   border-color: transparent;
 }
 
@@ -932,7 +1016,7 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  margin-top: 1.25rem;
+  margin-top: var(--space-lg);
 }
 
 .learn-search label {
@@ -946,13 +1030,13 @@ h3 {
   color: var(--text);
   background: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
 }
 
 .learn-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 0.75rem;
+  gap: var(--space-sm);
   margin-top: 0.75rem;
 }
 
@@ -960,7 +1044,7 @@ h3 {
   padding: 1rem 1.15rem;
   background: var(--surface-raised);
   border: 1px solid var(--border-soft);
-  border-radius: 12px;
+  border-radius: var(--radius-card-small);
 }
 
 .learn-card h3 {
@@ -975,7 +1059,8 @@ h3 {
   line-height: 1.5;
 }
 
-/* Mark the deep-linked explanation card so contextual navigation has a visible landing point. */
+/* Mark the deep-linked explanation card so contextual navigation has a visible landing point.
+   The mint ring is a wayfinding highlight, deliberately distinct from the keyboard focus ring. */
 .learn-card--focused {
   border-color: var(--mint);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 35%, transparent);
@@ -997,7 +1082,7 @@ h3 {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-soft);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
 }
 
 .preference-fieldset legend {
@@ -1026,7 +1111,7 @@ h3 {
   color: var(--text);
   background: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
 }
 
 /* Present the diagnostics preview as bounded monospace text. */
