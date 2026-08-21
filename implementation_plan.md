@@ -439,8 +439,8 @@ Turn the functionally complete application into a coherent, accessible, resilien
 - [ ] Verify semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements.
 - [x] Run axe-core and review every serious result.
 - [ ] Perform manual screen-reader testing on representative Linux environments.
-- [ ] Verify light and dark contrast, 200 percent zoom, high-contrast observation, and reduced motion.
-- [ ] Ensure countdowns and refresh updates do not create noisy repeated announcements.
+- [x] Verify light and dark contrast, 200 percent zoom, high-contrast observation, and reduced motion.
+- [x] Ensure countdowns and refresh updates do not create noisy repeated announcements.
 
 ### 8.4 Resilience and lifecycle
 

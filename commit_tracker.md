@@ -103,11 +103,44 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `231d332`
-**Last updated:** August 21, 2026 at 7:15 PM EDT (`America/Toronto`, UTC-04:00)
-**State:** Clear; all previously pending work was finalized through commit `cac92fb`
+**First recorded:** August 21, 2026 after commit `ad7c97e`
+**Last updated:** August 21, 2026 at 7:25 PM EDT (`America/Toronto`, UTC-04:00)
+**State:** Pending; not yet a Git commit when this entry was written
 
-The keyboard-workflow evidence was finalized as commit `3d89ea8`, and the route-focus work together with the axe-core gate was finalized as combined commit `cac92fb` because a failed formatting check interrupted the intended separate commits and the amendment folded them together. No work is pending in this section right now; the next entry will record the manual assistive-technology campaign when it begins.
+The previously pending section was cleared when the combined accessibility commit `cac92fb` landed. This entry records the automatable remainder of the assistive-technology campaign.
+
+### Intent
+
+Record every machine-observable portion of the plan's screen-reader, reduced-motion, and high-contrast observation items on the built application, while leaving the human Orca session explicitly outstanding rather than simulating its evidence.
+
+### Important changes
+
+- Added `tests/accessibility/assistive-technology.spec.ts` with four observations on the built application:
+  - With platform accessibility support enabled, the real Chromium accessibility tree exposes each route's heading and named controls, the Usage chart image alternative, Learn's labeled search box, and Settings radios and checkbox.
+  - Under emulated `prefers-reduced-motion: reduce`, the shipped spinner computes as non-animated while animating at baseline, matching the stylesheet motion contract in rendered form.
+  - Under emulated forced colors, the user-agent palette replaces authored backgrounds while core controls keep geometry, visible text, and a readable foreground assignment.
+  - Countdown metrics sit outside all live-region ancestry and live status text excludes countdown content, so thirty-second clock ticks cannot create repeated announcements.
+- Updated the accessibility architecture document with these findings and narrowed its limitations to the genuinely manual remainder: the human Orca session on representative desktops.
+- Marked the plan's contrast/zoom/high-contrast/reduced-motion verification task and the announcement-noise task complete from this evidence.
+
+### Decisions and assumptions
+
+- Automation records the machine-observable substrate a screen reader consumes; it is labeled as observation evidence, never as a substitute for the operator's Orca session.
+- Forced-colors and reduced-motion media emulation through Playwright changes only test-side media state; the application and its shipped policy are untouched.
+
+### Verification
+
+- `npm run check:docs`: 34 files scanned, no broken links.
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 30 passed.
+- Full accessibility plus e2e suites after a fresh build: 29 passed including the four new observations.
+
+### Risks or limitations
+
+- The Orca interaction pass (announcement order and quality, reading granularity, flat review) remains outstanding and cannot be produced by this repository alone.
+
+### Follow-up
+
+Perform the human Orca session when an operator is available and record it per the report rules; meanwhile proceed to section 8.4 resilience and lifecycle work.
 
 ---
 
