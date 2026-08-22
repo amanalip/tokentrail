@@ -12,7 +12,7 @@
   var stored = null;
   try {
     stored = localStorage.getItem(storageKey);
-  } catch (err) {
+  } catch {
     // Storage unavailable; fall back to system preference silently.
   }
   var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -25,7 +25,7 @@
       applyTheme(next);
       try {
         localStorage.setItem(storageKey, next);
-      } catch (err) {
+      } catch {
         // Non-fatal; the choice just will not persist.
       }
     });

@@ -309,13 +309,18 @@
           <p>
             The complete v1 read-only scope is implemented and machine-verified across
             development versions 0.1.0 through 0.5.x, each backed by recorded test reports.
-            Release engineering is underway: publication, artifact signing, update deployment,
+            The tag-driven release pipeline is proven end to end: every candidate tag lands
+            as one maintainer-reviewed draft carrying all four package formats for both
+            architectures, merged SHA-256 checksums, per-build provenance, a CycloneDX SBOM,
+            and structured release notes generated from the changelog. The changelog, support
+            policy, maintenance plan, and known-limitations record are all published. Release
+            validation is underway; publication, artifact signing, update deployment,
             telemetry, and any broader Codex access remain deliberately separate, gated steps
             rather than silent defaults.
           </p>
           <ul class="status-chips" aria-label="Status summary">
             <li>v1 scope: verified</li>
-            <li>Packaging: in progress</li>
+            <li>Release pipeline: proven</li>
             <li>Signing: gated</li>
             <li>Telemetry: never</li>
           </ul>
@@ -357,6 +362,7 @@
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/product_spec_electron.md">Product specification</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/design_decisions.md">Design decision log</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/compatibility-and-support-matrix.md">Compatibility matrix</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/support-policy.md">Support policy</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Known limitations</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/LICENSE">License (GPL-3.0)</a></li>

@@ -10,6 +10,10 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Current uncommitted work](#current-uncommitted-work)
+- [Commit 042 - Ship the companion website on GitHub Pages](#commit-042---ship-the-companion-website-on-github-pages)
+- [Commit 041 - Begin Phase 6 with the changelog and release documentation set](#commit-041---begin-phase-6-with-the-changelog-and-release-documentation-set)
+- [Commit 040 - Close Phase 5 machine-verifiable scope with pipeline evidence](#commit-040---close-phase-5-machine-verifiable-scope-with-pipeline-evidence)
 - [Commit 039 - Prove the tag-driven draft-release pipeline](#commit-039---prove-the-tag-driven-draft-release-pipeline)
 - [Commit 038 - Verify the from-git flow and record the 0.5.0 evidence](#commit-038---verify-the-from-git-flow-and-record-the-050-evidence)
 - [Commit 037 - Document the Phase 5 release-engineering architecture](#commit-037---document-the-phase-5-release-engineering-architecture)
@@ -111,11 +115,78 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `7cd5de2`
-**Last updated:** August 22, 2026 at 2:30 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `2e8a6be`
+**Last updated:** August 22, 2026 at 5:10 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The pending close-out entry below was finalized as commit `7cd5de2`. This entry begins Phase 6's publication-independent scope: the root changelog and the complete release, support, and maintenance documentation set, written from implemented policy and the executed candidate-run evidence.
+The release-notes portion of this entry (generator script, workflow wiring, plan and architecture updates, changelog bullet) was finalized as commit `11cbbcd`; the website refresh, site lint-scope repair, and this tracker update land with the tracker's own commit, whose hash a later entry must record per tracking rules. This entry closes the last machine-verifiable section 9.4 item — structured draft-release notes generated from the tagged changelog — and refreshes the companion website to match the project's current release-engineering state, alongside bringing this tracker back in step with committed history.
+
+### Intent
+
+Give every future draft release an honest, full user-facing notes body that cannot contradict the changelog, and make the public site reflect what the release pipeline now proves rather than an earlier "in progress" snapshot.
+
+### Important changes
+
+- Added `scripts/write-release-notes.mjs`: composes draft-release Markdown from the tagged commit's `CHANGELOG.md` (exact version section preferred; honestly labeled `Unreleased` fallback) plus fixed operational sections — unsigned-preview statement, download inventory with per-format architecture labels, checksum verification steps, documentation links pinned to the release tag, upgrade notes, and known-limitation references (LIM-004/006/007). Tag, commit, and repository values are shape-validated before embedding so no newline or metacharacter can become injection.
+- `.github/workflows/release.yml`'s draft job now checks out the tagged commit, installs Node, re-verifies tag/manifest agreement as defense-in-depth, generates notes via the script, and passes them to `gh release create --notes-file`. The hand-written heredoc is gone.
+- Repaired the CI breakage the website commits introduced: `site/script.js` was being linted without browser globals, failing `npm run lint` on main since `2e8a6be`. The ESLint configuration now gives `site/**/*.js` a browser-only global scope matching its dependency-free nature, and unused catch bindings were removed from the script itself.
+- Plan section 9.4's final open item ticked with evidence; status header moved to the Phase 6-preparation state; pipeline architecture record's draft-assembly and failure-behavior sections updated to describe generated notes failing closed.
+- `CHANGELOG.md` Unreleased gained the structured-notes bullet.
+- Website: status band rewritten around the proven tag→draft pipeline and published governance documents; chips updated (`Packaging: in progress` → `Release pipeline: proven`); Project docs column gains the support-policy link; FAQ's project-status answer refreshed to mention structured notes, provenance, SBOM, and the published policy set.
+- Tracker reconciliation: the previously pending Phase 6 documentation entry finalized below as Commit 041, and the six companion-site commits recorded together as Commit 042; the Contents list, which had lagged behind the body, now indexes through 042.
+
+### Decisions and assumptions
+
+- Notes are generated, not authored in the workflow, so highlights can only come from the reviewed changelog; operational prose lives in one reviewed script instead of YAML heredoc fragments.
+- Documentation links in notes pin to the release tag ref, so published notes keep resolving to the exact reviewed guides even after `main` moves on.
+- The `Unreleased` fallback is deliberate: until versions get their own changelog sections at freeze, drafts must still say something true, and the label names exactly what the text is.
+- The draft job now checks out the repository solely to read the tagged changelog and manifest; artifact assembly remains download-driven and `GH_REPO` stays as defense-in-depth.
+
+### Verification
+
+- Script executed against the real changelog: `v1.0.0` produced correct notes sourced from the labeled `Unreleased` section; malformed inputs (missing argument, short SHA, invalid repo pair) each failed closed with exit 1 and no output file written.
+- Generated Markdown inspected: heading hierarchy, table labels matching the tested artifacts (`x86_64`/`arm64` AppImage, `amd64`/`arm64` deb, `x86_64`/`aarch64` rpm and Pacman), and valid link destinations confirmed by eye against `docs/user/installing.md`.
+- Workflow edit reviewed line-by-line for indentation and pinned SHAs reused unchanged; no yaml parser available locally, noted as a limitation.
+- Full quality gates re-run after edits and green: formatting check; lint (which surfaced and then fixed the site script's missing browser-global scope — see Important changes); five-project strict typecheck; unit/component suites 29 files / 220 tests passed; fixture integration suites 3 files / 32 tests passed; documentation link check across 55 files; production dependency audit zero vulnerabilities.
+
+### Fact check
+
+- Artifact architecture labels cross-checked against the versioned 0.5.0 report's draft inventory and `docs/user/installing.md`'s mapping table.
+- LIM identifiers quoted from `docs/support/known-limitations.md`; commit timestamps for tracker entries read from Git, not memory.
+
+### Sanity check
+
+- Nothing here publishes anything: drafts remain maintainer-visible only, and the script cannot reach the network or create release objects.
+- No claim on the website promises publication, signing, or stable quality; gated steps are still named as gated.
+
+### User lessons
+
+- Release notes assembled by hand drift from the changelog they summarize; generating them from the source record makes contradiction structurally impossible.
+- Pinning documentation links to the release tag keeps a published release's instructions valid forever, even as the default branch evolves.
+
+### Agent lessons
+
+- A generator that fails closed on missing evidence is worth more than a flexible one: empty or invented notes are both worse than a red build.
+- Tracker slots marked "pending" must be promoted promptly; leaving them stale lets later readers misattribute which commit actually landed a change set.
+
+### Risks or limitations
+
+- The workflow change rides the next candidate tag before it has runner evidence; the local verification above is the only proof so far.
+- Site files remain outside Prettier/lint scope, so HTML consistency rests on manual review and the doc-link checker's coverage.
+
+### Follow-up
+
+Exercise the notes path on the next candidate tag when the operator calls one; continue Phase 6 freeze preparation (validation-matrix reruns, changelog split into real version sections at freeze time).
+
+---
+
+## Commit 041 - Begin Phase 6 with the changelog and release documentation set
+
+**Commit:** `4b868d8` - `Begin Phase 6 with the changelog and release documentation set`
+**Timestamp:** August 22, 2026 at 2:17:55 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Promoted from the pending entry below after landing. This commit put every document the v1.0.0 freeze requires into the repository before any candidate tag, so the freeze becomes checklist execution instead of a writing session.
 
 ### Intent
 
@@ -123,11 +194,11 @@ Put every document that the v1.0.0 freeze requires into the repository before an
 
 ### Important changes
 
-- Created `CHANGELOG.md` with a single evidence-backed Unreleased section describing the implemented v1 scope; no released versions exist yet and none are fabricated.
-- Created `docs/support/known-limitations.md` with stable limitation identifiers (LIM-001 through LIM-010) covering operator-held verification, environment coverage, and product behavior including unsigned-preview status.
+- Created `CHANGELOG.md` with a single evidence-backed Unreleased section describing the implemented v1 scope; no released versions exist and none are fabricated.
+- Created `docs/support/known-limitations.md` with stable limitation identifiers (LIM-001 through LIM-010).
 - Created `docs/release/release-validation-process.md` from the executed freeze/tag/build/validate/approve/publish model, citing the v0.5.0–v0.5.3 sequence as the worked example.
-- Created `docs/support/support-policy.md`, `docs/maintenance/maintenance-and-compatibility.md` mirroring the FUP tracker's recurring items, `docs/release/rollback-and-incident-response.md` built on immutable-release principles, and the executable `docs/release/release-checklist.md` whose publication block is explicitly user-gated.
-- Architecture index now links all six documents plus the changelog; plan section 10.7 swept complete for the six document deliverables.
+- Created `docs/support/support-policy.md`, `docs/maintenance/maintenance-and-compatibility.md` mirroring the FUP tracker's recurring items, `docs/release/rollback-and-incident-response.md`, and the executable `docs/release/release-checklist.md` whose publication block is explicitly user-gated.
+- Architecture index links all six documents plus the changelog; plan section 10.7's six document deliverables completed.
 
 ### Decisions and assumptions
 
@@ -144,7 +215,7 @@ Put every document that the v1.0.0 freeze requires into the repository before an
 
 ### Sanity check
 
-- Nothing here performs publication or implies artifacts exist beyond drafts; the checklist's approval section is explicitly user-gated.
+- Nothing performs publication or implies artifacts exist beyond drafts; the checklist's approval section is explicitly user-gated.
 
 ### User lessons
 
@@ -153,15 +224,70 @@ Put every document that the v1.0.0 freeze requires into the repository before an
 
 ### Agent lessons
 
-- Documentation sets required by later phases can be authored once their controlling behavior exists — waiting for the phase boundary would leave the same words to write under time pressure.
+- Documentation sets required by later phases can be authored once their controlling behavior exists — waiting for the phase boundary leaves the same words to write under time pressure.
 
 ### Risks or limitations
 
-- Soak, network-trace capture, full-matrix installs, and the v1.0.0 freeze remain open and are documented as such in the checklist.
+- Soak, network-trace capture, full-matrix installs, and the v1.0.0 freeze remain open, documented as such in the checklist.
 
 ### Follow-up
 
-Continue Phase 6 preparation: local validation-matrix reruns available on this machine, remaining documentation polish, then present the freeze decision and the explicit publication gate to the operator when evidence is complete.
+Continue Phase 6 preparation; present the freeze decision and the explicit publication gate to the operator when evidence is complete.
+
+---
+
+## Commit 042 - Ship the companion website on GitHub Pages
+
+**Commits:** `7dc0edd` - `Add GitHub Actions workflow for static site deployment`; combined with `14a490e` - `Add the companion website and deploy only its files to Pages`, `5493ce7` - `Add FAQ page, app screenshots, and footer credit`, `1e10907` - `Expand the FAQ with verified answers from the guides and source`, `3be40e2` - `Polish screenshot captions and the FAQ introduction`, and `2e8a6be` - `Add stat band, flow diagram, status section, icons, closing CTA, and share metadata`
+**Timestamps:** August 22, 2026 at 1:30:27 PM, 2:01:39 PM, 2:35:00 PM, 2:50:52 PM, 3:01:28 PM, and 3:39:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Recorded together because the six commits build one deliverable: the project's public face, deployed automatically and honestly.
+
+### Intent
+
+Give Token Trail a public landing page and verified FAQ that explain the product, prove its privacy claims from the same documents the repository maintains, and deploy only those static files.
+
+### Important changes
+
+- `.github/workflows/static.yml` deploys exclusively `./site` to GitHub Pages on every push to `main`; application repository content never publishes through this path.
+- `site/index.html` presents the hero, three privacy pillars (read-only allowlist, memory-only data, zero network), a numbers band, the six-route feature grid with real application screenshots, a data-flow SVG diagram, install steps for all four formats with copyable commands, a status band, documentation links mirroring the repository's guide set, and share metadata.
+- `site/faq.html` answers general, privacy/security, installation, number-reading, and troubleshooting questions, each written from the user guides, architecture records, and source behavior rather than marketing intent, linking to the controlling document.
+- Zero-network posture applies to the site itself: no fonts, scripts, or assets beyond its own files; theme toggle and mobile navigation are dependency-free.
+
+### Decisions and assumptions
+
+- Screenshots shown are real captured application output, not mockups; captions state what each screen shows.
+- The site claims only what the repository's evidence supports — preview status, unsigned artifacts, and untested environments stay visible in FAQ answers.
+
+### Verification
+
+- Every FAQ answer traced to its controlling guide or implemented behavior during authoring; internal links point at repository documents that exist.
+- Deployment path restricted to `./site` in the workflow's upload step.
+
+### Fact check
+
+- Install commands match `docs/user/installing.md`; architecture-label mappings match the versioned test report's draft inventory.
+
+### Sanity check
+
+- The site introduces no new product claims, no telemetry, no remote assets, and no implication that anything is published or signed.
+
+### User lessons
+
+- A public FAQ doubles as an audit: writing answers against source documents exposes where public explanation and implemented behavior could diverge.
+
+### Agent lessons
+
+- Companion sites inherit the project's honesty rules; marketing language that outruns recorded evidence would violate the same boundaries the application enforces.
+
+### Risks or limitations
+
+- Site files sit outside the repository's formatter and lint scopes; correctness relies on review and the documentation link checker's file coverage.
+
+### Follow-up
+
+Keep the site synchronized whenever release reality advances — status bands and FAQ answers age faster than architecture records.
 
 ---
 

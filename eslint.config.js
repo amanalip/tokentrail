@@ -60,6 +60,16 @@ export default typescriptEslint.config(
     },
   },
 
+  // The companion site ships as dependency-free browser JavaScript outside the
+  // application bundle and Vite pipeline, so its script receives the same
+  // browser-only global set rather than being treated as undefined identifiers.
+  {
+    files: ['site/**/*.js'],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+
   // Apply React's hook correctness rules only to renderer components and hooks.
   {
     files: ['src/renderer/**/*.{ts,tsx}'],
