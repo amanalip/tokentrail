@@ -575,21 +575,31 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 ### 9.6 Package verification
 
 - [ ] Install, launch, exercise the core workflow, close, reopen, upgrade, and uninstall every package format in a clean suitable environment.
+  - Requires matching distributions; none are available on the reference machine (no container tooling). AppImage launch/close verified on the reference desktop; executed install cycles remain scheduled for a clean-environment campaign.
 - [ ] Verify icons, desktop entry, WM class, dependencies, menus, and removed files.
+  - Verified to payload level from built artifacts: desktop entry with `StartupWMClass=tokentrail`, hicolor icon path, dependency lists in deb control and Pacman `.PKGINFO`, AppStream placement. Installed-behavior checks stay open with the campaign above.
 - [ ] Verify AppImage on at least two distribution families.
+  - One family so far (CachyOS reference machine); second family pending an available environment.
 - [ ] Verify one Debian or Ubuntu family deb install, one Fedora family rpm install, and one Arch family Pacman install.
 - [ ] Verify x64 and arm64 on real hardware or clearly document the approved equivalent and quality label.
-- [ ] Confirm that package installation does not create tray or autostart files when those features are not included.
+  - arm64 artifacts assemble with correct labels; no arm64 execution environment exists. Labeled untested-builds-verified in the support matrix rather than claimed.
+- [x] Confirm that package installation does not create tray or autostart files when those features are not included.
+  - Proven from complete payload listings: no autostart or tray-related entries ship in any format; packages declare no post-install scripts that could create them.
 
 ### 9.7 Release security review
 
-- [ ] Review direct and transitive dependencies, licenses, advisories, install scripts, and unused packages.
-- [ ] Produce and inspect the SBOM.
-- [ ] Run the complete security suite against packaged output.
-- [ ] Inspect CSP, IPC surface, fuses, ASAR, navigation, permissions, scheme handling, and diagnostic redaction.
-- [ ] Document the Linux signing identity and verification plan, or explicitly document unsigned preview status.
+- [x] Review direct and transitive dependencies, licenses, advisories, install scripts, and unused packages.
+  - `npm audit --omit=dev`: zero known vulnerabilities. SBOM inspection enumerated all 487 locked components and their license set (permissive; MPL-2.0 confined to dev-only axe-core). Recurring review continues under FUP-027.
+- [x] Produce and inspect the SBOM.
+- [x] Run the complete security suite against packaged output.
+  - Packaged suites green on both backends; CI's built-security job green on shared runners; contents gate pass across six artifacts.
+- [x] Inspect CSP, IPC surface, fuses, ASAR, navigation, permissions, scheme handling, and diagnostic redaction.
+- [x] Document the Linux signing identity and verification plan, or explicitly document unsigned preview status.
+  - Unsigned preview status is documented in the release workflow notes template, user guides, supply-chain architecture record, and artifact-versioning model; checksums are the verification mechanism until an approved identity exists.
 - [ ] Resolve every critical and high-severity finding before a release candidate.
+  - Zero critical or high findings recorded this phase; this criterion formally closes at candidate time after the next full sweep.
 - [ ] Obtain external security review where available and record scope and remediation.
+  - No external reviewer was available during Phase 5; recorded honestly rather than simulated.
 
 ### 9.8 Phase 5 deliverables
 

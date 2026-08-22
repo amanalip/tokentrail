@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 037 - Document the Phase 5 release-engineering architecture](#commit-037---document-the-phase-5-release-engineering-architecture)
 - [Commit 036 - Add the six user guides and refresh the README for Phase 5](#commit-036---add-the-six-user-guides-and-refresh-the-readme-for-phase-5)
 - [Commit 035 - Add least-privilege CI and tag-driven draft-release pipeline](#commit-035---add-least-privilege-ci-and-tag-driven-draft-release-pipeline)
 - [Commit 034 - Open Phase 5 with the four-format Linux release packaging](#commit-034---open-phase-5-with-the-four-format-linux-release-packaging)
@@ -108,9 +109,72 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `6996bc2`
-**Last updated:** August 22, 2026 at 12:10 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `3343e64`
+**Last updated:** August 22, 2026 at 1:30 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+The pending architecture-records entry below was finalized as commit `3343e64`. This entry executes the locally available portion of plan sections 9.6 and 9.7: clean-clone git-flow proof, AppImage reference launch, dependency audit with SBOM inspection, packaged security re-verification, the versioned 0.5.0 test report with curated screenshot, support-matrix updates, and one harness hardening born from a transient failure.
+
+### Intent
+
+Prove everything Phase 5 can prove on this machine without a release tag, record what remains environment-bound honestly, and leave the tree ready for the tag-driven draft-release proof that closes section 9.9's first criterion.
+
+### Important changes
+
+- Clean-clone proof: fresh `git clone` of `3343e64` into an empty directory followed by `npm ci`, full `verify` (220 unit + 32 integration), and budget-gated `build`, all green — the from-git flow works exactly as users will run it.
+- AppImage reference launch: x64 image started against a real desktop session, stayed stable, exited cleanly on SIGTERM; benign Wayland/GPU warnings only.
+- Dependency review: `npm audit --omit=dev` zero vulnerabilities; CycloneDX SBOM generated via npm's built-in emitter and inspected (487 components; permissive license set).
+- Packaged suite re-verified 4/4 across repeated runs after a configuration change.
+- Created `tests/test_reports/0.5.0/test_report.md`: scope, environments, commands with honest run windows, six-artifact inventory with sizes and SHA-256 prefixes, per-layer summary, four-row defect-and-remediation table including two transient timeouts recorded with their investigation limits, security/accessibility/matrix/performance sections, limitations, and a `preview-only` recommendation.
+- Captured curated packaged-launch screenshot (visually inspected: honest unavailable states, no synthetic data, correct branding) under `tests/test_reports/0.5.0/screenshots/`.
+- Support matrix updated: arm64 relabeled builds-verified/untested-execution; per-format quality rows split (AppImage verified-reference/payload-inspected; deb and Pacman payload-inspected; rpm CI-bound); new from-git development-flow row.
+- Plan sections 9.6 and 9.7 swept from evidence: payload-level and audit criteria completed; executed install campaigns stay open with named reasons.
+- Harness hardening: the packaged hardened-launch test now fails with the live document URL instead of an opaque timeout, converting any recurrence of this session's transient stall into a diagnosable artifact.
+
+### Decisions and assumptions
+
+- The two packaged-test timeouts (~01:07–01:10, UI fully rendered, unreproducible across five subsequent runs) are characterized as environment-transient startup stalls under post-build system load rather than declared fixed — no root cause was provable because the green rerun cleaned retained traces; the report records both failures, the remediation attempts, and the diagnostic hook so any recurrence self-localizes.
+- A test-created profile in the real user configuration directory (created by an earlier smoke run that bypassed the disposable-profile path) was removed to restore pre-session state.
+
+### Verification
+
+- All commands listed in §3 of the new report executed with recorded outcomes; documentation check extended to 51 files with zero broken links.
+- Screenshot visually inspected before inclusion per evidence rules.
+
+### Fact check
+
+- Artifact hashes were computed fresh for the inventory table; CI run identifier taken from the workflow-run listing; component count read from the generated SBOM JSON.
+
+### Sanity check
+
+- No claim extends beyond local or runner evidence: install execution stays deferred, rpm stays CI-bound, and the transient failure remains visibly open in the report's defect table.
+
+### User lessons
+
+- A verification gate is most valuable at its own birth: both the contents gate and the provenance script caught their author's first mistakes during initial runs.
+- Transient failures handled with diagnostics-plus-visibility preserve more trust than silent retries.
+
+### Agent lessons
+
+- Smoke tests of packaged applications ignore unpackaged-only environment seams; launching a packaged build touches the real user profile unless the harness isolates it explicitly.
+- When a green rerun destroys failure artifacts (Playwright clears outputDir), capture traces to a persistent output directory first; post-mortems need the evidence before the pass wipes it.
+
+### Risks or limitations
+
+- Executed install/upgrade/uninstall campaigns, second-distribution-family AppImage coverage, and arm64 execution remain open and visible in plan section 9.6 and the support matrix.
+- The transient-stall follow-up stays attached to the packaged suite until its cause is captured by the new diagnostic.
+
+### Follow-up
+
+Push the `v0.5.0` tag to prove the tag→draft-release pipeline end to end (the last machine-verifiable Phase 5 criterion), observe the run, sweep exit criteria, then close out Phase 5 pending only operator-held items.
+
+---
+
+## Commit 037 - Document the Phase 5 release-engineering architecture
+
+**Commit:** `3343e64` - `Document the Phase 5 release-engineering architecture`
+**Timestamp:** August 22, 2026 at 1:05:43 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 The pending guides entry below was finalized as commit `6996bc2`. This entry implements plan section 9.5: five architecture records created from the implemented packaging and release systems, the architecture index updated to own them, and an operator decision recorded — local rpm assembly is skipped because installing host rpm tooling through pacman is not wanted; rpm artifacts remain the release CI's job on runners where that tooling installs cleanly.
 

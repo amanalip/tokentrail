@@ -22,8 +22,15 @@ test('launches the hardened unpacked Linux package', async () => {
     // Wait for the packaged renderer's first local frame.
     const { page } = packagedApplication;
 
-    // Confirm the package loads from the approved custom scheme.
-    await expect.poll(() => page.url()).toBe('tokentrail://app/');
+    // Confirm the package loads from the approved custom scheme. A plain poll hides
+    // the failing value on timeout, so a miss rethrows with the live URL for diagnosis.
+    try {
+      await page.waitForURL('tokentrail://app/', { timeout: 15_000 });
+    } catch {
+      throw new Error(
+        `Packaged document did not reach the approved custom scheme; current URL: ${page.url()}`,
+      );
+    }
 
     // Confirm the packaged product shell is visible.
     await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();

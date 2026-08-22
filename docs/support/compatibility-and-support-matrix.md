@@ -28,15 +28,25 @@ This matrix states what Token Trail's v1 development actually verified versus wh
 
 | Architecture | Quality | Notes |
 | --- | --- | --- |
-| x64 | Verified (reference machine only) | All Phase 4 runtime, packaged, and performance evidence |
-| arm64 | Untested | Builds are configured for Phase 5; hardware verification is gated there |
+| x64 | Verified (reference machine only) | All Phase 4 runtime, packaged, and performance evidence; Phase 5 artifact builds and AppImage launch |
+| arm64 | Untested (builds verified) | Separate arm64 builds assemble correctly for three formats with native labels; no arm64 execution environment exists yet |
 
 ## Package formats
 
 | Format | Quality | Notes |
 | --- | --- | --- |
 | Unpacked directory output (`linux-unpacked`) | Verified | Hardened-launch, ASAR-content, icon, and identity suites run against it |
-| AppImage / deb / rpm / Pacman artifacts | Deferred | Build targets are configured; installation, upgrade, and uninstall verification belongs to Phase 5 |
+| AppImage | Verified (reference machine only); payload-inspected | x64/arm64 artifacts built, contents-gated; x64 image launches on the reference desktop with a clean exit. Second distribution family still owed |
+| deb | Payload-inspected only | Control fields, paths, and dependency set read back from the built package; no install execution yet |
+| Pacman | Payload-inspected only | `.PKGINFO` and file list read back from the built package; no install execution yet |
+| rpm | CI-bound | Local assembly skipped by operator decision; release runners provide `rpmbuild`; first tag exercises it |
+| Installation, upgrade, uninstall execution | Deferred | Clean-environment campaign named in plan section 9.6 |
+
+## Development environments
+
+| Flow | Quality | Evidence |
+| --- | --- | --- |
+| From-git flow: `git clone` → `npm ci` → `npm run verify` → `npm run build` | Verified | Executed from a fresh clone at `3343e64` and mirrored by shared-runner CI with frozen installs |
 
 ## Accessibility
 
