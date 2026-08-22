@@ -18,6 +18,7 @@ The complete v1 read-only product scope, implemented and verified across develop
 - Linux distribution as four package formats (AppImage, deb, rpm, Pacman) for x64 and arm64 with desktop entries whose names match runtime window identity (`tokentrail`), hicolor icons, and AppStream metadata in native packages.
 - Continuous integration on every pull request and main push; tag-driven pipeline assembling checksums, build provenance, and a CycloneDX SBOM onto one maintainer-reviewed draft prerelease.
 - User guides for getting started, installing, upgrading, troubleshooting, uninstalling, and privacy; architecture records covering the full system including packaging and release engineering.
+- Structured draft-release notes generated from the tagged changelog, carrying highlights, security posture, fixes, download inventory with per-format architecture labels, checksum verification steps, documentation links pinned to the release tag, upgrade notes, and known-limitation references.
 
 ### Security
 

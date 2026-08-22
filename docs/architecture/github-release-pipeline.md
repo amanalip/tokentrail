@@ -1,7 +1,7 @@
 # GitHub Release Pipeline Architecture
 
-**Status:** Implemented in Phase 5 (workflows `.github/workflows/ci.yml` and `.github/workflows/release.yml`); first CI run green; draft-release path exercised only by review so far
-**Last updated:** August 21, 2026
+**Status:** Implemented in Phase 5 (workflows `.github/workflows/ci.yml` and `.github/workflows/release.yml`); first CI run green; draft-release path proven end to end by candidate tags `v0.5.0`–`v0.5.3`; structured draft notes generated from the tagged changelog since August 22, 2026
+**Last updated:** August 22, 2026
 
 ## Scope
 
@@ -23,7 +23,7 @@ How changes are verified on shared infrastructure, and how an approved version t
 - **Environments:** all build/SBOM jobs declare the protected `release` environment; required-reviewer configuration is a named operator task in repository settings.
 - **Build jobs:** distinct x64 and arm64 jobs run the production build first (the bundles must exist before archiving), then package all four formats through the single reviewed configuration with an explicit `--publish never` — without that flag electron-builder attempts implicit GitHub publishing whenever a git tag is present. Runner tooling: Ubuntu's `rpm` package for rpmbuild plus `libarchive-tools` for fpm's Pacman backend. Each job emits per-format SHA-256 checksums and records machine-readable provenance (`scripts/write-build-provenance.mjs`, schema `tokentrail-build-provenance/1`: arch, tag, commit, runner identity, toolchain, UTC capture time, per-artifact sizes and digests).
 - **SBOM job:** emits a CycloneDX document from the lockfile using npm's built-in generator — supply-chain metadata adds no new dependency to audit.
-- **Draft assembly:** the only write-capable step (scoped `contents: write`) downloads all uploads, merges per-arch checksums into one `SHA256SUMS.txt`, writes honest notes labeling the artifacts unsigned previews, and creates a **draft prerelease** through GitHub's own CLI with the target repository named explicitly (`GH_REPO`) because this job checks out no git context. Nothing publishes automatically.
+- **Draft assembly:** the only write-capable step (scoped `contents: write`) re-verifies tag/manifest agreement on its own checkout, downloads all uploads, merges per-arch checksums into one `SHA256SUMS.txt`, generates the draft's user-facing notes, and creates a **draft prerelease** through GitHub's own CLI with the target repository named explicitly (`GH_REPO`) as defense-in-depth. Notes come from `scripts/write-release-notes.mjs` reading the *tagged commit's* `CHANGELOG.md` — the version section when present, the honestly labeled `Unreleased` section otherwise — so highlights can never drift from or contradict the recorded changelog. The generated body carries the fixed structure required by plan sections 9.4/13.3: highlights, security posture, fixes, download inventory, checksum guidance, per-tag documentation links, upgrade notes, and known limitations. Nothing publishes automatically.
 
 ## Invariants
 
@@ -34,7 +34,7 @@ How changes are verified on shared infrastructure, and how an approved version t
 
 ## Failure behavior
 
-Frozen install fails on lockfile drift; budget gate fails oversized bundles; security suite fails isolation regressions; provenance refuses empty artifact sets; checksum generation fails if a format is missing; the draft job fails rather than publishing partial file sets (`if-no-files-found: error`).
+Frozen install fails on lockfile drift; budget gate fails oversized bundles; security suite fails isolation regressions; provenance refuses empty artifact sets; checksum generation fails if a format is missing; the notes generator fails closed on a missing or unreadable changelog section and on malformed tag, commit, or repository values rather than publishing empty or injectable notes; the draft job fails rather than publishing partial file sets (`if-no-files-found: error`).
 
 ## Evidence
 
