@@ -67,8 +67,16 @@ jobs:
       - name: Install rpm packaging tooling
         run: sudo apt-get update && sudo apt-get install --yes rpm
 
+      # The Vite bundles must exist before packaging because electron-builder archives
+      # only reviewed runtime files; then --publish never keeps artifact creation
+      # strictly local, since electron-builder otherwise attempts implicit GitHub
+      # publishing whenever a git tag is present. This pipeline alone decides what
+      # reaches a draft release.
+      - name: Build production bundles
+        run: npm run build
+
       - name: Build all four package formats for x64
-        run: npx electron-builder --linux AppImage deb rpm pacman --x64 --config electron-builder.config.cjs
+        run: npx electron-builder --linux AppImage deb rpm pacman --x64 --publish never --config electron-builder.config.cjs
 
       - name: Generate SHA-256 checksums
         run: |
@@ -127,8 +135,11 @@ jobs:
       # Cross-building arm64 Linux targets on an x64 runner needs no emulation:
       # no native modules are rebuilt, and electron-builder fetches the matching
       # Electron distribution for the requested architecture.
+      - name: Build production bundles
+        run: npm run build
+
       - name: Build all four package formats for arm64
-        run: npx electron-builder --linux AppImage deb rpm pacman --arm64 --config electron-builder.config.cjs
+        run: npx electron-builder --linux AppImage deb rpm pacman --arm64 --publish never --config electron-builder.config.cjs
 
       - name: Generate SHA-256 checksums
         run: |
@@ -176,9 +187,13 @@ jobs:
         run: npm ci
 
       # npm's built-in CycloneDX output covers every locked production and
-      # development component without adding another dependency to audit.
+      # development component without adding another dependency to audit. The
+      # release directory is created here because no packaging step runs in
+      # this job to create it.
       - name: Emit the CycloneDX SBOM from the lockfile
-        run: npm sbom --sbom-format cyclonedx --sbom-type application > release/tokentrail-sbom.cdx.json
+        run: |
+          mkdir -p release
+          npm sbom --sbom-format cyclonedx --sbom-type application > release/tokentrail-sbom.cdx.json
 
       - name: Upload SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

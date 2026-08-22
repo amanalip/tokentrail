@@ -166,7 +166,7 @@ Prove everything Phase 5 can prove on this machine without a release tag, record
 
 ### Follow-up
 
-Push the `v0.5.0` tag to prove the tag→draft-release pipeline end to end (the last machine-verifiable Phase 5 criterion), observe the run, sweep exit criteria, then close out Phase 5 pending only operator-held items.
+The `v0.5.0` tag was pushed and its pipeline run failed fast with three real defects the local environment could not have exposed: release jobs never built the Vite bundles before packaging, electron-builder attempted implicit GitHub publishing because a tag was present, and the SBOM job wrote into an output directory nothing had created. All three are fixed in this increment (`npm run build` added to both build jobs, `--publish never` made explicit on every builder invocation as draft-only defense, `mkdir -p` before the SBOM redirect); per the artifact-versioning model the failed candidate is superseded by version 0.5.1 — the `v0.5.0` tag is retained unchanged as the recorded marker of that attempt since no release object of any kind was created from it. Next: commit these fixes, then push tag `v0.5.1` and observe the full pipeline through draft creation.
 
 ---
 
