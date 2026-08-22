@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Token Trail: a privacy-first dashboard for your Codex usage</title>
+  <meta name="description" content="Token Trail is a free, open-source, privacy-first Linux desktop dashboard for understanding your local Codex usage: quota windows, token activity, reset times, and credits. Read-only, in-memory, no telemetry." />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
+  <link rel="icon" type="image/svg+xml" href="assets/tokentrail-icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="Token Trail home">
+        <img src="assets/tokentrail-icon.svg" alt="" width="34" height="34" />
+        <span class="brand-name">Token&nbsp;Trail</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#docs">Docs</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-small" href="https://github.com/amanalip/tokentrail">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          GitHub
+        </a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle color theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12.3 22a10.3 10.3 0 0 1 0-20c.4 0 .8.2 1 .5.2.3.3.7.1 1.1a6.9 6.9 0 0 0 6.5 9.3c.4 0 .8.2 1 .5.2.3.3.7.1 1.1A10.3 10.3 0 0 1 12.3 22Z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-14a1 1 0 0 1-1-1V1a1 1 0 0 1 2 0v1a1 1 0 0 1-1 1Zm0 20a1 1 0 0 1-1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm9-9h1a1 1 0 1 0 0-2h-1a1 1 0 1 0 0 2ZM2 12h1a1 1 0 1 0 0-2H2a1 1 0 1 0 0 2Zm15.7-6.7 1-1a1 1 0 0 0-1.4-1.4l-1 1a1 1 0 0 0 1.4 1.4Zm-11 11-1 1a1 1 0 1 0 1.4 1.4l1-1a1 1 0 0 0-1.4-1.4Zm11 2.4a1 1 0 0 0 .7-.3 1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 1.4l1 1c.2.2.4.3.7.3Zm-11-11c.3 0 .5-.1.7-.3a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 1.4l1 1c.2.2.4.3.7.3Z"/></svg>
+        </button>
+        <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ Hero ============ -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">Free &amp; open source · GPL-3.0 · Linux</p>
+        <h1>Your Codex usage,<br /><span class="accent">in plain sight.</span></h1>
+        <p class="lede">
+          Token Trail is a read-only desktop dashboard that shows your local
+          OpenAI Codex usage clearly: quota windows, token activity, reset times,
+          and credits. It reads only what it must, keeps everything in memory,
+          and never sends your data anywhere.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#install">Get Token Trail</a>
+          <a class="btn btn-ghost" href="#features">See features</a>
+        </div>
+        <p class="hero-note">Development preview · v0.5.x · verify checksums before running</p>
+
+        <!-- Decorative trail chart echoing the app icon -->
+        <div class="hero-art" aria-hidden="true">
+          <svg viewBox="0 0 720 300" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="fade-line" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#55f5de" stop-opacity="0.15"/>
+                <stop offset="1" stop-color="#55f5de" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
+            <g stroke-width="1">
+              <line x1="60" y1="60"  x2="660" y2="60"  opacity="0.08"/>
+              <line x1="60" y1="120" x2="660" y2="120" opacity="0.08"/>
+              <line x1="60" y1="180" x2="660" y2="180" opacity="0.08"/>
+              <line x1="60" y1="240" x2="660" y2="240" opacity="0.08"/>
+            </g>
+            <polyline points="80,250 170,205 280,175 380,150 480,105 600,70"
+                      fill="none" stroke="url(#fade-line)" stroke-width="5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="80"  cy="250" r="9" fill="#0b1230" stroke="#55f5de" stroke-width="4"/>
+            <circle cx="170" cy="205" r="8" fill="#55f5de"/>
+            <circle cx="280" cy="175" r="8" fill="#55f5de"/>
+            <circle cx="380" cy="150" r="8" fill="#55f5de"/>
+            <circle cx="480" cy="105" r="8" fill="#55f5de"/>
+            <circle cx="600" cy="70" r="14" fill="none" stroke="#9087fe" stroke-width="4"/>
+            <circle cx="600" cy="70" r="8" fill="#55f5de"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Feature pillars ============ -->
+    <section class="pillars" aria-label="What makes Token Trail different">
+      <div class="container pillar-grid">
+        <article class="pillar">
+          <h3>Read-only by design</h3>
+          <p>Exactly three approved reads plus one update notification, allowlisted before they ever reach Codex. No task control, no account changes, ever.</p>
+        </article>
+        <article class="pillar">
+          <h3>Memory-only data</h3>
+            <p>Usage snapshots live only in RAM while Token Trail runs. Close the app and they are gone: no history file, no cache, nothing to sync.</p>
+        </article>
+        <article class="pillar">
+          <h3>Zero network</h3>
+          <p>No telemetry, no crash reporting, no analytics, no update checks, no remote assets. The packaged build's CSP blocks remote code outright.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ Features ============ -->
+    <section id="features" class="features section">
+      <div class="container">
+        <h2>Six routes. One honest picture.</h2>
+        <p class="section-lede">
+          Every value states where it came from, whether that is reported by Codex,
+          observed locally, or calculated by Token Trail. Missing values stay visibly
+          unavailable instead of pretending to be zero.
+        </p>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Overview</h3>
+            <p>Quota windows with used/remaining percentages, reset times, countdowns, provenance labels, and freshness states on one calm screen.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Quota Windows</h3>
+            <p>Grouping, sorting, raw-safe details, a reset timeline, attention ordering, and session-change observations kept in memory only.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Usage</h3>
+            <p>Date ranges with a daily chart, calendar heatmap distinguishing real zeros from missing days, accessible tables, statistics, and coverage reporting.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Credits</h3>
+            <p>Balance, unlimited state, spending limits, reached state, and reset-credit expiry using the exact seven-day display rule.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Learn</h3>
+            <p>Built-in explanations of quotas, tokens, credits, provenance, privacy, and statistics, linked contextually from the metrics themselves.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Settings &amp; Diagnostics</h3>
+            <p>Light/dark/system themes, refresh choices, and a fully previewed redacted diagnostics export. Clear-data wipes your preferences after confirmation.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Privacy ============ -->
+    <section id="privacy" class="privacy section">
+      <div class="container">
+        <h2>Privacy is not a promise.<br /><span class="accent">It is an architecture.</span></h2>
+        <p class="section-lede">
+          These are enforced boundaries in code, not policies a setting could loosen.
+        </p>
+        <div class="privacy-grid">
+          <div class="privacy-item">
+            <h4>Reads exactly three things</h4>
+            <p>Account information, rate-limit windows, and aggregate usage. Nothing else is requested, and responses are stripped of every field outside the approved set.</p>
+          </div>
+          <div class="privacy-item">
+            <h4>One file on disk</h4>
+            <p>The only thing ever written is your preferences document: display choices like theme and refresh settings. No usage value can appear in it.</p>
+          </div>
+          <div class="privacy-item">
+            <h4>No credential access</h4>
+            <p>Authentication belongs entirely to Codex. Token Trail never sees, copies, stores, or refreshes your credentials.</p>
+          </div>
+          <div class="privacy-item">
+            <h4>Prompts stay yours</h4>
+            <p>Token Trail cannot read or store prompts, responses, tasks, repositories, files, tool calls, transcripts, or browser sessions.</p>
+          </div>
+          <div class="privacy-item">
+            <h4>Sanitized diagnostics</h4>
+            <p>The support export comes from a fixed allowlist of fields, structurally excludes identifiers and paths, and you preview it fully before saving.</p>
+          </div>
+          <div class="privacy-item">
+            <h4>Hardened shell</h4>
+            <p>Sandboxed renderer, context isolation, strict self-hosted CSP, deny-by-default navigation and permissions, single-instance lock, Electron fuses.</p>
+          </div>
+        </div>
+        <p class="center">
+          <a class="btn btn-ghost" href="https://github.com/amanalip/tokentrail/blob/main/docs/user/privacy.md">Read the full privacy guide</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ Install ============ -->
+    <section id="install" class="install section">
+      <div class="container">
+        <h2>Install on Linux</h2>
+        <p class="section-lede">
+          Four package formats, two architectures (x64 and arm64). Artifacts are
+          unsigned development previews. Download from GitHub Releases and
+          verify checksums before running anything.
+        </p>
+
+        <ol class="steps">
+          <li>
+            <h3>Check your architecture</h3>
+            <div class="code-block"><code>uname -m</code><button class="copy-btn" data-copy="uname -m" type="button" aria-label="Copy command">Copy</button></div>
+            <p class="hint"><code>x86_64</code> → x64 builds (<code>amd64</code>) · <code>aarch64</code> → arm64 builds</p>
+          </li>
+          <li>
+            <h3>Download &amp; verify</h3>
+            <p>Grab an artifact and <code>SHA256SUMS.txt</code> from the Releases page, then:</p>
+            <div class="code-block"><code>sha256sum -c SHA256SUMS.txt --ignore-missing</code><button class="copy-btn" data-copy="sha256sum -c SHA256SUMS.txt --ignore-missing" type="button" aria-label="Copy command">Copy</button></div>
+            <p class="hint">Every file you downloaded must print <code>OK</code>.</p>
+          </li>
+          <li>
+            <h3>Prerequisite: Codex CLI</h3>
+            <p>Token Trail needs a working, signed-in OpenAI Codex CLI on your <code>PATH</code>:</p>
+            <div class="code-block"><code>codex --version &amp;&amp; codex login</code><button class="copy-btn" data-copy="codex --version && codex login" type="button" aria-label="Copy command">Copy</button></div>
+          </li>
+        </ol>
+
+        <div class="format-grid">
+          <article class="format-card">
+            <h3>AppImage</h3>
+            <p class="distro">Any distribution · portable</p>
+            <div class="code-block"><code>chmod +x tokentrail-*-linux-x86_64.AppImage<br />./tokentrail-*-linux-x86_64.AppImage</code><button class="copy-btn" data-copy="chmod +x tokentrail-*-linux-x86_64.AppImage && ./tokentrail-*-linux-x86_64.AppImage" type="button" aria-label="Copy commands">Copy</button></div>
+            <p class="hint">Requires FUSE 2 (<code>libfuse2</code>) on most distributions.</p>
+          </article>
+          <article class="format-card">
+            <h3>deb</h3>
+            <p class="distro">Debian · Ubuntu · Mint</p>
+            <div class="code-block"><code>sudo apt install ./tokentrail-*-linux-amd64.deb</code><button class="copy-btn" data-copy="sudo apt install ./tokentrail-*-linux-amd64.deb" type="button" aria-label="Copy command">Copy</button></div>
+            <p class="hint">Runtime libraries resolved automatically by <code>apt</code>.</p>
+          </article>
+          <article class="format-card">
+            <h3>rpm</h3>
+            <p class="distro">Fedora · openSUSE</p>
+            <div class="code-block"><code>sudo dnf install ./tokentrail-*-linux-x86_64.rpm</code><button class="copy-btn" data-copy="sudo dnf install ./tokentrail-*-linux-x86_64.rpm" type="button" aria-label="Copy command">Copy</button></div>
+            <p class="hint">On openSUSE use <code>sudo zypper install …</code> instead.</p>
+          </article>
+          <article class="format-card">
+            <h3>Pacman</h3>
+            <p class="distro">Arch · CachyOS · Manjaro</p>
+            <div class="code-block"><code>sudo pacman -U tokentrail-*-linux-x86_64.pacman</code><button class="copy-btn" data-copy="sudo pacman -U tokentrail-*-linux-x86_64.pacman" type="button" aria-label="Copy command">Copy</button></div>
+            <p class="hint">Installed via pacman's local-package mode.</p>
+          </article>
+        </div>
+
+        <p class="center install-cta">
+          <a class="btn btn-primary" href="https://github.com/amanalip/tokentrail/releases">Download from GitHub Releases</a>
+        </p>
+        <p class="hint center">Note: "Source code (zip / tar.gz)" links on release pages are repository snapshots, not runnable builds.</p>
+      </div>
+    </section>
+
+    <!-- ============ Docs ============ -->
+    <section id="docs" class="docs section">
+      <div class="container">
+        <h2>Documentation</h2>
+        <p class="section-lede">Everything about how Token Trail works is written down and versioned with the code.</p>
+        <div class="docs-grid">
+          <div class="docs-col">
+            <h3>User guides</h3>
+            <ul>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/getting-started.md">Getting started</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/installing.md">Installing</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/upgrading.md">Upgrading</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/troubleshooting.md">Troubleshooting</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/uninstalling.md">Uninstalling</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/privacy.md">Privacy</a></li>
+            </ul>
+          </div>
+          <div class="docs-col">
+            <h3>Architecture</h3>
+            <ul>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/system-overview.md">System overview</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/security-boundaries.md">Security boundaries</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/threat-model.md">Threat model</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/data-flow.md">Data flow</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/data-inventory.md">Data inventory</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/testing-architecture.md">Testing architecture</a></li>
+            </ul>
+          </div>
+          <div class="docs-col">
+            <h3>Project</h3>
+            <ul>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/product_spec_electron.md">Product specification</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/design_decisions.md">Design decision log</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/compatibility-and-support-matrix.md">Compatibility matrix</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Known limitations</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/LICENSE">License (GPL-3.0)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/tokentrail-icon.svg" alt="" width="26" height="26" />
+        <span>Token Trail</span>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          <li><a href="https://github.com/amanalip/tokentrail">Source code</a></li>
+          <li><a href="https://github.com/amanalip/tokentrail/releases">Releases</a></li>
+          <li><a href="https://github.com/amanalip/tokentrail/issues">Issues</a></li>
+          <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/privacy.md">Privacy</a></li>
+        </ul>
+      </nav>
+      <p class="footer-note">
+        GPL-3.0-only · This site makes zero network requests beyond its own files.
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
