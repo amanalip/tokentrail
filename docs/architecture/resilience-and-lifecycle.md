@@ -1,7 +1,7 @@
 # Token Trail Resilience and Lifecycle
 
-**Status:** Implementation-in-progress (Phase 4 opened August 21, 2026)
-**Implemented and evidenced so far:** owned-child termination boundaries, mid-session exit handling, bounded resources under repeated use, timezone-change presentation, restart persistence, failure isolation across sections, offline/no-network posture
+**Status:** Implementation-in-progress (Phase 4 opened August 21, 2026); window close, quit, and single-instance lifecycle evidence added August 22, 2026
+**Implemented and evidenced so far:** owned-child termination boundaries, mid-session exit handling, bounded resources under repeated use, timezone-change presentation, restart persistence, clean-quit child termination, single-instance handoff, failure isolation across sections, offline/no-network posture
 **Still open inside this document's scope:** true suspend/resume, display-change, and long-idle soak observations, which require desktop-session control and belong to the Phase 6 soak campaign
 **Controlling documents:** [product_spec_electron.md](../../product_spec_electron.md), [implementation_plan.md](../../implementation_plan.md) section 8.4, [process-and-lifecycle.md](process-and-lifecycle.md), [error-taxonomy-and-recovery.md](error-taxonomy-and-recovery.md)
 **Last updated:** August 21, 2026
@@ -45,6 +45,8 @@ Timeout, malformed, oversized, method-not-found, duplicate-response, and slow-re
 
 - Preferences persist per profile and survive application restarts; live-applied theme changes re-read correctly after relaunch (`tests/e2e/preferences.spec.ts`).
 - Usage snapshots, session deltas, and diagnostics previews remain memory-only; clearing data deletes only Token Trail-owned files and adopts returned defaults immediately (see [preferences-and-storage.md](preferences-and-storage.md) and [diagnostics-and-redaction.md](diagnostics-and-redaction.md)).
+- Closing the window translates through `window-all-closed` into a full application quit: the main process disappears within a bounded grace period and every owned fixture app-server child is verified gone from the process table, proving the `before-quit` stop path terminates the owned child rather than orphaning it (`tests/e2e/lifecycle-shutdown.spec.ts`).
+- A second launch while an instance runs loses the single-instance lock and exits cleanly with code 0 before creating windows or state; the surviving instance keeps answering interaction, and the hand-off raise is the one permitted user-initiated focus acquisition (`tests/e2e/lifecycle-shutdown.spec.ts`, observed through an unmanaged plain-process launch so no debugger keeps the loser alive).
 
 ## 6. Offline and network posture
 
@@ -61,6 +63,7 @@ Resilience work adds no capability: termination targets stay inside the owned ha
 - `tests/e2e/resilience.spec.ts`: resource bounds under churn and refresh storms.
 - `tests/e2e/timezone.spec.ts`: cross-zone presentation without corruption.
 - `tests/e2e/preferences.spec.ts`: persistence across restarts.
+- `tests/e2e/lifecycle-shutdown.spec.ts`: clean quit on window close with owned-child termination, and single-instance handoff through an unmanaged second launch.
 - `src/renderer/design-tokens.test.ts`: motion bounds.
 
 ## 9. Known limitations

@@ -433,7 +433,7 @@
         <details class="faq">
           <summary>I launched a second copy and nothing appeared.</summary>
           <div class="faq-body">
-            <p>Token Trail enforces single-instance behavior: a second launch hands focus to the already-running window instead of starting another process. This is intentional, prevents split-brain readings, and is also why the upgrading guide tells you to close the app before replacing its files.</p>
+            <p>Token Trail enforces single-instance behavior: a second launch hands focus to the already-running window instead of starting another process, a contract verified by automated lifecycle tests that observe the losing instance exit cleanly while the survivor keeps responding. This is intentional, prevents split-brain readings, and is also why the upgrading guide tells you to close the app before replacing its files.</p>
           </div>
         </details>
 

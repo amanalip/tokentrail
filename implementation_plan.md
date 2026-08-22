@@ -447,6 +447,7 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 - [x] Test offline, signed-out, missing Codex, unsupported Codex, malformed response, slow response, process exit, and repeated restart behavior.
 - [ ] Test suspend, resume, timezone change, display change, window close, reopen, and application shutdown.
+  - Partially satisfied August 22, 2026: timezone change between sessions (`tests/e2e/timezone.spec.ts`), restart persistence (`tests/e2e/preferences.spec.ts`), and — new — clean application exit on window close with verified termination of the owned fixture app-server child plus single-instance handoff where a plain-process second launch exits with code 0 and the survivor keeps answering interaction (`tests/e2e/lifecycle-shutdown.spec.ts`). True suspend/resume and display hot-plug remain open because they require desktop-session control this repository's automation cannot self-provide; they stay scheduled for the Phase 6 soak campaign.
 - [x] Verify that child termination targets only a process owned by Token Trail.
 - [x] Verify that listener, timer, query, and process counts remain bounded across repeated use.
 - [x] Ensure one endpoint failure does not erase unrelated valid sections.

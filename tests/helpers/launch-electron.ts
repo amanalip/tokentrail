@@ -13,6 +13,9 @@ import { fileURLToPath } from 'node:url';
 // Import the operating-system temporary directory for disposable test profiles.
 import { tmpdir } from 'node:os';
 
+// Import Node's process spawning so unmanaged second-launch scenarios run as plain processes.
+import { spawn, type ChildProcess } from 'node:child_process';
+
 // Import Playwright's Electron launcher and application type only in external test code.
 import { _electron as electron, type ElectronApplication } from 'playwright';
 
@@ -105,6 +108,28 @@ export async function launchBuiltApplication(
         : { TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario }),
       TOKENTRAIL_TEST_USER_DATA_DIR: profileDirectory,
       ...(options?.extraEnv ?? {}),
+    },
+  });
+}
+
+/**
+ * Start one unmanaged Electron instance the way a real user's second launch would arrive:
+ * a plain process with no debugger attachment. Playwright's own launcher cannot observe this
+ * scenario because a correctly-behaved second instance loses the single-instance lock and
+ * quits before any debuggable surface exists, which is exactly the behavior under test.
+ * The caller owns waiting for exit and killing the returned child if a test fails early.
+ */
+export function spawnUnmanagedInstance(
+  fixtureScenario: string,
+  userDataDirectory: string,
+): ChildProcess {
+  return spawn(electronExecutablePath, ['.'], {
+    cwd: repositoryRoot,
+    stdio: 'ignore',
+    env: {
+      ...createSanitizedTestEnvironment(),
+      TOKENTRAIL_TEST_FIXTURE_SCENARIO: fixtureScenario,
+      TOKENTRAIL_TEST_USER_DATA_DIR: userDataDirectory,
     },
   });
 }

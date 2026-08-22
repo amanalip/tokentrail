@@ -117,19 +117,23 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 ## Current uncommitted work
 
 **First recorded:** August 22, 2026 after commit `57edda6`
-**Last updated:** August 22, 2026 at 5:10 PM EDT (`America/Toronto`, UTC-04:00)
+**Last updated:** August 22, 2026 at 5:25 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-This entry closes the machine-verifiable portion of plan section 8.3's second item — verifying semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements — with a dedicated end-to-end evidence suite and component-level announcement contracts, plus the documentation and website reconciliation that follows from it.
+This entry closes the machine-verifiable portion of plan section 8.3's second item — verifying semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements — and advances section 8.4's lifecycle item to its automation limit, each with dedicated evidence suites plus the documentation and website reconciliation that follows.
 
 ### Intent
 
-Record structural accessibility evidence on the real built application so the section 8.3 item rests on executed checks rather than inherited assumptions, while leaving the human-judgment portion honestly open.
+Record structural accessibility and window-lifecycle evidence on the real built application so both plan items rest on executed checks rather than inherited assumptions, while leaving human-judgment and desktop-session-controlled portions honestly open.
 
 ### Important changes
 
 - Added `tests/e2e/semantic-structure.spec.ts` with three tests against the built application: (1) stable landmark inventory — exactly one main landmark, the sidebar exposed as a named complementary landmark, its link list as a named navigation landmark, and the skip link as the first focused control; exactly one level-one heading per route, each inside the main landmark; (2) every interactive control surveyed across Overview, Settings & Diagnostics, and Learn carries a non-empty accessible name, with progress bars, radios, and the Learn searchbox pinned at their canonical locations; (3) signed-out guidance renders as a named region rather than an alert, and resting states expose zero assertive alerts anywhere in the document.
 - Added three announcement-contract tests to `routes.test.tsx` at component level: a stale snapshot announces through `role="alert"` with its retry action inside the same announcement; the frequently repeating connection indicator is a polite `role="status"`, never an alert; fresh states expose no alerts. Unit count rises to 224.
+- Added `tests/e2e/lifecycle-shutdown.spec.ts` advancing plan section 8.4 to its automation limit: (1) closing the window through the real titlebar gesture translates into a full application quit — the main process disappears within a bounded grace period and every owned fixture app-server child is verified gone from `/proc`, proving the `before-quit` stop path terminates rather than orphans the child; (2) a second launch while an instance runs loses the single-instance lock and exits with code 0 before creating windows, while the survivor keeps answering interaction. The second launch is observed as an unmanaged plain process because Playwright's own launcher cannot attach to a correctly-behaved loser that quits before any debuggable surface exists — the first attempt failed exactly that way, which is itself evidence the lock works.
+- Extended `tests/helpers/launch-electron.ts` with `spawnUnmanagedInstance` so second-launch scenarios share the sanitized-environment and fixture-scoping rules of managed launches.
+- Plan section 8.4's lifecycle item annotated with the covered-versus-open split; true suspend/resume and display hot-plug stay scheduled for the Phase 6 soak campaign.
+- `docs/architecture/resilience-and-lifecycle.md`: restart/persistence section gains clean-quit and handoff claims with evidence pointers; status header and test-evidence map updated.
 - Ticked plan section 8.3's semantic-verification item with the evidence note; the manual screen-reader item stays open alongside LIM-001.
 - `docs/architecture/accessibility-architecture.md`: new evidence bullet describing the contracts; status header updated; one accidentally duplicated axe-core evidence bullet found and removed during the same edit.
 - Website FAQ: keyboard/screen-reader answer now also states the post-navigation heading move and the verified landmark/announcement semantics.
@@ -142,12 +146,13 @@ Record structural accessibility evidence on the real built application so the se
 
 ### Verification
 
-- New e2e suite 3/3 green; routes component file 21/21 green including the three new contracts.
-- Full gates re-run before commit: formatting, lint, five-project typecheck, unit suites, integration fixtures, build budget gate, e2e, accessibility/development, security, docs link check.
+- New e2e suites green: semantic-structure 3/3, lifecycle-shutdown 2/2; routes component file 21/21 including the three new contracts.
+- Full gates re-run before commit: formatting, lint, five-project typecheck, unit suites, integration fixtures, build budget gate, full e2e plus accessibility/development and security suites, docs link check.
 
 ### Fact check
 
 - Landmark and role observations were read from the rendered built application and jsdom output during the debugged failure, not assumed; the signed-out test initially failed because it queried synchronously before the bridge promise resolved, which itself confirmed the region appears only once real state arrives.
+- The single-instance observation came from a real unmanaged process exit with code 0 read through the kernel's `exit` event, and child termination was checked against `/proc/<pid>` existence rather than application self-reporting.
 
 ### Sanity check
 
@@ -169,7 +174,7 @@ Record structural accessibility evidence on the real built application so the se
 
 ### Follow-up
 
-The remaining section 8.3 sibling (manual Orca session) and section 8.4's suspend/resume/display items stay operator- or environment-held; the automatable remainder of section 8.4 — window close, reopen, and shutdown observation — is the next candidate for the same treatment.
+The manual Orca session (section 8.3) and true suspend/resume, display hot-plug, and soak campaigns (section 8.4) stay operator- or environment-held; Phase 6 freeze decisions remain user-held.
 
 ---
 
