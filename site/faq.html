@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Frequently asked questions: Token Trail</title>
-  <meta name="description" content="Detailed answers about Token Trail: privacy, what it reads, installation on Linux, provenance labels, troubleshooting Codex detection, and more." />
+  <meta name="description" content="Detailed answers about Token Trail: privacy, what it reads and stores, installation on Linux, provenance labels, quota windows, statistics, troubleshooting, and known limitations." />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
   <link rel="icon" type="image/svg+xml" href="assets/tokentrail-icon.svg" />
@@ -50,9 +50,9 @@
         <p class="eyebrow">Frequently asked questions</p>
         <h1>Answers, straight<br /><span class="accent">from the docs.</span></h1>
         <p class="lede">
-          Everything below reflects implemented behavior in the current
-          development preview, verified by the project's test suites and
-          recorded evidence. Each answer links to the full guide where one exists.
+          Everything below describes implemented behavior in the current development
+          preview, checked against the source code, the user guides, and the recorded
+          test evidence. Each answer links to the full guide where one exists.
         </p>
       </div>
     </section>
@@ -60,27 +60,45 @@
     <section class="section faq-section">
       <div class="container faq-container">
 
-        <h2 class="faq-category">General</h2>
+        <nav class="faq-jump" aria-label="Jump to a section">
+          <a href="#general">General</a>
+          <a href="#privacy-security">Privacy and security</a>
+          <a href="#installation">Installation</a>
+          <a href="#reading-the-numbers">Reading the numbers</a>
+          <a href="#troubleshooting">Troubleshooting</a>
+        </nav>
+
+        <!-- ==================== General ==================== -->
+        <h2 class="faq-category" id="general">General</h2>
 
         <details class="faq">
           <summary>What exactly is Token Trail?</summary>
           <div class="faq-body">
-            <p>Token Trail is a free, open-source desktop dashboard for the Linux desktop that helps you understand your local OpenAI Codex usage. It shows quota windows with used and remaining percentages, token activity over time, reset times with countdowns, credits and spending limits, and related metrics, all in one place.</p>
-            <p>It is strictly read-only: it observes account-level data reported by your own Codex CLI installation and presents it clearly. It cannot start tasks, change your account, or redeem credits.</p>
+            <p>Token Trail is a free, open-source desktop dashboard for Linux that helps you understand your local OpenAI Codex usage. It presents six routes:</p>
+            <ul>
+              <li><strong>Overview</strong>: your primary quota window with used and remaining percentages, reset time, countdown, and last-updated freshness.</li>
+              <li><strong>Quota Windows</strong>: every bucket Codex reports, grouped and sorted in deterministic attention order.</li>
+              <li><strong>Usage</strong>: aggregate token activity over date ranges, with a daily chart, calendar heatmap, accessible table, and statistics.</li>
+              <li><strong>Credits</strong>: balance, unlimited state, spending limits, and reset-credit expiry.</li>
+              <li><strong>Learn</strong>: built-in explanations linked contextually from the metrics.</li>
+              <li><strong>Settings &amp; Diagnostics</strong>: themes, refresh choices, redacted diagnostics export, and clear-data.</li>
+            </ul>
+            <p>It is strictly read-only: it observes account-level data reported by your own Codex CLI installation. It cannot start tasks, change your account, or redeem credits.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Is it really free? What is the license?</summary>
           <div class="faq-body">
-            <p>Yes. Token Trail is licensed under GPL-3.0-only, and the complete source code is public at github.com/amanalip/tokentrail. There is no paid tier, no account to create, and no subscription.</p>
+            <p>Yes. Token Trail is licensed under GPL-3.0-only, and the complete source code is public at github.com/amanalip/tokentrail. There is no paid tier, no account to create, and no subscription. Even the branding assets are original project artwork under the same license.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Which platforms are supported?</summary>
           <div class="faq-body">
-            <p>Linux desktop environments, for x64 (amd64) and arm64 (aarch64) machines. Packages ship as AppImage, deb (Debian, Ubuntu, Mint), rpm (Fedora, openSUSE), and Pacman (Arch, CachyOS, Manjaro). Verified configurations are listed in the compatibility and support matrix; untested environments may still work.</p>
+            <p>Linux desktop environments, for x64 (amd64) and arm64 (aarch64) machines. Four package formats ship: AppImage, deb (Debian, Ubuntu, Mint), rpm (Fedora, openSUSE), and Pacman (Arch, CachyOS, Manjaro).</p>
+            <p>Honest caveat from the support record: XWayland sessions have recorded evidence, while GNOME Wayland, Cinnamon, Xfce, and native X11 sessions are listed as untested so far. Untested does not mean unsupported; it means nobody has captured proof yet. arm64 artifacts build correctly but have not yet been executed on real hardware.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/compatibility-and-support-matrix.md">Compatibility and support matrix</a></p>
           </div>
         </details>
@@ -88,7 +106,7 @@
         <details class="faq">
           <summary>What is the project's status?</summary>
           <div class="faq-body">
-            <p>The complete v1 read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x, with screenshot-backed test reports recorded per version. The project is currently moving through packaging, release automation, and release validation. Artifacts are unsigned development previews until an approved signing plan exists.</p>
+            <p>The complete v1 read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x. Each executable version carries its own screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites. The project is currently moving through packaging, release automation, and release validation. Artifacts remain unsigned development previews until an approved signing plan exists.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></p>
           </div>
         </details>
@@ -96,16 +114,46 @@
         <details class="faq">
           <summary>Do I need a Codex account or subscription?</summary>
           <div class="faq-body">
-            <p>You need a working OpenAI Codex CLI installation signed in to a Codex plan. Token Trail itself requires no account: it starts its own local Codex app-server process and reads only what Codex reports for your existing session.</p>
+            <p>You need a working OpenAI Codex CLI installation, signed in to a Codex plan, resolvable from your normal PATH. Token Trail itself requires no account and no sign-in: it starts its own local Codex app-server process (<code>codex app-server --stdio</code>) and reads only what Codex reports for your existing authenticated session.</p>
           </div>
         </details>
 
-        <h2 class="faq-category">Privacy and security</h2>
+        <details class="faq">
+          <summary>Who is Token Trail for?</summary>
+          <div class="faq-body">
+            <p>For people who use Codex on their own Linux machine and want an honest picture of their capacity without opening a terminal or guessing from error messages: how much of each quota window remains, when windows reset, how much token activity happened across days, and what credits look like right now.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Is Token Trail affiliated with OpenAI?</summary>
+          <div class="faq-body">
+            <p>No. It is an independent GPL-licensed project that talks to the locally installed Codex CLI through its documented app-server interface. All network activity belonging to your Codex usage stays inside Codex's own processes under its own terms; Token Trail adds nothing on top.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Does it show my OpenAI API usage or billing?</summary>
+          <div class="faq-body">
+            <p>No, deliberately. Codex plan usage and OpenAI API billing are separate systems. Token Trail reads only local Codex app-server account data and never represents API billing state. Likewise, included plan usage flows through quota windows while credits are reported separately with their own units, and the two are displayed side by side without ever being added together.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Why do the files and commands say "tokentrail" without a space?</summary>
+          <div class="faq-body">
+            <p>"Token Trail" (with a space) is the user-facing product name shown in the interface. "tokentrail" is the machine-safe identifier used where spaces and capitalization cause trouble: the repository, package name, executable slug, desktop entry, and protocol identifiers. The application keeps these roles strictly separated.</p>
+          </div>
+        </details>
+
+        <!-- ==================== Privacy and security ==================== -->
+        <h2 class="faq-category" id="privacy-security">Privacy and security</h2>
 
         <details class="faq">
           <summary>Can Token Trail read my prompts or Codex conversations?</summary>
           <div class="faq-body">
-            <p>No, as an enforced boundary rather than a policy. Token Trail reads exactly three kinds of data from Codex (account information, rate-limit windows, and aggregate token usage) plus one rate-limit update notification, through an allowlist checked before anything reaches Codex. The only other protocol traffic is the standard handshake required to start the app-server session. Prompts, responses, tasks, repositories, files, tool calls, agent transcripts, and browser sessions are structurally outside what the application can request or store, and responses are validated then stripped of every field outside the approved set.</p>
+            <p>No, and this is an enforced boundary in code rather than a promise. Token Trail reads exactly three kinds of data (account information such as plan label, rate-limit snapshots, and aggregate usage buckets, plus credit information) through an allowlist checked before anything reaches Codex. Prompts, responses, tasks, repositories, files, tool calls, agent transcripts, and browser sessions are structurally outside what the application can request.</p>
+            <p>Responses are validated against closed schemas and stripped of every field outside the approved set before they cross into display logic; account email addresses are dropped intentionally at the schema level. The only other protocol traffic is the standard handshake required to start the app-server session and one rate-limit update notification that triggers a fresh approved read.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/privacy.md">Privacy guide</a></p>
           </div>
         </details>
@@ -113,46 +161,71 @@
         <details class="faq">
           <summary>Where is my usage data stored?</summary>
           <div class="faq-body">
-            <p>Nowhere, in practice. Usage snapshots, quota values, and session deltas live only in RAM while Token Trail runs; closing the app erases them completely. The only file ever written to disk is your preferences document at <code>~/.config/Token Trail/</code>, which holds display choices like theme and refresh settings. No usage value, timestamp, or account detail can appear in it.</p>
+            <p>In RAM only, while the application runs. Usage snapshots, quota values, and session-to-session deltas live in memory; closing the window erases them completely. There is no history file, no cache, no crash dump containing them, and nothing for a future version to sync.</p>
+            <p>The only thing ever written to disk is your preferences document at <code>~/.config/Token Trail/preferences.json</code>, containing display choices such as theme and refresh settings. Its schema structurally excludes usage values, timestamps, and account details, so they cannot appear in it even by accident.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>What happens if my preferences file gets corrupted?</summary>
+          <div class="faq-body">
+            <p>Preferences are validated on every load against a closed schema. A newer version reads older files fine, and invalid values are reset to defaults rather than breaking launch. A corrupt document is quarantined and reset safely but visibly, never trusted blindly. Clearing data from Settings &amp; Diagnostics deletes the document after you confirm.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Does Token Trail have telemetry or make network connections?</summary>
           <div class="faq-body">
-            <p>No. No telemetry, no crash reporting, no analytics, no update checks, no remote fonts or assets. The packaged build's Content Security Policy blocks remote script and style sources outright. All network activity belonging to your Codex usage happens inside Codex's own processes under its own privacy terms.</p>
+            <p>No. No telemetry, no crash reporting, no analytics, no update checks, no remote fonts or assets. A repository-wide search finds no auto-update or update-check code anywhere, and the AppStream metadata tests actively forbid update-check language. The packaged build's Content Security Policy blocks remote script and style sources outright; the only URLs fetched are local <code>file://</code> resources serving the app's own bundle.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Does Token Trail handle my login or API keys?</summary>
           <div class="faq-body">
-            <p>Never. Authentication belongs entirely to Codex. If you are signed out, Token Trail shows a signed-out state and you fix it by running <code>codex login</code> yourself. Credentials never pass through or rest inside Token Trail, so there is nothing stored to leak and nothing to re-enter inside the app.</p>
+            <p>Never. Authentication belongs entirely to Codex. If you are signed out, Token Trail shows a signed-out state and you fix it by running <code>codex login</code> yourself. Credentials never pass through or rest inside Token Trail, so there is nothing stored to leak and nothing to re-enter inside the application.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Can it change my account or spend my credits?</summary>
           <div class="faq-body">
-            <p>No. Token Trail has no write access of any kind: no task control, no credit redemption, no account changes. The read-only boundary is enforced in code, not by a setting you could loosen.</p>
+            <p>No. Token Trail has no write access of any kind: no task control, no credit redemption, no account changes. The outbound allowlist contains only read methods, so a compromised or buggy component could not issue a write even if it tried.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>How is the application hardened against attacks?</summary>
+          <div class="faq-body">
+            <p>The Electron shell applies defense in depth: a sandboxed renderer with context isolation and no Node integration, a strict self-hosted Content Security Policy in production, deny-by-default handlers for navigation, redirects, popups, webviews, permission requests, and downloads, single-instance enforcement so a second launch focuses the running window instead, and Electron fuses that disable risky runtime behaviors. Renderer isolation is verified in development, built, and packaged modes on both display-server backends by automated tests.</p>
+            <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/security-boundaries.md">Security boundaries guide</a></p>
           </div>
         </details>
 
         <details class="faq">
           <summary>What is inside the diagnostics export? Is it safe to share?</summary>
           <div class="faq-body">
-            <p>The support document built in Settings &amp; Diagnostics comes from a fixed, closed schema: application/Electron/Chromium/Node versions, platform and session details, theme, connection facts such as the refresh category, and coarse sanitized health, coverage, and session counters. Email addresses, identifiers, file paths, prompts, responses, raw protocol messages, and unknown fields are structurally excluded, and automated tests plant canary values for every sensitive class to prove they cannot leak. You preview the complete export before choosing where to save it, which makes it designed to be safe to attach when asking for help.</p>
+            <p>The support document comes from a fixed, closed schema: application/Electron/Chromium/Node versions, platform and session details, theme, connection facts such as the last refresh category, and coarse sanitized health, coverage, and session counters. Email addresses, identifiers, file paths, prompts, responses, raw protocol messages, and unknown fields are structurally excluded.</p>
+            <p>This is backed by automated tests that plant canary values for every sensitive class and fail the build if any could leak. You always see a complete preview before choosing a save destination through the native dialog, so the exported file is designed to be safe to attach when asking for help.</p>
           </div>
         </details>
 
-        <h2 class="faq-category">Installation</h2>
+        <details class="faq">
+          <summary>What does "provenance" mean here?</summary>
+          <div class="faq-body">
+            <p>Every value is labeled with its source: Codex-reported values come from the local app-server, calculated values are derived locally from those reported values, and locally observed values describe what this running process saw, such as when something was last refreshed. Provenance exists so honest numbers and honest gaps look different at a glance, and contextual links take you straight to an explanation whenever a metric surprises you.</p>
+          </div>
+        </details>
+
+        <!-- ==================== Installation ==================== -->
+        <h2 class="faq-category" id="installation">Installation</h2>
 
         <details class="faq">
           <summary>Why are downloads called unsigned development previews?</summary>
           <div class="faq-body">
-            <p>Packages are not code-signed yet because an approved signing plan is still pending. That means your OS may show unknown-publisher warnings. To be safe, always verify checksums before running anything:</p>
+            <p>Packages are not code-signed yet because no Linux signing identity has been approved for the project. That means your OS may show unknown-publisher warnings. Checksums are the verification mechanism until signing lands, so always verify before running anything:</p>
             <div class="code-block"><code>sha256sum -c SHA256SUMS.txt --ignore-missing</code><button class="copy-btn" data-copy="sha256sum -c SHA256SUMS.txt --ignore-missing" type="button" aria-label="Copy command">Copy</button></div>
-            <p>Every downloaded file must print <code>OK</code>. A mismatch means the file is not the reviewed build; do not run it.</p>
+            <p>Every downloaded file must print <code>OK</code>. A mismatch means the file is not the reviewed build; do not run it. Release pipelines also attach build provenance and a CycloneDX SBOM to each maintainer-reviewed draft release.</p>
           </div>
         </details>
 
@@ -161,28 +234,91 @@
           <div class="faq-body">
             <p>Classic AppImages need FUSE 2 on most distributions:</p>
             <div class="code-block"><code>sudo apt install libfuse2</code><button class="copy-btn" data-copy="sudo apt install libfuse2" type="button" aria-label="Copy command">Copy</button></div>
-            <p>On Fedora use <code>sudo dnf install fuse</code>; on Arch family use <code>sudo pacman -S --needed fuse2</code>. As a fallback you can skip FUSE entirely by extracting and running in place:</p>
+            <p>On Fedora use <code>sudo dnf install fuse</code>; on the Arch family use <code>sudo pacman -S --needed fuse2</code>. As a fallback you can skip FUSE entirely by extracting and running in place:</p>
             <div class="code-block"><code>./tokentrail-*-linux-x86_64.AppImage --appimage-extract-and-run</code><button class="copy-btn" data-copy="./tokentrail-*-linux-x86_64.AppImage --appimage-extract-and-run" type="button" aria-label="Copy command">Copy</button></div>
+            <p>Note that the AppImage is the one format without embedded AppStream metadata today, an upstream tooling limitation recorded in the design decision log.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/troubleshooting.md">Troubleshooting guide</a></p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>Are "Source code" links on the release page installable?</summary>
+          <summary>Are the "Source code" links on release pages installable?</summary>
           <div class="faq-body">
-            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, such as <code>tokentrail-0.5.0-linux-amd64.deb</code>.</p>
+            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-0.5.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm and Pacman use x86_64/aarch64.</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>How do I uninstall Token Trail?</summary>
+          <summary>Where do the packages put their files?</summary>
           <div class="faq-body">
-            <p>Per format: delete the AppImage file, or remove the native package with your package manager (<code>sudo apt remove tokentrail</code>, <code>sudo dnf remove</code>, or <code>sudo pacman -R</code>). Removing the package removes exactly its own files. To also erase preferences, clear data from Settings &amp; Diagnostics or delete <code>~/.config/Token Trail/</code>. There is nothing else to clean up because there is nothing else on disk.</p>
+            <p>Native packages install application files under <code>/opt/Token Trail/</code>, a launcher at <code>/usr/share/applications/tokentrail.desktop</code>, icons into the hicolor theme directories, and AppStream metadata at <code>/usr/share/metainfo/com.tokentrail.app.metainfo.xml</code>. The launcher declares <code>StartupWMClass=tokentrail</code>, so running windows associate correctly with the menu entry on Wayland and X11 alike. The AppImage is a single portable file with no other installed pieces; desktop-menu integration depends on your environment's AppImage handling.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Does it install services, autostart entries, or tray icons?</summary>
+          <div class="faq-body">
+            <p>No. Token Trail installs no tray icon, no autostart entry, no background service, and no daemon. When the window closes, the process exits and everything in memory is gone. Nothing runs between sessions because there is nothing to run.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>How do I check which version I have?</summary>
+          <div class="faq-body">
+            <p>Open Settings &amp; Diagnostics and expand the diagnostics preview: the application version appears alongside the Electron and Chromium versions it runs on. For package installs you can also ask your package manager directly:</p>
+            <div class="code-block"><code>dpkg -s tokentrail | grep Version   # deb<br />rpm -q tokentrail                   # rpm<br />pacman -Qi tokentrail | grep Version # Pacman</code><button class="copy-btn" data-copy="dpkg -s tokentrail | grep Version" type="button" aria-label="Copy command">Copy</button></div>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>How do upgrades work? Will it update itself?</summary>
+          <div class="faq-body">
+            <p>v1 performs no update checks by design, so upgrading is always a manual act you decide on. Download the new artifact and its checksums, verify them, close Token Trail, then install over the old version with your package manager (or replace the AppImage file). Package managers replace application files in place; your preferences survive because they live in your user profile, not inside the package. Running copies refuse mid-flight replacement because of single-instance enforcement, which is why closing first matters.</p>
+            <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/upgrading.md">Upgrading guide</a></p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Can I roll back to an older version?</summary>
+          <div class="faq-body">
+            <p>Downgrading is not a supported path. Preferences written by a newer version may carry fields an older build does not understand; the older build quarantines and resets them safely but visibly, so expect settings to return to defaults. Published releases are immutable: files never change under the same name, and corrections ship as new versions.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>How do I uninstall completely?</summary>
+          <div class="faq-body">
+            <p>Delete the AppImage file, or remove the native package with your package manager: <code>sudo apt remove tokentrail</code>, <code>sudo dnf remove tokentrail</code>, <code>sudo zypper remove tokentrail</code>, or <code>sudo pacman -R tokentrail</code>. The packages declare no post-remove scripts, so exactly their own files are removed.</p>
+            <p>Your preferences intentionally survive in case you reinstall later. To erase those too, either clear data from Settings &amp; Diagnostics first or delete the directory afterward:</p>
+            <div class="code-block"><code>rm -rf ~/.config/"Token Trail"</code><button class="copy-btn" data-copy='rm -rf ~/.config/"Token Trail"' type="button" aria-label="Copy command">Copy</button></div>
+            <p>You can verify removal with <code>which tokentrail</code>: it should come up empty, along with the paths listed in the uninstalling guide.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/uninstalling.md">Uninstalling guide</a></p>
           </div>
         </details>
 
-        <h2 class="faq-category">Reading the numbers</h2>
+        <!-- ==================== Reading the numbers ==================== -->
+        <h2 class="faq-category" id="reading-the-numbers">Reading the numbers</h2>
+
+        <details class="faq">
+          <summary>What is a quota window?</summary>
+          <div class="faq-body">
+            <p>A quota window is a rolling period, such as five hours or a week, for which Codex reports used and remaining percentages for its own capacity accounting. Because the window slides continuously rather than resetting at one fixed instant, the percentage can change unevenly over time even without unusual activity. Codex may report several buckets, such as primary and secondary, and Token Trail shows each one separately with its own duration, reset timestamp, and countdown.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>What happens when I hit a limit?</summary>
+          <div class="faq-body">
+            <p>A reached state appears on screen only when Codex reports it, and it applies to the specific bucket Codex named. Token Trail never predicts that you will be blocked and never assigns one bucket's reached state to another window. If a limit hits, the Quota Windows route surfaces reached-state reports first in its attention ordering so you see them without hunting.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>My reset countdown passed but the number did not change. Is it broken?</summary>
+          <div class="faq-body">
+            <p>No. Countdowns are calculated from the reported reset timestamp against your local clock, but when a reset time passes, Token Trail waits for a fresh snapshot from Codex rather than assuming the reset actually occurred. Refresh, or interact with Codex, and the next approved read updates the display with reality instead of an assumption.</p>
+          </div>
+        </details>
 
         <details class="faq">
           <summary>What do the provenance labels on each value mean?</summary>
@@ -194,47 +330,75 @@
               <li><strong>Calculated by Token Trail</strong>: derived from reported source ranges.</li>
               <li><strong>Unavailable</strong>: not present, invalid, or unsupported by your Codex version, shown with a reason instead of an invented number.</li>
             </ul>
-            <p>Summaries over incomplete date ranges are additionally flagged as covering only part of the period you asked about. This labeling exists so honest numbers and honest gaps look different at a glance.</p>
+            <p>Summaries over incomplete date ranges are additionally flagged as partial, with the covered dates shown, so a calculated total never quietly pretends to cover days it does not have.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Why does something show Unavailable instead of zero?</summary>
           <div class="faq-body">
-            <p>Because an empty-looking value can mean three distinct things, and Token Trail deliberately distinguishes them: reported zero (Codex said zero), missing (Codex did not include the field), and unavailable with a reason (invalid, unsupported, or failed input). None is ever silently converted to zero. If your installed Codex version lacks support for an approved read, upgrading the CLI usually restores the missing values while everything else keeps working.</p>
+            <p>An empty-looking value can mean three different things, and Token Trail deliberately distinguishes them: reported zero (Codex said the value is zero), missing (Codex did not include the field), and unavailable with a reason (invalid, unsupported, or failed input). None of these is silently converted to zero. If your installed Codex version lacks support for an approved read, the affected metric shows unavailable while unrelated valid sections keep working; upgrading your Codex CLI usually restores the missing values.</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>Do token totals and quota percentages add up to each other?</summary>
+          <summary>Do token totals and quota percentages relate to each other?</summary>
           <div class="faq-body">
-            <p>No, and that is intentional. They measure different things reported by different mechanisms, so Token Trail displays both without blending them into one number. The Learn route inside the app explains the relationship in depth, linked contextually from the metrics themselves.</p>
+            <p>They are related but not convertible, so Token Trail never converts one into the other. Token totals describe how much text went through Codex; quota percentages are reported separately by Codex for its own capacity windows. Blending them into a single number would invent meaning, which is why the interface refuses to do it.</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>Why is my history gone after closing the app?</summary>
+          <summary>How do statistics handle missing days?</summary>
           <div class="faq-body">
-            <p>By design. v1 keeps everything in memory only, with no history file, cache, or sync target, so nothing about your usage survives closing the window. Session-to-session observations within one run are also memory-only. This is the privacy tradeoff made deliberately: maximum honesty about current state, zero data retention.</p>
+            <p>A missing date stays missing and is never treated as zero. Strict comparisons require every date in both periods to be supplied, so a comparison against an incomplete range simply does not render rather than mislead. Coverage reporting explains exactly what was received for any range you select. The calendar heatmap makes the same distinction visually: positive days, genuinely reported zero days, and days where nothing was reported all look different.</p>
           </div>
         </details>
 
         <details class="faq">
-          <summary>Does it refresh automatically?</summary>
+          <summary>Why is there no single health score combining everything?</summary>
           <div class="faq-body">
-            <p>Token Trail runs no polling timers of its own. Data is read at startup, whenever you press the refresh control, and when Codex itself pushes a rate-limit update notification, which triggers a fresh approved read so quota changes appear without a click.</p>
-            <p>An automatic-refresh option exists in Settings but stays off by default and is not yet wired to any scheduler; the app labels this honestly as pending evidence.</p>
+            <p>Quota percentages, credit strings, spending controls, and reset-credit counts use different units reported through different mechanisms. Combining them into one score would invent meaning that no source stated, so Token Trail shows them side by side with their origins labeled instead. This is the same principle behind keeping token totals and quota percentages separate.</p>
           </div>
         </details>
 
-        <h2 class="faq-category">Troubleshooting</h2>
+        <details class="faq">
+          <summary>Will my history be there tomorrow?</summary>
+          <div class="faq-body">
+            <p>No, by design. Changes since Token Trail opened compare the current snapshot against an in-memory baseline taken at startup; those observations disappear when the process exits and are never written to disk. v1 keeps no persistent history at all, which is the deliberate tradeoff behind its strongest privacy property: there is nothing stored to leak, subpoena, or sync.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>When does the data refresh?</summary>
+          <div class="faq-body">
+            <p>Data is read at startup, whenever you press the refresh control, and whenever Codex pushes a rate-limit update notification, which triggers a fresh approved read so quota changes appear without a click. Token Trail itself runs no polling timers. An automatic-refresh option exists in Settings but stays off by default and is not yet wired to any scheduler; the app labels this honestly as pending evidence.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>What connection states can the Overview show?</summary>
+          <div class="faq-body">
+            <p>Four, each stating reality plainly: connecting/loading while the owned Codex app-server starts, fresh data with per-value read times once values arrive, signed out when Codex reports no authenticated session, and unavailable when the Codex CLI cannot be found or answered incompatibly. Values appear only when Codex actually reports them, so gaps stay visible rather than masquerading as zeros.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Is the app usable with a keyboard or a screen reader?</summary>
+          <div class="faq-body">
+            <p>Keyboard-only navigation works everywhere; press Tab after loading to reach the skip-to-content link, and all routes maintain visible focus. Automated axe-core accessibility gates run in CI. One honest gap from the support record: a full human-operated Orca screen-reader session has not yet been performed, since that requires operator judgment beyond automated checks.</p>
+          </div>
+        </details>
+
+        <!-- ==================== Troubleshooting ==================== -->
+        <h2 class="faq-category" id="troubleshooting">Troubleshooting</h2>
 
         <details class="faq">
           <summary>Token Trail says the Codex CLI is unavailable, but codex works in my terminal.</summary>
           <div class="faq-body">
-            <p>This almost always means your desktop session's PATH differs from your shell's PATH. Menu launches do not read <code>.bashrc</code>. Confirm the CLI resolves in a terminal first:</p>
+            <p>This almost always means your desktop session's PATH differs from your shell's PATH, because menu launches do not read <code>.bashrc</code>. Confirm the CLI resolves in a terminal first:</p>
             <div class="code-block"><code>which codex && codex --version</code><button class="copy-btn" data-copy="which codex && codex --version" type="button" aria-label="Copy command">Copy</button></div>
-            <p>If that works but the app still cannot find it, link the directory containing <code>codex</code> into a standard location such as <code>/usr/local/bin</code>, then press refresh.</p>
+            <p>If that works but the application still cannot find it, link the directory containing <code>codex</code> into a standard location such as <code>/usr/local/bin</code>, then press refresh. Token Trail resolves the executable from the PATH environment it inherits, splitting it into absolute entries and checking each one.</p>
           </div>
         </details>
 
@@ -243,14 +407,37 @@
           <div class="faq-body">
             <p>Codex itself has no authenticated session visible to Token Trail. Fix it through Codex directly:</p>
             <div class="code-block"><code>codex login</code><button class="copy-btn" data-copy="codex login" type="button" aria-label="Copy command">Copy</button></div>
-            <p>Then refresh. Token Trail never asks for credentials itself.</p>
+            <p>Then refresh. Token Trail never asks for credentials itself, so there is nothing to re-enter inside the application.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>The menu entry, icon, or taskbar association is missing.</summary>
+          <div class="faq-body">
+            <p>Native packages install a launcher at <code>/usr/share/applications/tokentrail.desktop</code>. If your menu lacks the entry, reinstalling the package restores it, or you can refresh your desktop database:</p>
+            <div class="code-block"><code>update-desktop-database ~/.local/share/applications 2>/dev/null || true</code><button class="copy-btn" data-copy="update-desktop-database ~/.local/share/applications 2>/dev/null || true" type="button" aria-label="Copy command">Copy</button></div>
+            <p>On X11 you can confirm what a running window reports with <code>xprop WM_CLASS</code>; it should contain <code>tokentrail</code>, matching the launcher's StartupWMClass on both Wayland and X11.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>One metric is unavailable while everything else works. Should I worry?</summary>
+          <div class="faq-body">
+            <p>No. If your installed Codex version does not support one of the approved reads, the affected metric shows as unavailable with a reason instead of failing the whole dashboard. Everything else keeps working, because one unsupported endpoint never erases unrelated valid sections. Upgrading your Codex CLI usually restores the missing values.</p>
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>I launched a second copy and nothing appeared.</summary>
+          <div class="faq-body">
+            <p>Token Trail enforces single-instance behavior: a second launch hands focus to the already-running window instead of starting another process. This is intentional, prevents split-brain readings, and is also why the upgrading guide tells you to close the app before replacing its files.</p>
           </div>
         </details>
 
         <details class="faq">
           <summary>Where do I get help?</summary>
           <div class="faq-body">
-            <p>Export the redacted diagnostics document from Settings &amp; Diagnostics (it is designed to be safe to share), then open an issue at github.com/amanalip/tokentrail/issues with the file attached. The troubleshooting and known-limitations guides cover most other cases.</p>
+            <p>Export the redacted diagnostics document from Settings &amp; Diagnostics (it previews everything before saving and is designed to be safe to share), then open an issue at github.com/amanalip/tokentrail/issues with the file attached. The troubleshooting guide covers most other cases, and the known-limitations page lists honestly what currently lacks evidence, such as unsigned artifacts and environments awaiting their first verified session.</p>
             <p><a href="https://github.com/amanalip/tokentrail/issues">Issue tracker</a> · <a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Known limitations</a></p>
           </div>
         </details>
