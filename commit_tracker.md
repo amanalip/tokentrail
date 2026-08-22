@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 034 - Open Phase 5 with the four-format Linux release packaging](#commit-034---open-phase-5-with-the-four-format-linux-release-packaging)
 - [Commit 033 - Close Phase 4 automated scope with the 0.4.0 evidence record](#commit-033---close-phase-4-automated-scope-with-the-040-evidence-record)
 - [Commit 032 - Verify desktop identity across backends and enforce Wayland conduct](#commit-032---verify-desktop-identity-across-backends-and-enforce-wayland-conduct)
 - [Commit 031 - Move focus to new route content on navigation](#commit-031---move-focus-to-new-route-content-on-navigation)
@@ -105,11 +106,78 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `21327f2`
-**Last updated:** August 21, 2026 at 11:05 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `23dddba`
+**Last updated:** August 21, 2026 at 11:45 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The pending Phase 4 close-out entry below was finalized as commit `21327f2`. This entry opens Phase 5 per the approved sequence and completes plan section 9.2 in one coherent increment: all four approved Linux package formats become configured, contract-tested release targets with AppStream metadata, machine-safe artifact names, corrected desktop window-association identity, and an automated packaged-contents inspection gate.
+The pending packaging entry below was finalized as commit `23dddba`. This entry implements plan section 9.3: a least-privilege continuous-integration workflow for pull requests and main-branch pushes, and an immutable tag-driven pipeline that assembles all four package formats for both architectures onto one draft GitHub Release.
+
+### Intent
+
+Make every future change independently verifiable on shared infrastructure and turn approved version tags into reviewable draft releases without granting ordinary pushes any release capability.
+
+### Important changes
+
+- Added `.github/workflows/ci.yml`: pull-request and main-push runs covering frozen install, formatting, lint, five-project type checks, unit/component tests, fixture integration tests, the production build with its bundle-budget gate, and the packaged security suite under Xvfb with exactly the runtime libraries Token Trail's own deb declares.
+- Added `.github/workflows/release.yml`: triggered only by pushed `v*` tags; distinct x64 and arm64 build jobs plus an SBOM job feed one draft-creation job that publishes nothing on its own — files land on a draft prerelease for maintainer review.
+- Release jobs declare the protected `release` environment; the tag must equal the manifest version before any build starts (fail-closed guard).
+- Added `scripts/write-build-provenance.mjs`: per-build JSON provenance recording arch, tag, commit, runner identity, toolchain versions, UTC capture time, and per-artifact sizes plus SHA-256 digests; refuses to write when no artifacts exist.
+- SBOM generation uses npm's built-in CycloneDX emitter from the lockfile, so supply-chain metadata adds no new dependency to audit.
+
+### Decisions and assumptions
+
+- Every third-party action is pinned to one reviewed commit SHA fetched live from the GitHub API during authoring (checkout v7.0.1 `3d3c42e5…`, setup-node v7.0.0 `82076278…`, upload-artifact v7.0.1 `043fb46d…`, download-artifact v8.0.1 `3e5f45b2…`); floating tags were rejected because upstream movement would silently change CI behavior.
+- Draft creation uses GitHub's preinstalled CLI rather than another third-party release action, keeping the write-capable step first-party.
+- Signatures are intentionally absent pending an approved Linux signing plan; drafts are labeled unsigned previews in their notes.
+- CI deliberately covers only the plan's section 9.3 check list; e2e, accessibility, packaged smoke, and performance suites remain phase-evidence commands rather than every-push gates.
+- Repository-side settings that workflows cannot set themselves (release environment required reviewers, tag immutability) are named operator follow-ups.
+
+### Verification
+
+- Both workflow files parse as valid YAML (`js-yaml`).
+- The provenance script executed locally against the existing six built artifacts and produced correct schema-shaped output including hashes; it was also fixed during development after its own first run exposed a missing import.
+- Formatting and lint pass; the maintainer email appears only in reviewed metadata contexts already public in Git history.
+- Honest limit: workflow execution itself cannot be exercised before push; the first real CI run is observed evidence scheduled immediately after this commit lands.
+
+### Fact check
+
+- Action SHAs came from api.github.com tag refs showing `type: "commit"`, so pins point at exact commits rather than annotated-tag indirection.
+- `npm sbom --sbom-format cyclonedx` confirmed available in npm 12 via local help output.
+- Ubuntu 24.04 library names use the t64 suffix convention; the CI apt list mirrors the deb Depends set verified in Commit 034's artifact inspection.
+
+### Sanity check
+
+- No new capability crosses any product trust boundary: both files orchestrate existing reviewed commands; the renderer allowlist, CSP, IPC surface, and Codex scope are untouched.
+- Ordinary branch pushes cannot reach the release workflow's trigger, and its only write permission is scoped to the single draft-creation step.
+
+### User lessons
+
+- Least privilege in CI means naming permissions explicitly even when defaults would do; explicit denials survive platform default changes.
+- A tag-driven draft pipeline converts "releasing" from a risky act into reviewing a prepared draft — publication becomes the only human decision.
+
+### Agent lessons
+
+- Pin actions by fetching the tag ref from the API and checking it resolves to type "commit"; annotated tags would pin a tag object, not code.
+- Test helper scripts against real inputs before wiring them into automation: the missing-import defect surfaced on first local execution, not in CI.
+
+### Risks or limitations
+
+- rpm assembly inside the release pipeline remains unexercised until rpm-tools-equivalent runners build it; the workflow installs Ubuntu's `rpm` package for that step.
+- First-run CI may expose runner-image differences (library names, npm global install behavior); fixes will be recorded as they land.
+
+### Follow-up
+
+Push and observe the first CI run; then proceed to plan section 9.4 user documentation and 9.5 architecture records while monitoring CI results.
+
+---
+
+## Commit 034 - Open Phase 5 with the four-format Linux release packaging
+
+**Commit:** `23dddba` - `Open Phase 5 with the four-format Linux release packaging`
+**Timestamp:** August 21, 2026 at 11:18:39 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+The pending Phase 4 close-out entry was finalized as commit `21327f2`. This entry opens Phase 5 per the approved sequence and completes plan section 9.2 in one coherent increment: all four approved Linux package formats become configured, contract-tested release targets with AppStream metadata, machine-safe artifact names, corrected desktop window-association identity, and an automated packaged-contents inspection gate.
 
 ### Intent
 

@@ -1,0 +1,128 @@
+# Token Trail continuous integration.
+#
+# Purpose: give every pull request and every main-branch push an independent,
+# machine-verifiable quality gate covering the checks the implementation plan
+# requires at section 9.3: frozen installation, formatting, lint, strict type
+# checking across all five projects, unit/component tests, fixture integration
+# tests, the production build with its bundle-budget gate, and the packaged
+# renderer-isolation security suite against the built application.
+#
+# Trust posture:
+# - Least privilege by default: this file never requests write permissions, so
+#   untrusted pull-request runs cannot touch repository content or secrets.
+# - Every third-party action is pinned to one reviewed commit SHA; floating tags
+#   would let upstream changes alter CI behavior without review.
+# - No release capability lives here. Publishing artifacts is the separate,
+#   tag-driven draft-release workflow's responsibility.
+
+name: Continuous integration
+
+on:
+  # Run for proposed changes from any fork or branch.
+  pull_request:
+
+  # Run for direct pushes to the reviewed main branch so regressions surface even
+  # without a pull request.
+  push:
+    branches: [main]
+
+# Explicit deny-by-default token scope: read-only repository access is enough for
+# every step below because nothing here publishes, releases, or writes back.
+permissions:
+  contents: read
+
+# Superseded runs on the same reference are cancelled so queued runs cannot pile up.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast static and behavioral gate that needs no display server.
+  quality:
+    name: Format, lint, types, unit, integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the reviewed commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      # The manifest pins its package manager (`packageManager: npm@12.0.2`) while
+      # Node distributions bundle their own npm. Installing exactly the pinned npm
+      # keeps lockfile handling identical between maintainer machines and CI.
+      - name: Match the manifest-pinned npm version
+        run: npm install --global npm@12.0.2
+
+      # Frozen installation fails on any drift between manifest and lockfile.
+      - name: Install dependencies frozen from the lockfile
+        run: npm ci
+
+      - name: Formatting check
+        run: npm run check:format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Strict type check across all five projects
+        run: npm run typecheck
+
+      # Unit and component suites run in jsdom and need no display server.
+      - name: Unit and component tests
+        run: npm test
+
+      # Integration tests drive the owned-process Codex transport through the
+      # checked-in fixture catalog using Electron's own binary as Node.
+      - name: Fixture integration tests
+        run: npm run test:integration
+
+  # Production build plus the hardened-launch security suite, which drives the real
+  # Electron application and therefore needs Electron's system libraries and a
+  # virtual display on the headless runner.
+  built-security:
+    name: Build budget and packaged security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out the reviewed commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Match the manifest-pinned npm version
+        run: npm install --global npm@12.0.2
+
+      # Exactly the runtime libraries Token Trail's own deb declares as dependencies,
+      # so CI reproduces the documented Linux runtime contract instead of an ad-hoc
+      # list, plus Xvfb because the runner has no display server.
+      - name: Install Electron runtime libraries and a virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            libgtk-3-0t64 \
+            libnotify4 \
+            libnss3 \
+            libxss1 \
+            libxtst6 \
+            libasound2t64 \
+            libgbm1 \
+            xdg-utils \
+            libatspi2.0-0t64 \
+            libuuid1 \
+            libsecret-1-0 \
+            xvfb
+
+      - name: Install dependencies frozen from the lockfile
+        run: npm ci
+
+      # Runs the production build with its bundle-budget gate first, then launches
+      # the built application to prove renderer isolation, navigation denial, CSP,
+      # IPC authorization, and scheme handling survive packaging unchanged.
+      - name: Security suite against the built application
+        run: xvfb-run --auto-servernum npm run test:security
