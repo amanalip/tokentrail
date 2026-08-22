@@ -487,15 +487,76 @@ figcaption {
   padding: 48px 24px;
 }
 
-.pillar h3 {
+.pillar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  align-items: start;
+}
+
+.pillar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
   color: var(--teal);
+  background: var(--teal-dim);
+  border: 1px solid rgba(85, 245, 222, 0.25);
+}
+
+.pillar h3 {
+  align-self: center;
+  color: var(--text);
   font-size: 1.05rem;
-  margin-bottom: 8px;
 }
 
 .pillar p {
   margin: 0;
   font-size: 0.97rem;
+  grid-column: 2;
+}
+
+/* ---------- Numbers band ---------- */
+
+.stat-band {
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  list-style: none;
+  margin: 0 auto;
+  padding: 34px 24px;
+  max-width: 1080px;
+}
+
+.stats li {
+  text-align: center;
+  padding: 0 8px;
+  border-left: 1px solid var(--border);
+}
+
+.stats li:first-child {
+  border-left: none;
+}
+
+.stat-num {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--teal);
+  line-height: 1.2;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 /* ---------- Sections ---------- */
@@ -537,12 +598,38 @@ figcaption {
   color: var(--text);
 }
 
+.card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  color: var(--purple);
+  background: var(--purple-dim);
+}
+
 .feature-card p {
   margin: 0;
   font-size: 0.95rem;
 }
 
 /* ---------- Privacy ---------- */
+
+.flow-figure {
+  margin: 0 auto 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-raised));
+  padding: 18px;
+}
+
+.flow-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 
 .privacy-grid {
   display: grid;
@@ -824,6 +911,70 @@ details.faq summary:focus-visible {
   color: var(--text);
 }
 
+/* ---------- Status band ---------- */
+
+.status-band {
+  background:
+    radial-gradient(700px 300px at 15% 50%, rgba(85, 245, 222, 0.06), transparent 70%),
+    radial-gradient(700px 300px at 85% 50%, rgba(144, 135, 254, 0.08), transparent 70%);
+  border-bottom: 1px solid var(--border);
+}
+
+.status-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.status-inner h2 {
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+}
+
+.status-inner p {
+  font-size: 1.02rem;
+}
+
+.status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+}
+
+.status-chips li {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--teal);
+  background: var(--teal-dim);
+  border: 1px solid rgba(85, 245, 222, 0.25);
+  border-radius: 999px;
+  padding: 8px 18px;
+}
+
+/* ---------- Closing CTA ---------- */
+
+.closing-cta {
+  background:
+    radial-gradient(600px 280px at 50% 120%, rgba(144, 135, 254, 0.12), transparent 70%);
+  border-bottom: none;
+}
+
+.closing-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 88px 24px;
+  text-align: center;
+}
+
+.closing-inner .hero-actions {
+  margin-top: 28px;
+  justify-content: center;
+}
+
 /* ---------- Docs ---------- */
 
 .docs-grid {
@@ -901,6 +1052,10 @@ details.faq summary:focus-visible {
   font-size: 0.85rem;
 }
 
+.faq-pointer a {
+  font-weight: 600;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 900px) {
@@ -909,8 +1064,13 @@ details.faq summary:focus-visible {
   .pillar-grid {
     grid-template-columns: 1fr 1fr;
   }
-  .docs-grid {
-    grid-template-columns: 1fr 1fr;
+  .docs-grid,
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 24px;
+  }
+  .stats li:nth-child(4) {
+    border-left: none;
   }
   .pillar-grid {
     gap: 24px;
@@ -966,6 +1126,15 @@ details.faq summary:focus-visible {
   .format-grid,
   .docs-grid {
     grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 28px;
+  }
+
+  .stats li:nth-child(odd) {
+    border-left: none;
   }
 
   .section {
