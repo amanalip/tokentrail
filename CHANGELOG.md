@@ -26,6 +26,10 @@ The complete v1 read-only product scope, implemented and verified across develop
 - Codex access restricted to three approved reads plus one update notification, allowlisted before transport, size-guarded, validated with closed schemas, and normalized with field-level provenance; errors are redacted before crossing the privileged boundary.
 - No telemetry, no update checks, no network clients; usage data exists only in memory and never persists.
 
+### Fixed
+
+- Navigating to the Usage route now reliably moves keyboard and assistive-technology focus onto the route heading. The move was previously skipped whenever the Usage screen's lazy-loaded chunk was still mounting behind its loading fallback, leaving keyboard users on the navigation link they had activated.
+
 ### Known limitations
 
 - See `docs/support/known-limitations.md`; unsigned artifacts and untested environments are named there rather than implied away.

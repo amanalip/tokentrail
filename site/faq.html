@@ -109,7 +109,7 @@
         <details class="faq">
           <summary>What is the project's status?</summary>
           <div class="faq-body">
-            <p>The complete v1 read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x. Each executable version carries its own screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites. The project is moving through release validation: the tag-driven pipeline already assembles maintainer-reviewed drafts with structured notes, merged checksums, build provenance, and a CycloneDX SBOM, and the changelog plus support, maintenance, and incident-response policies are published. Artifacts remain unsigned development previews until an approved signing plan exists.</p>
+            <p>The complete v1 read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x. Each executable version carries its own screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites. On August 22, 2026, that entire automated matrix was re-executed green against a single commit — a rerun that caught and fixed one keyboard-focus defect on the Usage route. The project is moving through release validation: the tag-driven pipeline already assembles maintainer-reviewed drafts with structured notes, merged checksums, build provenance, and a CycloneDX SBOM, and the changelog plus support, maintenance, release-checklist, and incident-response policies are published. Artifacts remain unsigned development previews until an approved signing plan exists.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></p>
           </div>
         </details>
@@ -389,7 +389,7 @@
         <details class="faq">
           <summary>Is the app usable with a keyboard or a screen reader?</summary>
           <div class="faq-body">
-            <p>Keyboard-only navigation works everywhere; press Tab after loading to reach the skip-to-content link, and all routes maintain visible focus. Automated axe-core accessibility gates run in CI. One honest gap from the support record: a full human-operated Orca screen-reader session has not yet been performed, since that requires operator judgment beyond automated checks.</p>
+            <p>Keyboard-only navigation works everywhere; press Tab after loading to reach the skip-to-content link, every route moves focus to its heading after you navigate — including Usage, whose chart loads lazily — and all routes maintain visible focus. Automated axe-core accessibility audits run against the built application, alongside keyboard-only end-to-end workflows in real Electron sessions. One honest gap from the support record: a full human-operated Orca screen-reader session has not yet been performed, since that requires operator judgment beyond automated checks.</p>
           </div>
         </details>
 

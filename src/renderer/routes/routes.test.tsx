@@ -553,6 +553,22 @@ describe('keyboard route sweep', () => {
       (document.activeElement as HTMLElement | null)?.blur();
     }
   });
+
+  it('lands focus on the Usage heading even though its chunk mounts behind Suspense', async () => {
+    // Install one complete snapshot and render the shell.
+    installBridge(createSnapshot());
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'Overview' });
+
+    // The Usage route ships as a lazy chunk, so activating its navigation link can commit
+    // the loading fallback (which renders no heading) before real content exists. Whenever
+    // the real heading appears, assistive focus must have been moved onto it rather than
+    // being left on the navigation link that was activated.
+    await user.click(screen.getByRole('link', { name: 'Usage' }));
+    const heading = await screen.findByRole('heading', { level: 1, name: 'Usage' });
+    expect(document.activeElement).toBe(heading);
+  });
 });
 
 // Group behavior around Usage honesty guarantees from section 25 of the product specification.

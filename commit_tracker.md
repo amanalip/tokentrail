@@ -10,7 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
-- [Current uncommitted work](#current-uncommitted-work)
+- [Commit 043 - Generate structured draft-release notes from the tagged changelog and refresh the companion site](#commit-043---generate-structured-draft-release-notes-from-the-tagged-changelog-and-refresh-the-companion-site)
 - [Commit 042 - Ship the companion website on GitHub Pages](#commit-042---ship-the-companion-website-on-github-pages)
 - [Commit 041 - Begin Phase 6 with the changelog and release documentation set](#commit-041---begin-phase-6-with-the-changelog-and-release-documentation-set)
 - [Commit 040 - Close Phase 5 machine-verifiable scope with pipeline evidence](#commit-040---close-phase-5-machine-verifiable-scope-with-pipeline-evidence)
@@ -115,11 +115,75 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `2e8a6be`
-**Last updated:** August 22, 2026 at 5:10 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `1308e1a`
+**Last updated:** August 22, 2026 at 4:36 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The release-notes portion of this entry (generator script, workflow wiring, plan and architecture updates, changelog bullet) was finalized as commit `11cbbcd`; the website refresh, site lint-scope repair, and this tracker update land with the tracker's own commit, whose hash a later entry must record per tracking rules. This entry closes the last machine-verifiable section 9.4 item — structured draft-release notes generated from the tagged changelog — and refreshes the companion website to match the project's current release-engineering state, alongside bringing this tracker back in step with committed history.
+This entry executes the machine-verifiable portion of Phase 6 freeze preparation named in Commit 043's follow-up: a full validation-matrix rerun on commit `1308e1a`, one real defect it surfaced and fixed, the architecture-record reconciliation that defect exposed, and the companion-site refresh that keeps public claims in step with recorded evidence.
+
+### Intent
+
+Re-run every automated gate against current HEAD so Phase 6 preparation rests on fresh evidence rather than inherited green runs, fix whatever falls out honestly, and keep the website synchronized with the project's release-engineering reality.
+
+### Important changes
+
+- Full validation matrix executed August 22, 2026 starting 4:20 PM EDT on commit `1308e1a`: formatting check; lint; five-project strict typecheck; unit suites 29 files / 220 tests; integration fixtures 3 files / 32 tests; production build with its bundle-budget gate satisfied; e2e suite 27 tests; accessibility plus development suites 8 tests; security suite 3 tests; packaged smoke suites 4 tests under both display-server backends; packaged performance gate green (startup, idle CPU, memory budgets); documentation link check across 55 files; `npm audit --omit=dev` zero vulnerabilities.
+- The rerun's e2e leg failed once — deterministically, twice — in `tests/e2e/keyboard-workflows.spec.ts`: after activating the Usage navigation link, focus remained on that link instead of moving to the route heading. Root cause: UsageRoute mounts behind a lazy Suspense chunk whose loading fallback renders no `h1`, and App's focus-move effect queried exactly once at effect time, silently skipping when only the fallback existed. A disposable probe spec confirmed zero `focus()` calls and zero `focusin` events after activation.
+- Product fix in `src/renderer/App.tsx`: the post-navigation focus move now watches the content landmark with a bounded MutationObserver (two-second deadline) and focuses the heading the moment real content appears, instead of skipping when the heading is not yet mounted; cleanup disconnects the observer and cancels the deadline.
+- New unit regression test in `routes.test.tsx` asserting focus lands on the Usage heading even though its chunk resolves behind Suspense (unit count 221); the e2e assertion now polls for the cross-task focus move, matching the suite's established convention.
+- `docs/architecture/navigation-and-route-composition.md` reconciled: its known-limitations section still claimed focus movement was "scheduled Phase 4 accessibility work" although it landed in Commit 031; the document now describes implemented focus mechanics including the lazy-chunk case, and the stale limitation is gone.
+- `CHANGELOG.md` Unreleased gained a Fixed bullet describing the user-visible focus repair.
+- Website: status band now cites the August 22, 2026 validation-matrix rerun; Project docs column gains the release-validation process, executable release checklist, rollback/incident-response, and maintenance-and-compatibility links so published governance documents are all reachable; FAQ project-status answer refreshed to match.
+
+### Decisions and assumptions
+
+- Fixed the product behavior rather than only loosening the test: keyboard and screen-reader users were genuinely left on the activated navigation link whenever the lazy chunk suspended, which contradicts the documented accessibility contract.
+- The observer carries an explicit deadline so a future route that legitimately renders no heading cannot leak an observer for the session; quick navigation away cleans up through the effect teardown.
+- The stale architecture claim was corrected in the same change as the behavior confirmation, honoring the rule that stale architecture text is a defect.
+
+### Verification
+
+- Failure reproduced twice before the fix; after the fix, the keyboard-workflows suite passed three consecutive repeats (`--repeat-each=3`) and the full e2e suite passed 27/27.
+- All gates listed above re-ran green after the fix; full verify re-executed showing 221 unit / 32 integration.
+- Probe spec deleted after diagnosis; no diagnostic code remains.
+
+### Fact check
+
+- The deterministic failure was observed directly (two identical failures), the probe output quoted above came from live instrumentation, and the Suspense-fallback mechanism was read from `App.tsx` source rather than inferred.
+- Suite counts and timestamps in this entry come from the actual terminal outputs of this session's runs.
+
+### Sanity check
+
+- No privacy, security, network, or packaging surface changed: the fix is renderer-local focus management.
+- The website gains no new capability claims; it now links documents that already exist and restates evidence already recorded here.
+
+### User lessons
+
+- Green suites age: a rerun of unchanged code found a real defect because timing, not logic, had shifted.
+- An accessibility contract enforced only where content mounts synchronously is not yet enforced.
+
+### Agent lessons
+
+- Unit-level navigation sweeps that blur after each step structurally cannot catch a missing focus move; the end-to-end layer is the only place this class lives, so it must be run regularly even outside CI.
+- When a doc's "known limitations" name scheduled future work, sweep them the moment the work lands; stale limitation text hid this regression risk from readers.
+
+### Risks or limitations
+
+- None identified beyond the operator-held and environment-bound items already tracked; no new debt introduced.
+
+### Follow-up
+
+Keep phase-evidence Playwright suites in the regular rotation during Phase 6 preparation; proceed toward candidate-freeze decisions, which remain user-held.
+
+---
+
+## Commit 043 - Generate structured draft-release notes from the tagged changelog and refresh the companion site
+
+**Commits:** `11cbbcd` - `Generate draft-release notes from the tagged changelog`; combined with `1308e1a` - `Refresh the companion site and restore the lint gate`
+**Timestamps:** August 22, 2026 at 4:10:51 PM and 4:11:46 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Finalized from the pending entry below by this tracker update. These two commits closed the last machine-verifiable section 9.4 item — structured draft-release notes generated from the tagged changelog — refreshed the companion website to match the project's release-engineering state, and repaired the CI breakage the website commits had introduced.
 
 ### Intent
 
@@ -133,7 +197,6 @@ Give every future draft release an honest, full user-facing notes body that cann
 - Plan section 9.4's final open item ticked with evidence; status header moved to the Phase 6-preparation state; pipeline architecture record's draft-assembly and failure-behavior sections updated to describe generated notes failing closed.
 - `CHANGELOG.md` Unreleased gained the structured-notes bullet.
 - Website: status band rewritten around the proven tag→draft pipeline and published governance documents; chips updated (`Packaging: in progress` → `Release pipeline: proven`); Project docs column gains the support-policy link; FAQ's project-status answer refreshed to mention structured notes, provenance, SBOM, and the published policy set.
-- Tracker reconciliation: the previously pending Phase 6 documentation entry finalized below as Commit 041, and the six companion-site commits recorded together as Commit 042; the Contents list, which had lagged behind the body, now indexes through 042.
 
 ### Decisions and assumptions
 
@@ -145,9 +208,9 @@ Give every future draft release an honest, full user-facing notes body that cann
 ### Verification
 
 - Script executed against the real changelog: `v1.0.0` produced correct notes sourced from the labeled `Unreleased` section; malformed inputs (missing argument, short SHA, invalid repo pair) each failed closed with exit 1 and no output file written.
-- Generated Markdown inspected: heading hierarchy, table labels matching the tested artifacts (`x86_64`/`arm64` AppImage, `amd64`/`arm64` deb, `x86_64`/`aarch64` rpm and Pacman), and valid link destinations confirmed by eye against `docs/user/installing.md`.
+- Generated Markdown inspected: heading hierarchy, table labels matching the tested artifacts, and valid link destinations confirmed against `docs/user/installing.md`.
 - Workflow edit reviewed line-by-line for indentation and pinned SHAs reused unchanged; no yaml parser available locally, noted as a limitation.
-- Full quality gates re-run after edits and green: formatting check; lint (which surfaced and then fixed the site script's missing browser-global scope — see Important changes); five-project strict typecheck; unit/component suites 29 files / 220 tests passed; fixture integration suites 3 files / 32 tests passed; documentation link check across 55 files; production dependency audit zero vulnerabilities.
+- Full quality gates re-run after edits and green: formatting check; lint (which surfaced and then fixed the site script's missing browser-global scope); five-project strict typecheck; unit/component suites 29 files / 220 tests; fixture integration suites 3 files / 32 tests; documentation link check across 55 files; production dependency audit zero vulnerabilities.
 
 ### Fact check
 
@@ -171,12 +234,67 @@ Give every future draft release an honest, full user-facing notes body that cann
 
 ### Risks or limitations
 
-- The workflow change rides the next candidate tag before it has runner evidence; the local verification above is the only proof so far.
-- Site files remain outside Prettier/lint scope, so HTML consistency rests on manual review and the doc-link checker's coverage.
+- The workflow change rides the next candidate tag before it has runner evidence; local verification is the proof so far.
+- Site files remain outside Prettier/lint scope except for the script's global definition; HTML consistency rests on manual review and the doc-link checker's coverage.
 
 ### Follow-up
 
 Exercise the notes path on the next candidate tag when the operator calls one; continue Phase 6 freeze preparation (validation-matrix reruns, changelog split into real version sections at freeze time).
+
+---
+
+## Commit 042 - Ship the companion website on GitHub Pages
+
+**Commits:** `7dc0edd` - `Add GitHub Actions workflow for static site deployment`; combined with `14a490e` - `Add the companion website and deploy only its files to Pages`, `5493ce7` - `Add FAQ page, app screenshots, and footer credit`, `1e10907` - `Expand the FAQ with verified answers from the guides and source`, `3be40e2` - `Polish screenshot captions and the FAQ introduction`, and `2e8a6be` - `Add stat band, flow diagram, status section, icons, closing CTA, and share metadata`
+**Timestamps:** August 22, 2026 at 1:30:27 PM, 2:01:39 PM, 2:35:00 PM, 2:50:52 PM, 3:01:28 PM, and 3:39:08 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Recorded together because the six commits build one deliverable: the project's public face, deployed automatically and honestly.
+
+### Intent
+
+Give Token Trail a public landing page and verified FAQ that explain the product, prove its privacy claims from the same documents the repository maintains, and deploy only those static files.
+
+### Important changes
+
+- `.github/workflows/static.yml` deploys exclusively `./site` to GitHub Pages on every push to `main`; application repository content never publishes through this path.
+- `site/index.html` presents the hero, three privacy pillars (read-only allowlist, memory-only data, zero network), a numbers band, the six-route feature grid with real application screenshots, a data-flow SVG diagram, install steps for all four formats with copyable commands, a status band, documentation links mirroring the repository's guide set, and share metadata.
+- `site/faq.html` answers general, privacy/security, installation, number-reading, and troubleshooting questions, each written from the user guides, architecture records, and source behavior rather than marketing intent, linking to the controlling document.
+- Zero-network posture applies to the site itself: no fonts, scripts, or assets beyond its own files; theme toggle and mobile navigation are dependency-free.
+
+### Decisions and assumptions
+
+- Screenshots shown are real captured application output, not mockups; captions state what each screen shows.
+- The site claims only what the repository's evidence supports — preview status, unsigned artifacts, and untested environments stay visible in FAQ answers.
+
+### Verification
+
+- Every FAQ answer traced to its controlling guide or implemented behavior during authoring; internal links point at repository documents that exist.
+- Deployment path restricted to `./site` in the workflow's upload step.
+
+### Fact check
+
+- Install commands match `docs/user/installing.md`; architecture-label mappings match the versioned test report's draft inventory.
+
+### Sanity check
+
+- The site introduces no new product claims, no telemetry, no remote assets, and no implication that anything is published or signed.
+
+### User lessons
+
+- A public FAQ doubles as an audit: writing answers against source documents exposes where public explanation and implemented behavior could diverge.
+
+### Agent lessons
+
+- Companion sites inherit the project's honesty rules; marketing language that outruns recorded evidence would violate the same boundaries the application enforces.
+
+### Risks or limitations
+
+- Site files sit outside the repository's formatter and lint scopes; correctness relies on review and the documentation link checker's file coverage.
+
+### Follow-up
+
+Keep the site synchronized whenever release reality advances — status bands and FAQ answers age faster than architecture records.
 
 ---
 
@@ -233,61 +351,6 @@ Put every document that the v1.0.0 freeze requires into the repository before an
 ### Follow-up
 
 Continue Phase 6 preparation; present the freeze decision and the explicit publication gate to the operator when evidence is complete.
-
----
-
-## Commit 042 - Ship the companion website on GitHub Pages
-
-**Commits:** `7dc0edd` - `Add GitHub Actions workflow for static site deployment`; combined with `14a490e` - `Add the companion website and deploy only its files to Pages`, `5493ce7` - `Add FAQ page, app screenshots, and footer credit`, `1e10907` - `Expand the FAQ with verified answers from the guides and source`, `3be40e2` - `Polish screenshot captions and the FAQ introduction`, and `2e8a6be` - `Add stat band, flow diagram, status section, icons, closing CTA, and share metadata`
-**Timestamps:** August 22, 2026 at 1:30:27 PM, 2:01:39 PM, 2:35:00 PM, 2:50:52 PM, 3:01:28 PM, and 3:39:08 PM EDT (`America/Toronto`, UTC-04:00)
-**Author:** Aman Ali
-
-Recorded together because the six commits build one deliverable: the project's public face, deployed automatically and honestly.
-
-### Intent
-
-Give Token Trail a public landing page and verified FAQ that explain the product, prove its privacy claims from the same documents the repository maintains, and deploy only those static files.
-
-### Important changes
-
-- `.github/workflows/static.yml` deploys exclusively `./site` to GitHub Pages on every push to `main`; application repository content never publishes through this path.
-- `site/index.html` presents the hero, three privacy pillars (read-only allowlist, memory-only data, zero network), a numbers band, the six-route feature grid with real application screenshots, a data-flow SVG diagram, install steps for all four formats with copyable commands, a status band, documentation links mirroring the repository's guide set, and share metadata.
-- `site/faq.html` answers general, privacy/security, installation, number-reading, and troubleshooting questions, each written from the user guides, architecture records, and source behavior rather than marketing intent, linking to the controlling document.
-- Zero-network posture applies to the site itself: no fonts, scripts, or assets beyond its own files; theme toggle and mobile navigation are dependency-free.
-
-### Decisions and assumptions
-
-- Screenshots shown are real captured application output, not mockups; captions state what each screen shows.
-- The site claims only what the repository's evidence supports — preview status, unsigned artifacts, and untested environments stay visible in FAQ answers.
-
-### Verification
-
-- Every FAQ answer traced to its controlling guide or implemented behavior during authoring; internal links point at repository documents that exist.
-- Deployment path restricted to `./site` in the workflow's upload step.
-
-### Fact check
-
-- Install commands match `docs/user/installing.md`; architecture-label mappings match the versioned test report's draft inventory.
-
-### Sanity check
-
-- The site introduces no new product claims, no telemetry, no remote assets, and no implication that anything is published or signed.
-
-### User lessons
-
-- A public FAQ doubles as an audit: writing answers against source documents exposes where public explanation and implemented behavior could diverge.
-
-### Agent lessons
-
-- Companion sites inherit the project's honesty rules; marketing language that outruns recorded evidence would violate the same boundaries the application enforces.
-
-### Risks or limitations
-
-- Site files sit outside the repository's formatter and lint scopes; correctness relies on review and the documentation link checker's file coverage.
-
-### Follow-up
-
-Keep the site synchronized whenever release reality advances — status bands and FAQ answers age faster than architecture records.
 
 ---
 

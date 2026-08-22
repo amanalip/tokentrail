@@ -111,10 +111,40 @@ export function App() {
     previousRouteRef.current = target.route;
     if (isFirstRender || target.learnEntryId !== null) return;
 
-    const heading = document.querySelector<HTMLElement>('#overview h1');
-    if (heading === null) return;
-    heading.setAttribute('tabindex', '-1');
-    heading.focus();
+    // Route content can arrive one commit later than the route switch itself: the Usage chart
+    // ships as a lazy chunk behind Suspense, and its loading fallback renders no heading.
+    // A single query at effect time would then silently skip the accessibility focus move and
+    // leave keyboard users on the navigation link they just activated. Watch the content
+    // landmark briefly so the move still happens when real content mounts.
+    const content = document.getElementById('overview');
+    if (content === null) return;
+
+    let settled = false;
+    const tryFocus = (): boolean => {
+      if (settled) return true;
+      const heading = content.querySelector<HTMLElement>('h1');
+      if (heading === null) return false;
+      settled = true;
+      heading.setAttribute('tabindex', '-1');
+      heading.focus();
+      return true;
+    };
+
+    if (tryFocus()) return undefined;
+    const observer = new MutationObserver(() => {
+      if (tryFocus()) observer.disconnect();
+    });
+    observer.observe(content, { childList: true, subtree: true });
+    // A future route that legitimately renders no heading must not keep an observer alive
+    // for the rest of the session; the deadline bounds the watch instead.
+    const deadline = window.setTimeout(() => {
+      observer.disconnect();
+    }, 2_000);
+    return () => {
+      settled = true;
+      observer.disconnect();
+      window.clearTimeout(deadline);
+    };
   }, [target]);
 
   // Apply the explicit theme attribute at the document root so the reviewed palettes activate.

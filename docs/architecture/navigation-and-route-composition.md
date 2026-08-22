@@ -1,7 +1,7 @@
 # Navigation and Route Composition
 
-**Status:** Implemented in Phase 3
-**Last updated:** August 21, 2026
+**Status:** Implemented in Phase 3; route focus movement reconciled with implemented behavior on August 22, 2026
+**Last updated:** August 22, 2026
 
 This document explains the implemented route tree, navigation mechanics, data dependencies, and contextual links. The product specification (sections 7 and 8) controls required behavior.
 
@@ -27,6 +27,7 @@ Token Trail (#overview default)
 - Navigation uses standard fragment links (`href="#overview"` and so on) handled by the `hashchange` event; there is no router dependency and no history API usage that could navigate away from the local origin.
 - `parseRoute` accepts only exact identifiers from the closed `ROUTES` constant; any other hash falls back to Overview. User or protocol data can never select an arbitrary destination.
 - Links are real anchors with `aria-current="page"` on the active item, so middle-click, keyboard, and assistive navigation behave like plain web navigation.
+- Every intentional route change moves keyboard and assistive focus onto the new route's heading (given a `-1` tab index for the move). Because the Usage route mounts behind a lazy Suspense chunk whose loading fallback renders no heading, the move watches the content landmark for a bounded two-second window after the switch and focuses the heading the moment real content appears; a route that never renders a heading leaves nothing running. Initial renders keep the document's natural focus start, and Learn deep links delegate attention to their targeted entry card instead of the heading.
 - No link triggers a remote request: fragments resolve locally under the packaged custom protocol.
 
 ## Data composition rules
@@ -73,11 +74,12 @@ Every route renders from the single normalized snapshot delivered by the shared 
 
 ## Test evidence
 
-- `routes.test.tsx`: fragment-link navigation between routes, validated Learn deep links with focus fallback, contextual clause/error/reached/coverage links, Usage statistics/table/comparison honesty, chart-and-table same-source consistency, unavailable-never-zero statistics, Credits balance and capping copy, settings persistence payload, preview-before-export flow, clear-data confirmation, local Learn filtering, and a keyboard-only sweep activating all six destinations.
+- `routes.test.tsx`: fragment-link navigation between routes, validated Learn deep links with focus fallback, contextual clause/error/reached/coverage links, Usage statistics/table/comparison honesty, chart-and-table same-source consistency, unavailable-never-zero statistics, Credits balance and capping copy, settings persistence payload, preview-before-export flow, clear-data confirmation, local Learn filtering, a keyboard-only sweep activating all six destinations, and the focus move landing on the Usage heading even when its lazy chunk mounts behind Suspense.
 - `tests/e2e/fixture-catalog.spec.ts`: fixture-backed end-to-end coverage of the section 21.2 catalog including reached-state explanations, gapped usage, huge counters, sparse updates, and the keyboard route sweep in real Electron.
 - `tests/e2e/preferences.spec.ts`: live theme application through real radio controls plus persistence across restart.
 - `tests/e2e/window-identity.spec.ts` and `tests/e2e/typography.spec.ts`: runtime icon and numeric readability matrix evidence.
+- `tests/e2e/keyboard-workflows.spec.ts`: keyboard-only primary workflows asserting the post-navigation focus lands on each route's heading in real Electron.
 
 ## Known limitations
 
-- Route transitions do not yet move focus to the new heading (scheduled Phase 4 accessibility work); screen users currently rely on landmark navigation.
+None recorded for navigation behavior itself; route focus movement is implemented and tested at both component and end-to-end layers.

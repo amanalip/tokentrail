@@ -312,14 +312,19 @@
             The tag-driven release pipeline is proven end to end: every candidate tag lands
             as one maintainer-reviewed draft carrying all four package formats for both
             architectures, merged SHA-256 checksums, per-build provenance, a CycloneDX SBOM,
-            and structured release notes generated from the changelog. The changelog, support
-            policy, maintenance plan, and known-limitations record are all published. Release
-            validation is underway; publication, artifact signing, update deployment,
-            telemetry, and any broader Codex access remain deliberately separate, gated steps
-            rather than silent defaults.
+            and structured release notes generated from the changelog. On August 22, 2026,
+            the entire automated validation matrix — unit, integration, end-to-end,
+            accessibility, security, packaged smoke, and performance gates — was re-executed
+            green against a single commit, catching and fixing one keyboard-focus defect in
+            the process. The changelog, support policy, maintenance plan, and
+            known-limitations record are all published. Release validation continues toward
+            the v1.0.0 freeze; publication, artifact signing, update deployment, telemetry,
+            and any broader Codex access remain deliberately separate, gated steps rather
+            than silent defaults.
           </p>
           <ul class="status-chips" aria-label="Status summary">
             <li>v1 scope: verified</li>
+            <li>Full matrix: re-verified Aug 22</li>
             <li>Release pipeline: proven</li>
             <li>Signing: gated</li>
             <li>Telemetry: never</li>
@@ -363,6 +368,10 @@
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/design_decisions.md">Design decision log</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/compatibility-and-support-matrix.md">Compatibility matrix</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/support-policy.md">Support policy</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/release/release-validation-process.md">Release validation process</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/release/release-checklist.md">Release checklist</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/release/rollback-and-incident-response.md">Rollback &amp; incident response</a></li>
+              <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/maintenance/maintenance-and-compatibility.md">Maintenance plan</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Known limitations</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></li>
               <li><a href="https://github.com/amanalip/tokentrail/blob/main/LICENSE">License (GPL-3.0)</a></li>
