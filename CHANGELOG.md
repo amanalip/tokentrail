@@ -1,10 +1,10 @@
 # Changelog
 
-All notable changes to Token Trail are documented here. Versions appear newest-first once released; until the first publication, implemented and verified work lives under "Unreleased". Planned work never appears in this file.
+All notable changes to Token Trail are documented here. Versions appear newest-first; planned work never appears in this file.
 
-## Unreleased
+## 1.0.0
 
-The complete v1 read-only product scope, implemented and verified across development versions 0.1.0 through 0.5.3 with evidence recorded under `tests/test_reports/`.
+Released August 22, 2026. The complete v1 read-only product scope, implemented and verified across development versions 0.1.0 through 0.5.3 with evidence recorded under `tests/test_reports/`, and re-validated green on the full automated matrix against this release commit.
 
 ### Added
 

@@ -97,6 +97,6 @@ Phase 6 documents now opened from implemented policy and process:
 - [rollback and incident response](../release/rollback-and-incident-response.md);
 - [known limitations](../support/known-limitations.md) with stable identifiers;
 - the executable [release checklist](../release/release-checklist.md);
-- a root [`CHANGELOG.md`](../../CHANGELOG.md) holding verified unreleased work until first publication.
+- a root [`CHANGELOG.md`](../../CHANGELOG.md) holding verified release history newest-first, beginning with `1.0.0`.
 
 Until their owning phase begins, these filenames are planned work, not descriptions of current capabilities. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.

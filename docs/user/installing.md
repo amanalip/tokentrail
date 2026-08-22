@@ -3,7 +3,7 @@
 **Status:** Phase 5 user guide; installation steps are being followed against release-candidate packages in plan section 9.6 and corrected from observed results
 **Last updated:** August 21, 2026
 
-Token Trail ships as four package formats for two architectures. All artifacts are **unsigned development previews** until an approved signing plan exists; verify checksums before running anything.
+Token Trail ships as four package formats for two architectures. All artifacts are **unsigned** until an approved signing plan exists; verify checksums before running anything.
 
 ## Contents
 

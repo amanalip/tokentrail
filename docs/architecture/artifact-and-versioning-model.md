@@ -1,6 +1,6 @@
 # Artifact and Versioning Model
 
-**Status:** Implemented in Phase 5; first tag-driven execution awaits the Phase 6 release candidate
+**Status:** Implemented in Phase 5; the `v1.0.0` release candidate tag is the first production application of this model (candidate tags `v0.5.0`–`v0.5.3` proved the pipeline)
 **Last updated:** August 21, 2026
 
 ## Scope

@@ -5,7 +5,8 @@ node_modules/
 dist/
 
 # electron-builder writes unpacked applications and distributable packages here.
-release/
+# The leading slash keeps this from ignoring documentation under docs/release/.
+/release/
 
 # Test runners write transient reports, screenshots, videos, and coverage data to these folders.
 coverage/

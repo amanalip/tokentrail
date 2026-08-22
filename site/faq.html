@@ -52,10 +52,9 @@
         <p class="eyebrow">Frequently asked questions</p>
         <h1>Answers, straight<br /><span class="accent">from the docs.</span></h1>
         <p class="lede">
-          Answers describe implemented behavior in the current development
-          preview. Each one is checked against the source code and the user
-          guides, and links to the full documentation where a deeper
-          explanation exists.
+          Answers describe implemented behavior in the released v1.0.0. Each
+          one is checked against the source code and the user guides, and
+          links to the full documentation where a deeper explanation exists.
         </p>
       </div>
     </section>
@@ -109,7 +108,7 @@
         <details class="faq">
           <summary>What is the project's status?</summary>
           <div class="faq-body">
-            <p>The complete v1 read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x. Each executable version carries its own screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites. On August 22, 2026, that entire automated matrix was re-executed green against a single commit — a rerun that caught and fixed one keyboard-focus defect on the Usage route. The project is moving through release validation: the tag-driven pipeline already assembles maintainer-reviewed drafts with structured notes, merged checksums, build provenance, and a CycloneDX SBOM, and the changelog plus support, maintenance, release-checklist, and incident-response policies are published. Artifacts remain unsigned development previews until an approved signing plan exists.</p>
+            <p>Token Trail v1.0.0 was frozen and released on August 22, 2026. The complete read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x, each with a screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites — and the entire automated matrix ran green against the release commit on release day. The tag-driven pipeline assembles maintainer-reviewed drafts with structured notes, merged checksums, build provenance, and a CycloneDX SBOM; publishing each draft is a deliberate maintainer action. Artifacts remain unsigned until an approved signing plan exists.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></p>
           </div>
         </details>
@@ -224,7 +223,7 @@
         <h2 class="faq-category" id="installation">Installation</h2>
 
         <details class="faq">
-          <summary>Why are downloads called unsigned development previews?</summary>
+          <summary>Why are the downloads unsigned?</summary>
           <div class="faq-body">
             <p>Packages are not code-signed yet because no Linux signing identity has been approved for the project. That means your OS may show unknown-publisher warnings. Checksums are the verification mechanism until signing lands, so always verify before running anything:</p>
             <div class="code-block"><code>sha256sum -c SHA256SUMS.txt --ignore-missing</code><button class="copy-btn" data-copy="sha256sum -c SHA256SUMS.txt --ignore-missing" type="button" aria-label="Copy command">Copy</button></div>
@@ -247,7 +246,7 @@
         <details class="faq">
           <summary>Are the "Source code" links on release pages installable?</summary>
           <div class="faq-body">
-            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-0.5.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm and Pacman use x86_64/aarch64.</p>
+            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-1.0.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm and Pacman use x86_64/aarch64.</p>
           </div>
         </details>
 

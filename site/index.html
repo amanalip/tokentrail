@@ -71,7 +71,7 @@
           <a class="btn btn-primary" href="#install">Get Token Trail</a>
           <a class="btn btn-ghost" href="#features">See features</a>
         </div>
-        <p class="hero-note">Development preview · v0.5.x · verify checksums before running</p>
+        <p class="hero-note">v1.0.0 · first stable release · verify checksums before running</p>
 
         <!-- Real application screenshot in a window frame -->
         <figure class="hero-art">
@@ -243,8 +243,8 @@
         <h2>Install on Linux</h2>
         <p class="section-lede">
           Four package formats, two architectures (x64 and arm64). Artifacts are
-          unsigned development previews. Download from GitHub Releases and
-          verify checksums before running anything.
+          unsigned, so checksums are the integrity mechanism: download from
+          GitHub Releases and verify before running anything.
         </p>
 
         <ol class="steps">
@@ -307,24 +307,24 @@
         <div class="status-inner">
           <h2>Where the project stands</h2>
           <p>
-            The complete v1 read-only scope is implemented and machine-verified across
-            development versions 0.1.0 through 0.5.x, each backed by recorded test reports.
-            The tag-driven release pipeline is proven end to end: every candidate tag lands
-            as one maintainer-reviewed draft carrying all four package formats for both
-            architectures, merged SHA-256 checksums, per-build provenance, a CycloneDX SBOM,
-            and structured release notes generated from the changelog. On August 22, 2026,
-            the entire automated validation matrix — unit, integration, end-to-end,
-            accessibility, security, packaged smoke, and performance gates — was re-executed
-            green against a single commit, catching and fixing one keyboard-focus defect in
-            the process. The changelog, support policy, maintenance plan, and
-            known-limitations record are all published. Release validation continues toward
-            the v1.0.0 freeze; publication, artifact signing, update deployment, telemetry,
-            and any broader Codex access remain deliberately separate, gated steps rather
-            than silent defaults.
+            Token Trail v1.0.0 was frozen and released on August 22, 2026: the complete
+            read-only scope is implemented and machine-verified across development
+            versions 0.1.0 through 0.5.x, each backed by recorded test reports, and the
+            entire automated validation matrix — unit, integration, end-to-end,
+            accessibility, security, packaged smoke, and performance gates — ran green
+            against the release commit on release day. The tag-driven pipeline turns the
+            v1.0.0 tag into one maintainer-reviewed draft carrying all four package
+            formats for both architectures, merged SHA-256 checksums, per-build
+            provenance, a CycloneDX SBOM, and structured release notes generated from
+            the tagged changelog; publishing that draft is a deliberate maintainer
+            action after review. The changelog, support policy, maintenance plan, and
+            known-limitations record are published with the release. Artifact signing,
+            update deployment, telemetry, and any broader Codex access remain
+            deliberately separate, gated steps rather than silent defaults.
           </p>
           <ul class="status-chips" aria-label="Status summary">
-            <li>v1 scope: verified</li>
-            <li>Full matrix: re-verified Aug 22</li>
+            <li>v1.0.0: frozen &amp; released</li>
+            <li>Full matrix: green Aug 22</li>
             <li>Release pipeline: proven</li>
             <li>Signing: gated</li>
             <li>Telemetry: never</li>
