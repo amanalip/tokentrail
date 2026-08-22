@@ -28,6 +28,7 @@ The complete v1 read-only product scope, implemented and verified across develop
 
 ### Fixed
 
+- Aggregate token activity (the Usage route) now renders against current Codex CLI installations. Real Codex app-server responses name the usage bucket array `dailyUsageBuckets` with `startDate` keys and the longest-turn counter `longestRunningTurnSec`, while Token Trail validated only the originally reviewed spellings — so every real read failed schema validation and the section showed as permanently unavailable while quota windows kept working. Both observed spellings now validate to one internal shape, a missing bucket array reads as honest unavailable content rather than a failed read, and one malformed bucket record is counted as a rejection instead of erasing its valid neighbors.
 - Navigating to the Usage route now reliably moves keyboard and assistive-technology focus onto the route heading. The move was previously skipped whenever the Usage screen's lazy-loaded chunk was still mounting behind its loading fallback, leaving keyboard users on the navigation link they had activated.
 
 ### Known limitations

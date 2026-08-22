@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 045 - Verify semantics, lifecycle, and support promises ahead of freeze](#commit-045---verify-semantics-lifecycle-and-support-promises-ahead-of-freeze)
 - [Commit 044 - Re-run the full validation matrix and fix the lazy-route focus skip](#commit-044---re-run-the-full-validation-matrix-and-fix-the-lazy-route-focus-skip)
 - [Commit 043 - Generate structured draft-release notes from the tagged changelog and refresh the companion site](#commit-043---generate-structured-draft-release-notes-from-the-tagged-changelog-and-refresh-the-companion-site)
 - [Commit 042 - Ship the companion website on GitHub Pages](#commit-042---ship-the-companion-website-on-github-pages)
@@ -116,15 +117,74 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `57edda6`
-**Last updated:** August 22, 2026 at 5:25 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `6f010fa`
+**Last updated:** August 22, 2026 at 5:35 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-This entry closes the machine-verifiable portion of plan section 8.3's second item — verifying semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements — and advances section 8.4's lifecycle item to its automation limit, each with dedicated evidence suites plus the documentation and website reconciliation that follows.
+The operator reported the Usage route showing "Aggregate usage is unavailable" against their real Codex installation while quota windows kept working. Diagnosis captured the real app-server's approved-read responses and proved a protocol naming drift: real Codex 0.149.0 emits `dailyUsageBuckets` with per-bucket `startDate` keys and `longestRunningTurnSec`, while Token Trail validated only its originally reviewed spellings — so every real usage read failed schema validation and degraded to the honest-but-wrong unavailable state. The fix canonicalizes both observed spellings onto one internal shape and hardens the read against partial data.
 
 ### Intent
 
-Record structural accessibility and window-lifecycle evidence on the real built application so both plan items rest on executed checks rather than inherited assumptions, while leaving human-judgment and desktop-session-controlled portions honestly open.
+Make aggregate-usage reads work against current Codex CLI installations without weakening validation bounds, pin both spellings in contract tests, exercise the production shape through the full pipeline, and record the compatibility finding for future maintainers.
+
+### Important changes
+
+- `src/main/codex/protocol-schemas.ts`: the aggregate-usage result schema is now wrapped in a reviewed canonicalization layer — bucket arrays are accepted under either name (`dailyBuckets` or `dailyUsageBuckets`), per-bucket calendar keys under either name (`date` or `startDate`), and the longest-turn counter under either name (`longestTurnSeconds` or `longestRunningTurnSec`). Counter values pass through untouched; bounds and strip behavior are unchanged.
+- Hardened failure semantics in the same layer: an array missing under both names canonicalizes to null (the honest unavailable-content signal) instead of failing the whole read, and a non-object bucket record canonicalizes to an empty bucket that normalization counts as exactly one rejected record — one malformed neighbor can never erase valid days again.
+- Fixture scenarios now emit the real upstream spellings with plain JSON number counters, so integration evidence exercises actual production shapes end to end rather than Token Trail's internal names; all 32 fixture-integration tests still assert identical normalized outcomes.
+- Added `src/main/codex/protocol-schemas.test.ts` pinning the schema contract: upstream spelling canonicalizes value-identically, the reviewed spelling still validates unchanged, absent/null arrays preserve availability rules, malformed records degrade to counted rejections, and structurally impossible results fail closed.
+- Verified live on the reference machine: the built application launched without any fixture scenario, discovered the real signed-in Codex CLI, and rendered Usage with zero unavailable labels, a visible statistics region, and a chart alternative describing real supplied days. No screenshots of real account data were captured into the repository.
+- `docs/architecture/protocol-compatibility.md`: new "Observed aggregate-usage spelling variants" subsection records both spellings, the capture source, and the canonicalization rule.
+- `CHANGELOG.md`: user-visible Fixed bullet describing the defect and repair.
+
+### Decisions and assumptions
+
+- Compatibility is implemented as explicit canonicalization at the privileged boundary rather than loosening schemas to `passthrough`: unknown fields still strip, array bounds still enforce, and normalization continues to decide availability per field.
+- Both spellings stay accepted indefinitely because older Codex versions may legitimately emit either; the fixture speaks the newer spelling so default evidence follows reality.
+
+### Verification
+
+- Codex, overview, and integration suites green after each step (60 tests); the two initially failing contract tests exposed genuine pre-existing brittleness (missing-key and non-object-element behavior) which is now fixed rather than papered over.
+- Live check against real Codex 0.149.0 passed on the first run after the fix: unavailable labels = 0, summary region visible, chart alternative present describing nonzero supplied days.
+
+### Fact check
+
+- The upstream shapes quoted here were captured from the operator's own installed Codex 0.149.0 by speaking the exact approved-method handshake through a disposable probe script; no probe code or real-data payload entered the repository.
+
+### Sanity check
+
+- No new data leaves the boundary: the canonicalizer only renames fields onto already-reviewed internal names before existing validation runs.
+- Privacy held throughout: the live verification asserted DOM state programmatically and captured nothing identifying into tracked files.
+
+### User lessons
+
+- An "honest unavailable" state can still be wrong: honesty about *how* data was received is not honesty about *why* it failed when the failure is our own schema drift.
+
+### Agent lessons
+
+- Fixtures written from an assumed contract prove only self-consistency; the first conversation with the real counterpart surfaced what every green suite had missed. Capture reality early.
+
+### Risks or limitations
+
+- Older Codex versions that emit neither spelling would now degrade to unavailable-with-counted-rejections rather than failing loudly; acceptable because availability labeling stays truthful.
+
+### Follow-up
+
+Keep watching for further field-shape drift during the Phase 6 candidate matrix; consider capturing additional approved-read payloads from other Codex versions when environments allow.
+
+---
+
+## Commit 045 - Verify semantics, lifecycle, and support promises ahead of freeze
+
+**Commits:** `4d5e0f0` - `Verify landmark and announcement semantics on the built application`; combined with `8947d72` - `Prove clean quit with child termination and single-instance handoff` and `6f010fa` - `Align support policy bullets with the matrix quality label`
+**Timestamps:** August 22, 2026 at 5:03:59 PM, 5:11:43 PM, and 5:15:31 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Finalized from the pending entry below by this tracker update. These three commits recorded structural accessibility contracts, window-lifecycle behavior, and the support-promise audit — the remaining machine-verifiable preparation work before operator-held campaigns gate the v1.0.0 freeze.
+
+### Intent
+
+Record accessibility and window-lifecycle evidence on the real built application so plan sections 8.3 and 8.4 rest on executed checks at their automation limits, and keep support promises exactly as broad as the verified matrix.
 
 ### Important changes
 

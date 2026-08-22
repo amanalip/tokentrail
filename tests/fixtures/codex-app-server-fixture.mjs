@@ -249,10 +249,15 @@ function createRateLimitsResult() {
 }
 
 // Create one scenario-specific approved aggregate-usage result.
+//
+// Buckets are emitted under the upstream spellings observed from real Codex installations
+// (`dailyUsageBuckets` with `startDate` keys and `longestRunningTurnSec`) so the full
+// pipeline — transport, schema canonicalization, normalization — exercises production
+// shapes rather than Token Trail's internal names.
 function createUsageResult() {
   // Preserve an honest unavailable usage section when no account exists.
   if (scenario === 'empty' || scenario === 'missing-account') {
-    return { summary: null, dailyBuckets: null };
+    return { summary: null, dailyUsageBuckets: null };
   }
 
   // Supply fourteen complete dates with one gap, one reported zero, and one duplicate record.
@@ -263,13 +268,17 @@ function createUsageResult() {
       if (day === 8) continue;
       // Mark August 4 as an explicit reported zero distinct from the missing date.
       const tokens = day === 4 ? '0' : `${10_000 + day}`;
-      buckets.push({ date: `2026-08-${`${day}`.padStart(2, '0')}`, tokens });
+      buckets.push({ startDate: `2026-08-${`${day}`.padStart(2, '0')}`, tokens });
     }
     // Repeat one date so duplicate handling is exercised at the normalization boundary.
-    buckets.push({ date: '2026-08-02', tokens: '999' });
+    buckets.push({ startDate: '2026-08-02', tokens: '999' });
     return {
-      summary: { lifetimeTokens: '160135', peakDailyTokens: '10016' },
-      dailyBuckets: buckets,
+      summary: {
+        lifetimeTokens: '160135',
+        peakDailyTokens: '10016',
+        longestRunningTurnSec: 1500,
+      },
+      dailyUsageBuckets: buckets,
     };
   }
 
@@ -282,13 +291,13 @@ function createUsageResult() {
       const month = day <= 30 ? '06' : '07';
       const dateNumber = day <= 30 ? day : day - 30;
       buckets.push({
-        date: `2026-${month}-${`${dateNumber}`.padStart(2, '0')}`,
+        startDate: `2026-${month}-${`${dateNumber}`.padStart(2, '0')}`,
         tokens,
       });
     }
     return {
       summary: { lifetimeTokens: '630465', peakDailyTokens: '20030' },
-      dailyBuckets: buckets,
+      dailyUsageBuckets: buckets,
     };
   }
 
@@ -299,25 +308,26 @@ function createUsageResult() {
         lifetimeTokens: '123456789012345678901234567890',
         peakDailyTokens: '99999999999999999999',
       },
-      dailyBuckets: [
-        { date: '2026-08-12', tokens: '12345678901234567890' },
-        { date: '2026-08-13', tokens: '98765432109876543210' },
+      dailyUsageBuckets: [
+        { startDate: '2026-08-12', tokens: '12345678901234567890' },
+        { startDate: '2026-08-13', tokens: '98765432109876543210' },
       ],
     };
   }
 
-  // Supply two complete synthetic days plus reported summary counters.
+  // Supply two complete synthetic days plus reported summary counters using plain JSON
+  // numbers exactly as real Codex reports them.
   return {
     summary: {
-      lifetimeTokens: '4203910',
-      peakDailyTokens: '180400',
+      lifetimeTokens: 4203910,
+      peakDailyTokens: 180400,
       currentStreakDays: 8,
       longestStreakDays: 19,
-      longestTurnSeconds: 2520,
+      longestRunningTurnSec: 2520,
     },
-    dailyBuckets: [
-      { date: '2026-08-12', tokens: '91210' },
-      { date: '2026-08-13', tokens: '124500' },
+    dailyUsageBuckets: [
+      { startDate: '2026-08-12', tokens: 91210 },
+      { startDate: '2026-08-13', tokens: 124500 },
     ],
   };
 }

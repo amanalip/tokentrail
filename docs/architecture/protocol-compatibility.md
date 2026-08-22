@@ -32,8 +32,13 @@ The method allowlist will be a closed constant. A method absent from that consta
 - `RateLimitSnapshot` contains nullable identity, primary and secondary windows, credit state, spending control, reached state, and plan type.
 - `GetAccountRateLimitsResponse` contains a primary snapshot, optional snapshots by limit ID, and nullable reset-credit summary.
 - Reset-credit `availableCount` is a `bigint`, while detail rows may be null.
-- Usage summaries use nullable `bigint` fields for lifetime tokens, peak daily tokens, longest-running turn, and streak values.
-- Daily buckets contain a date string and `bigint` token value.
+- Usage summaries use nullable counters for lifetime tokens, peak daily tokens, longest-running turn, and streak values; counters arrive as plain JSON numbers within safe integer range or as canonical decimal strings when larger.
+- Daily buckets contain a calendar-date string and a token counter.
+
+### Observed aggregate-usage spelling variants
+
+Real Codex 0.149.0 (August 22, 2026 capture) names the bucket array `dailyUsageBuckets`, the per-bucket calendar key `startDate`, and the longest-turn counter `longestRunningTurnSec`; the originally reviewed contract named them `dailyBuckets`, `date`, and `longestTurnSeconds`. The privileged schema canonicalizes both spellings onto one internal shape before validation (`protocol-schemas.ts`), treats a missing array under both names as null content, and degrades a non-object bucket record into one counted rejection instead of failing the read. A naming drift therefore cannot erase an otherwise valid approved read again — this exact drift was the recorded cause of the August 22, 2026 defect where quota windows worked while Usage showed unavailable.
+
 - Rate-limit update notifications instruct clients to merge supplied values into the most recent full read.
 
 ## Denied surface examples
