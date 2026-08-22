@@ -112,7 +112,9 @@ async function connectToPackagedChromium(
  * Playwright's Electron launcher is intentionally not used because the production fuses disable Node inspect,
  * which that launcher needs. This difference is itself part of the package security posture being tested.
  */
-export async function launchPackagedApplication(): Promise<PackagedApplicationHarness> {
+export async function launchPackagedApplication(options?: {
+  readonly extraEnv?: Readonly<Record<string, string>>;
+}): Promise<PackagedApplicationHarness> {
   // Fail with the expected path if the packaging command did not produce an executable.
   await access(packagedExecutablePath);
 
@@ -148,6 +150,7 @@ export async function launchPackagedApplication(): Promise<PackagedApplicationHa
         ),
         PATH: userDataDirectory,
         HOME: userDataDirectory,
+        ...(options?.extraEnv ?? {}),
       },
       stdio: ['ignore', 'ignore', 'pipe'],
     },

@@ -1,5 +1,6 @@
 {
   "name": "tokentrail",
+  "productName": "Token Trail",
   "version": "0.3.0",
   "description": "A privacy-first desktop dashboard for understanding local Codex usage.",
   "license": "GPL-3.0-only",

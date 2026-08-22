@@ -462,11 +462,11 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 ### 8.6 Linux behavior
 
-- [ ] Test KDE Plasma Wayland and available KDE X11 behavior.
+- [x] Test KDE Plasma Wayland and available KDE X11 behavior.
 - [ ] Test GNOME Wayland and representative Cinnamon or Xfce behavior.
 - [ ] Test fractional scaling, multiple displays, system themes, window restoration, and desktop notifications only if later approved.
-- [ ] Avoid forbidden Wayland assumptions about focus or window positioning.
-- [ ] Verify application name, icon, WM class, and desktop identity in packaged prototypes.
+- [x] Avoid forbidden Wayland assumptions about focus or window positioning.
+- [x] Verify application name, icon, WM class, and desktop identity in packaged prototypes.
 
 ### 8.7 Product-quality and compatibility documentation
 

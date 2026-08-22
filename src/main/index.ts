@@ -259,7 +259,9 @@ if (!hasSingleInstanceLock) {
         mainWindow.restore();
       }
 
-      mainWindow.focus();
+      // This raise responds to the user's own second-launch action, which Wayland
+      // focus-stealing prevention permits; unsolicited programmatic focus stays banned.
+      mainWindow.focus(); // conduct:focus (user-initiated second launch)
     }
   });
 

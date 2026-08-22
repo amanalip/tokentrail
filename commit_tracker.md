@@ -103,47 +103,44 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `29a74a0`
-**Last updated:** August 21, 2026 at 8:05 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `95304e5`
+**Last updated:** August 21, 2026 at 8:20 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending section was cleared when the resilience evidence landed as `29a74a0`. This entry records the section 8.5 performance campaign: enforced budgets, lazy chart loading, and measured interactions.
+The previously pending section was cleared when the performance campaign landed as `95304e5`. This entry records the section 8.6 Linux desktop campaign and one desktop-identity fix it surfaced.
 
 ### Intent
 
-Convert Phase 1's provisional performance observations into enforcing Phase 4 gates, remove the largest avoidable cost from first paint by deferring ECharts onto its own route chunk, and measure real interaction feedback against fixture data.
+Verify the packaged prototype's reviewed identity across the display-server backends available here, encode Wayland conduct as an enforced contract, and correct a runtime naming gap the verification exposed.
 
 ### Important changes
 
-- Made the Usage route a lazily loaded chunk: ECharts left the initial path entirely, cutting first-paint renderer JavaScript from 825,991 to 314,367 bytes (62 percent) while other routes never download chart code. A bounded local Suspense panel with status semantics covers the brief load.
-- Added `scripts/check-bundle-budget.mjs` wired into `npm run build`, gating initial raw and gzip sizes, the chart chunk, and total renderer JavaScript at ceilings derived from post-split measurements plus roughly ten percent headroom; failures name their own numbers and demand a recorded revision before limits rise.
-- Promoted packaged runtime gates in `tests/performance/foundation-performance.spec.ts`: idle CPU at or below two percent of one core (measured zero), proportional set size at or below 450 megabytes (measured 333.2), cold and warm startup unchanged at three seconds (measured 410.6 and 401.5).
-- Recorded the resident-memory budget revision: the enforcing contract moved to proportional set size because tree-summed VmRSS double-counts shared Chromium pages; RSS stays reported under a revised 1,000-megabyte informational ceiling against 863.9 observed.
-- Added `tests/e2e/performance-interactions.spec.ts` measuring role-based readiness on built fixture data: first Usage visit including the lazy chunk at 339.1 milliseconds against a two-second gate, view toggles near thirty milliseconds against five hundred, and five refresh round trips all under 119 milliseconds against five thousand.
-- Created `docs/architecture/performance-and-resource-model.md` with methods, full budget tables, the memory revision record, and the lazy-loading rationale; indexed it across the architecture guide.
-- Marked every section 8.5 plan task complete from this evidence.
+- Added `tests/packaged/desktop-identity.spec.ts`: two packaged launches assert real content, window title `Token Trail`, and an executable basename of exactly `tokentrail` read through `/proc/<pid>/exe` — once on the native Wayland backend and once forced onto X11 through XWayland via `ELECTRON_OZONE_PLATFORM_HINT`, with a user-agent check proving the hint actually reached Chromium so silent fallback cannot fake coverage.
+- Fixed a runtime naming gap the new assertions found: the packaged manifest lacked a product name, so runtime name reporting used the machine slug. Added `"productName": "Token Trail"` beside `"name": "tokentrail"` in the manifest, keeping people-facing and machine-facing identities paired after install.
+- Extended the packaged launch helper with an opt-in extra-environment merge, mirroring the built-application launcher.
+- Added `src/main/windows/wayland-conduct.test.ts`: a static contract forbidding absolute window positioning, stacking manipulation, blur, and unsolicited focus; focus acquisition is allowed only on lines carrying a `conduct:focus` marker, currently the single second-instance raise that answers the user's own launch action.
+- Created `docs/architecture/linux-desktop-integration.md` covering dual identities, backend coverage with honest environment limits (GNOME and other desktops remain unavailable), Wayland conduct, deferred scaling/display matrices, and Phase 5 desktop-entry scope.
+- Marked three section 8.6 plan tasks complete; GNOME/Cinnamon/Xfce sessions and fractional-scaling/multi-display work stay honestly unchecked.
 
 ### Decisions and assumptions
 
-- Bundle ceilings use raw bytes for enforcement plus gzip for the initial path, matching what local media actually loads while keeping CI deterministic.
-- Interaction timing observes user-visible readiness through standard roles rather than production instrumentation hooks, so shipped code carries no measurement machinery.
-- The packaged harness intentionally runs without the fixture seam; interaction timings therefore come from the built application with fixture data, and packaged runs own startup, CPU, and memory.
+- Executable basename through `/proc` is treated as the launcher-visible identity proxy because raw-process harnesses have no main-process evaluation surface; it matches how Wayland app ids derive from executables.
+- The second-instance raise is classified as user-initiated rather than stolen focus, and the allowance is per-line marked so every future exception stays visible to review.
 
 ### Verification
 
-- `npm run build` now ends with the bundle-budget check reporting satisfied ceilings.
-- `npm run test:performance` passed with all new gates active; `tests/e2e/performance-interactions.spec.ts` passed twice including an evidence-file override run.
-- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 203 passed across 27 files, integration tests 32 passed.
-- `npm run check:docs`: 36 files scanned, no broken links.
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 206 passed across 28 files including the three conduct cases, integration tests 32 passed.
+- `npm run test:packaged`: four passed including both backend identity launches.
+- `npm run check:docs`: 37 files scanned, no broken links.
 
 ### Risks or limitations
 
-- Measurements reflect the development reference machine; low-end confirmation belongs to Phase 6.
-- The chart-ready figure includes one-time chunk materialization from warm page cache; cold-cache media timing joins the soak campaign.
+- Native window-chrome visual confirmation remains operator work for the versioned report.
+- Installed desktop-entry verification waits for Phase 5 installer artifacts and clean installs.
 
 ### Follow-up
 
-Begin section 8.6 Linux desktop behavior: packaged-shell identity checks under KDE Wayland, X11 where available, GNOME as available, and window restoration observation; then complete section 8.7 documentation.
+Complete section 8.7 with the compatibility-and-support-matrix draft, then close Phase 4 with curated evidence into the versioned report and an exit-criteria sweep.
 
 ---
 
