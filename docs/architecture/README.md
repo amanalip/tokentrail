@@ -70,7 +70,7 @@ Phase 4 creates the following from implemented product-quality behavior and test
 - `resilience-and-lifecycle.md` (opened; tracks failure isolation, owned-process boundaries, resource bounds, clocks, and restart behavior);
 - `performance-and-resource-model.md` (opened; tracks runtime gates, bundle budgets, and interaction timings);
 - `linux-desktop-integration.md` (opened; tracks identity across backends and the Wayland conduct guard);
-- `docs/support/compatibility-and-support-matrix.md` outside this directory;
+- `docs/support/compatibility-and-support-matrix.md` outside this directory (opened as a Phase 4 draft);
 - evidence updates to `accessibility-architecture.md` rather than a duplicate accessibility file.
 
 Phase 5 creates the following alongside implemented packaging and release-candidate workflows:

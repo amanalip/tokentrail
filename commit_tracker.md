@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 032 - Verify desktop identity across backends and enforce Wayland conduct](#commit-032---verify-desktop-identity-across-backends-and-enforce-wayland-conduct)
 - [Commit 031 - Move focus to new route content on navigation](#commit-031---move-focus-to-new-route-content-on-navigation)
 - [Commit 030 - Open section 8.3 with keyboard-only workflow evidence](#commit-030---open-section-83-with-keyboard-only-workflow-evidence)
 - [Commit 029 - Close section 8.2 with the motion and idle-CPU review](#commit-029---close-section-82-with-the-motion-and-idle-cpu-review)
@@ -103,11 +104,53 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `95304e5`
-**Last updated:** August 21, 2026 at 8:20 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `7b47f47`
+**Last updated:** August 21, 2026 at 8:35 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The previously pending section was cleared when the performance campaign landed as `95304e5`. This entry records the section 8.6 Linux desktop campaign and one desktop-identity fix it surfaced.
+The previously pending desktop-identity entry was finalized as commit `7b47f47`. This entry completes the remaining section 8.7 deliverable, records the Phase 4 evidence report as version `0.4.0`, and performs the exit-criteria sweep.
+
+### Intent
+
+Close out every machine-completable Phase 4 item in one pass: publish the compatibility-and-support-matrix draft from recorded evidence, promote the working version to 0.4.0 with a full versioned evidence record including curated screenshots, and sweep the exit criteria honestly — leaving the human screen-reader criterion visibly open rather than simulating it.
+
+### Important changes
+
+- Created `docs/support/compatibility-and-support-matrix.md` with explicit quality labels (Verified / Verified-reference-only / Emulated / Untested / Deferred) covering platforms, display servers, architectures, package formats, accessibility areas, and performance; support claims are bounded to evidence.
+- Bumped the working version to 0.4.0 in the manifest and lockfile because code changed after the tested 0.3.0 record.
+- Captured nine curated screenshots from the built application running the checked-in fixture scenario into `tests/test_reports/0.4.0/screenshots/`, visually inspected for intended states and privacy (synthetic data only), including true dark-palette captures after discovering the session default resolves light.
+- Created `tests/test_reports/0.4.0/test_report.md`: scope, environments, commands with final counts, per-layer summaries, an eleven-row defect-and-remediation table honoring integrity rules, security/privacy verification, accessibility verification including outstanding items, the honest Linux matrix, performance-versus-budget tables, installation scope, limitations, and a `preview-only` recommendation.
+- Swept plan section 8.9 exit criteria from evidence: seven criteria marked complete; the manual-checks criterion stays open with an indented note recording which portions are satisfied and why the manual screen-reader portion gates formal closure.
+- Updated the plan status header to the substantially-complete state with the gating conditions named.
+
+### Decisions and assumptions
+
+- The versioned report records run windows honestly (evening of August 21, 2026) instead of inventing per-command wall-clock starts that were never captured.
+- Screenshots use explicit theme overrides where the capture name names a palette, because this session's system preference resolves light and unnamed defaults would have mislabeled evidence.
+- Formal Phase 4 closure is deliberately withheld pending only operator-held evidence; nothing else remains machine-completable.
+
+### Verification
+
+- `npm run verify` after all edits: formatting, lint, strict type checks, unit tests 206 passed across 28 files, integration tests 32 passed.
+- Packaged suite 4 passed; performance suite 1 passed; interaction suite passed; documentation check clean at 37 files plus the new report.
+- Screenshot set visually reviewed for correct states, palettes matching their filenames, and absence of real user data.
+
+### Risks or limitations
+
+- The report's environment matrix inherits every deferred item named above; no support claims extend beyond recorded evidence.
+- Formal closure requires the operator Orca session plus, eventually, soak-campaign items that belong to later phases by plan design.
+
+### Follow-up
+
+Operator-performed Orca session closes the last Phase 4 exit criterion; then Phase 5 packaging begins per the approved sequence.
+
+---
+
+## Commit 032 - Verify desktop identity across backends and enforce Wayland conduct
+
+**Commit:** `7b47f47` - `Verify desktop identity across backends and enforce Wayland conduct`
+**Timestamp:** August 21, 2026 at 8:06:17 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 ### Intent
 
@@ -141,6 +184,8 @@ Verify the packaged prototype's reviewed identity across the display-server back
 ### Follow-up
 
 Complete section 8.7 with the compatibility-and-support-matrix draft, then close Phase 4 with curated evidence into the versioned report and an exit-criteria sweep.
+
+---
 
 ---
 
