@@ -65,7 +65,7 @@ jobs:
       # rpmbuild comes from Ubuntu's `rpm` package; the other three formats need no
       # extra host tooling beyond what electron-builder bundles.
       - name: Install rpm packaging tooling
-        run: sudo apt-get update && sudo apt-get install --yes rpm
+        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools
 
       # The Vite bundles must exist before packaging because electron-builder archives
       # only reviewed runtime files; then --publish never keeps artifact creation
@@ -130,7 +130,7 @@ jobs:
         run: npm ci
 
       - name: Install rpm packaging tooling
-        run: sudo apt-get update && sudo apt-get install --yes rpm
+        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools
 
       # Cross-building arm64 Linux targets on an x64 runner needs no emulation:
       # no native modules are rebuilt, and electron-builder fetches the matching
