@@ -111,7 +111,67 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `515f806`
+**First recorded:** August 22, 2026 after commit `7cd5de2`
+**Last updated:** August 22, 2026 at 2:30 AM EDT (`America/Toronto`, UTC-04:00)
+**State:** Pending; not yet a Git commit when this entry was written
+
+The pending close-out entry below was finalized as commit `7cd5de2`. This entry begins Phase 6's publication-independent scope: the root changelog and the complete release, support, and maintenance documentation set, written from implemented policy and the executed candidate-run evidence.
+
+### Intent
+
+Put every document that the v1.0.0 freeze requires into the repository before any candidate tag, so the freeze itself becomes a checklist execution instead of a writing session.
+
+### Important changes
+
+- Created `CHANGELOG.md` with a single evidence-backed Unreleased section describing the implemented v1 scope; no released versions exist yet and none are fabricated.
+- Created `docs/support/known-limitations.md` with stable limitation identifiers (LIM-001 through LIM-010) covering operator-held verification, environment coverage, and product behavior including unsigned-preview status.
+- Created `docs/release/release-validation-process.md` from the executed freeze/tag/build/validate/approve/publish model, citing the v0.5.0–v0.5.3 sequence as the worked example.
+- Created `docs/support/support-policy.md`, `docs/maintenance/maintenance-and-compatibility.md` mirroring the FUP tracker's recurring items, `docs/release/rollback-and-incident-response.md` built on immutable-release principles, and the executable `docs/release/release-checklist.md` whose publication block is explicitly user-gated.
+- Architecture index now links all six documents plus the changelog; plan section 10.7 swept complete for the six document deliverables.
+
+### Decisions and assumptions
+
+- Limitations receive permanent identifiers so release notes, guides, and reports can reference them without duplication drift.
+- The support policy deliberately promises no more than the compatibility matrix's verified rows.
+
+### Verification
+
+- Documentation link checker extended to 55 files with zero broken links after cross-linking everything.
+
+### Fact check
+
+- Policy content traces to implemented behavior: immutability rules from the artifact-versioning record, candidate mechanics from observed runs, recurring maintenance from the follow-up tracker.
+
+### Sanity check
+
+- Nothing here performs publication or implies artifacts exist beyond drafts; the checklist's approval section is explicitly user-gated.
+
+### User lessons
+
+- Writing the validation process from real failed-candidate runs produces procedures that already survived contact.
+- Stable limitation identifiers let every future document reference gaps consistently.
+
+### Agent lessons
+
+- Documentation sets required by later phases can be authored once their controlling behavior exists — waiting for the phase boundary would leave the same words to write under time pressure.
+
+### Risks or limitations
+
+- Soak, network-trace capture, full-matrix installs, and the v1.0.0 freeze remain open and are documented as such in the checklist.
+
+### Follow-up
+
+Continue Phase 6 preparation: local validation-matrix reruns available on this machine, remaining documentation polish, then present the freeze decision and the explicit publication gate to the operator when evidence is complete.
+
+---
+
+## Commit 040 - Close Phase 5 machine-verifiable scope with pipeline evidence
+
+**Commit:** `7cd5de2` - `Close Phase 5 machine-verifiable scope with pipeline evidence`
+**Timestamp:** August 22, 2026 at 2:13:11 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+The pending pipeline-proof entry below was finalized across commits `af03499`, `c052fd2`, and `515f806`. This entry closes Phase 5's machine-verifiable scope: the exit-criteria sweep from tag-run evidence, architecture and support documents reconciled with actual pipeline behavior, the versioned report's addendum recording all four candidate runs, and the sampled checksum verification performed against the real draft.
 **Last updated:** August 22, 2026 at 2:15 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 

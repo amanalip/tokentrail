@@ -89,14 +89,14 @@ Phase 5 creates the following alongside implemented packaging and release-candid
 
 Phase 5 also creates the user-facing `docs/user/getting-started.md`, `installing.md`, `upgrading.md`, `troubleshooting.md`, `uninstalling.md`, and `privacy.md` guides (all six now exist with release-candidate verification scheduled).
 
-Phase 6 creates:
+Phase 6 documents now opened from implemented policy and process:
 
-- `docs/release/release-validation-process.md`;
-- `docs/support/support-policy.md`;
-- `docs/maintenance/maintenance-and-compatibility.md`;
-- `docs/release/rollback-and-incident-response.md`;
-- `docs/support/known-limitations.md`;
-- `docs/release/release-checklist.md`;
-- the finalized root `CHANGELOG.md` and version-specific release notes.
+- [release validation process](../release/release-validation-process.md);
+- [support policy](../support/support-policy.md);
+- [maintenance and compatibility](../maintenance/maintenance-and-compatibility.md);
+- [rollback and incident response](../release/rollback-and-incident-response.md);
+- [known limitations](../support/known-limitations.md) with stable identifiers;
+- the executable [release checklist](../release/release-checklist.md);
+- a root [`CHANGELOG.md`](../../CHANGELOG.md) holding verified unreleased work until first publication.
 
 Until their owning phase begins, these filenames are planned work, not descriptions of current capabilities. Every new document must name its status, invariants, failure behavior, privacy/security effect, tests, limitations, and controlling decisions.

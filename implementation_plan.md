@@ -686,12 +686,12 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 
 ### 10.7 Release, support, and maintenance documentation
 
-- [ ] Create `docs/release/release-validation-process.md` from the actual freeze, matrix, soak, remediation, evidence, approval, publication, and public-verification workflow.
-- [ ] Create `docs/support/support-policy.md` defining supported versions, environments, response boundaries, security-report handling, compatibility labels, and end-of-support rules.
-- [ ] Create `docs/maintenance/maintenance-and-compatibility.md` defining Electron/Chromium and Codex upgrade cadence, dependency review, fixture updates, migrations, regression scope, and patch-release triggers.
-- [ ] Create `docs/release/rollback-and-incident-response.md` defining immutable-release correction, patch versions, compromised artifact response, advisory handling, rollback limits, communication, and evidence preservation.
-- [ ] Create `docs/support/known-limitations.md` from final observed limitations, unavailable environments, preview-quality targets, workarounds, and linked follow-up identifiers.
-- [ ] Create `docs/release/release-checklist.md` as the executable human checklist for candidate creation, evidence review, approval, publication, checksum download, clean installation, and handoff.
+- [x] Create `docs/release/release-validation-process.md` from the actual freeze, matrix, soak, remediation, evidence, approval, publication, and public-verification workflow.
+- [x] Create `docs/support/support-policy.md` defining supported versions, environments, response boundaries, security-report handling, compatibility labels, and end-of-support rules.
+- [x] Create `docs/maintenance/maintenance-and-compatibility.md` defining Electron/Chromium and Codex upgrade cadence, dependency review, fixture updates, migrations, regression scope, and patch-release triggers.
+- [x] Create `docs/release/rollback-and-incident-response.md` defining immutable-release correction, patch versions, compromised artifact response, advisory handling, rollback limits, communication, and evidence preservation.
+- [x] Create `docs/support/known-limitations.md` from final observed limitations, unavailable environments, preview-quality targets, workarounds, and linked follow-up identifiers.
+- [x] Create `docs/release/release-checklist.md` as the executable human checklist for candidate creation, evidence review, approval, publication, checksum download, clean installation, and handoff.
 - [ ] Finalize `CHANGELOG.md` and version-specific release notes from verified changes rather than planned features.
 - [ ] Keep support and maintenance promises no broader than the final verified compatibility matrix.
 
