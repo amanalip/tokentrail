@@ -11,7 +11,8 @@ Only the most recent published release receives fixes. Because releases are immu
 
 Support claims follow `docs/support/compatibility-and-support-matrix.md` exactly:
 
-- **Verified:** environments with executed evidence (today: KDE Plasma Wayland and X11-through-XWayland on x64; AppImage/deb/Pacman/rpm payload behavior).
+- **Verified:** environments with executed evidence (today: KDE Plasma Wayland and X11-through-XWayland on x64; the AppImage's executed launch evidence covers the reference machine only).
+- **Payload-inspected:** deb, rpm, and Pacman artifacts were built and their contents examined, but never installed or executed; they carry no executed-behavior promise.
 - **Untested:** environments without recorded evidence may work but receive no support promises until someone records results.
 - arm64 is build-verified only until execution evidence exists.
 

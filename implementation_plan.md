@@ -696,6 +696,7 @@ Validate the complete v1 candidate across the required matrix, correct release-b
 - [x] Create `docs/release/release-checklist.md` as the executable human checklist for candidate creation, evidence review, approval, publication, checksum download, clean installation, and handoff.
 - [ ] Finalize `CHANGELOG.md` and version-specific release notes from verified changes rather than planned features.
 - [ ] Keep support and maintenance promises no broader than the final verified compatibility matrix.
+  - Audited August 22, 2026 against the current matrix: the support policy's environment bullets now mirror the matrix quality labels exactly (verified-executed versus payload-inspected versus untested), the maintenance document's recurring scope matches the FUP tracker, known-limitation identifiers cross-reference cleanly from release documents, and no signing, auto-update, or publication promise appears anywhere in the policy set. The item stays open for a final sweep once the freeze-time matrix is complete.
 
 ### 10.8 Phase 6 deliverables
 
