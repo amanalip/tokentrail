@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 044 - Re-run the full validation matrix and fix the lazy-route focus skip](#commit-044---re-run-the-full-validation-matrix-and-fix-the-lazy-route-focus-skip)
 - [Commit 043 - Generate structured draft-release notes from the tagged changelog and refresh the companion site](#commit-043---generate-structured-draft-release-notes-from-the-tagged-changelog-and-refresh-the-companion-site)
 - [Commit 042 - Ship the companion website on GitHub Pages](#commit-042---ship-the-companion-website-on-github-pages)
 - [Commit 041 - Begin Phase 6 with the changelog and release documentation set](#commit-041---begin-phase-6-with-the-changelog-and-release-documentation-set)
@@ -115,11 +116,70 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `1308e1a`
-**Last updated:** August 22, 2026 at 4:36 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `57edda6`
+**Last updated:** August 22, 2026 at 5:10 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-This entry executes the machine-verifiable portion of Phase 6 freeze preparation named in Commit 043's follow-up: a full validation-matrix rerun on commit `1308e1a`, one real defect it surfaced and fixed, the architecture-record reconciliation that defect exposed, and the companion-site refresh that keeps public claims in step with recorded evidence.
+This entry closes the machine-verifiable portion of plan section 8.3's second item — verifying semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements — with a dedicated end-to-end evidence suite and component-level announcement contracts, plus the documentation and website reconciliation that follows from it.
+
+### Intent
+
+Record structural accessibility evidence on the real built application so the section 8.3 item rests on executed checks rather than inherited assumptions, while leaving the human-judgment portion honestly open.
+
+### Important changes
+
+- Added `tests/e2e/semantic-structure.spec.ts` with three tests against the built application: (1) stable landmark inventory — exactly one main landmark, the sidebar exposed as a named complementary landmark, its link list as a named navigation landmark, and the skip link as the first focused control; exactly one level-one heading per route, each inside the main landmark; (2) every interactive control surveyed across Overview, Settings & Diagnostics, and Learn carries a non-empty accessible name, with progress bars, radios, and the Learn searchbox pinned at their canonical locations; (3) signed-out guidance renders as a named region rather than an alert, and resting states expose zero assertive alerts anywhere in the document.
+- Added three announcement-contract tests to `routes.test.tsx` at component level: a stale snapshot announces through `role="alert"` with its retry action inside the same announcement; the frequently repeating connection indicator is a polite `role="status"`, never an alert; fresh states expose no alerts. Unit count rises to 224.
+- Ticked plan section 8.3's semantic-verification item with the evidence note; the manual screen-reader item stays open alongside LIM-001.
+- `docs/architecture/accessibility-architecture.md`: new evidence bullet describing the contracts; status header updated; one accidentally duplicated axe-core evidence bullet found and removed during the same edit.
+- Website FAQ: keyboard/screen-reader answer now also states the post-navigation heading move and the verified landmark/announcement semantics.
+
+### Decisions and assumptions
+
+- Descriptions are provided by the application through visible adjacent text and labelled controls rather than `aria-describedby`; the name sweep plus existing axe review verifies that mechanism instead of inventing a different one.
+- The item was closed only for its machine-verifiable scope; the human Orca session remains a separate open checkbox because automation cannot substitute for operator judgment.
+- Signed-out and error panels are initial page states, so they are asserted to use named regions rather than alert semantics that would fire on every load.
+
+### Verification
+
+- New e2e suite 3/3 green; routes component file 21/21 green including the three new contracts.
+- Full gates re-run before commit: formatting, lint, five-project typecheck, unit suites, integration fixtures, build budget gate, e2e, accessibility/development, security, docs link check.
+
+### Fact check
+
+- Landmark and role observations were read from the rendered built application and jsdom output during the debugged failure, not assumed; the signed-out test initially failed because it queried synchronously before the bridge promise resolved, which itself confirmed the region appears only once real state arrives.
+
+### Sanity check
+
+- No product source changed in this stage; the additions are pure evidence and documentation.
+- The closed checkbox names its evidence inline so a reader can distinguish verified structure from the still-open human session.
+
+### User lessons
+
+- A role contract that is never asserted can silently regress; writing the assertion is what turns an implementation detail into a guarantee.
+
+### Agent lessons
+
+- Synchronous queries after `render` race the initial snapshot resolution; async queries encode the real contract.
+- Documentation edits double as audits: the duplicated evidence bullet had survived two prior reviews.
+
+### Risks or limitations
+
+- None identified; no runtime behavior changed.
+
+### Follow-up
+
+The remaining section 8.3 sibling (manual Orca session) and section 8.4's suspend/resume/display items stay operator- or environment-held; the automatable remainder of section 8.4 — window close, reopen, and shutdown observation — is the next candidate for the same treatment.
+
+---
+
+## Commit 044 - Re-run the full validation matrix and fix the lazy-route focus skip
+
+**Commit:** `57edda6` - `Re-run the full validation matrix and fix the lazy-route focus skip`
+**Timestamp:** August 22, 2026 at 4:45:50 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Finalized from the pending entry below by this tracker update. This commit executed the machine-verifiable Phase 6 freeze-preparation follow-up named in Commit 043: a complete validation-matrix rerun on then-HEAD `1308e1a`, the real defect it surfaced and fixed, and the companion-site refresh keeping public claims synchronized.
 
 ### Intent
 

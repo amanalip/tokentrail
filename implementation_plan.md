@@ -436,7 +436,8 @@ Turn the functionally complete application into a coherent, accessible, resilien
 
 - [x] Complete keyboard-only navigation for onboarding, routes, refresh, settings, diagnostics, dialogs, tables, and chart alternatives.
 - [x] Provide visible focus and logical focus movement.
-- [ ] Verify semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements.
+- [x] Verify semantic landmarks, headings, names, descriptions, errors, live updates, and status announcements.
+  - Closed August 22, 2026 by `tests/e2e/semantic-structure.spec.ts` (stable landmark inventory with named complementary/navigation landmarks and first-focus skip link; exactly one level-one heading per route inside main; non-empty accessible names for every interactive control surveyed across Overview, Settings & Diagnostics, and Learn; signed-out guidance as a named region rather than an alert; no resting alerts) plus component-level announcement contracts in `routes.test.tsx` (stale snapshot announces through `role="alert"` carrying its retry action; the repeating connection indicator stays a polite `role="status"`). Descriptions are provided through visible adjacent text and labelled controls, verified by the name sweep and the existing axe-core review. The human Orca session remains separately open below and under LIM-001.
 - [x] Run axe-core and review every serious result.
 - [ ] Perform manual screen-reader testing on representative Linux environments.
 - [x] Verify light and dark contrast, 200 percent zoom, high-contrast observation, and reduced motion.

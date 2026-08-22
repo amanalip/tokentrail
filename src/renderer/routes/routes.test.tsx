@@ -571,6 +571,49 @@ describe('keyboard route sweep', () => {
   });
 });
 
+// Group the assistive-technology announcement contracts for connection, stale, and error states.
+// Plan section 8.3 requires recorded evidence that errors and live updates use the correct
+// live-region semantics rather than relying on visual styling alone.
+describe('status and error announcement contracts', () => {
+  it('announces a stale snapshot through an alert carrying its retry action', async () => {
+    // Install one otherwise-ready snapshot whose top-level state marks the last refresh failed.
+    installBridge(createSnapshot({ state: 'stale' }));
+    render(<App />);
+
+    // A failed refresh must be an assertive live region so it is announced without a click,
+    // and the retry control must sit inside that same announcement for immediate keyboard use.
+    const staleAlert = await screen.findByRole('alert');
+    expect(within(staleAlert).getByRole('button', { name: 'Try again' })).not.toBeNull();
+  });
+
+  it('keeps the connection indicator a polite status region instead of an alert', async () => {
+    // Install one complete fresh snapshot so the Overview renders its normal header.
+    installBridge(createSnapshot());
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'Overview' });
+
+    // Connection changes repeat often while refreshing; they must use polite status semantics
+    // and no alert may be present in the resting fresh state.
+    const statuses = screen.getAllByRole('status');
+    expect(statuses.some((element) => element.className.includes('connection'))).toBe(true);
+    expect(screen.queryAllByRole('alert')).toEqual([]);
+  });
+
+  it('presents the signed-out state as a named region with its own heading', async () => {
+    // Install one snapshot whose top-level state reports that Codex has no authenticated session.
+    installBridge(createSnapshot({ state: 'signed-out' }));
+    render(<App />);
+
+    // Named regions let screen-reader users jump straight to the state and its corrective copy;
+    // an initial page state must not borrow alert semantics it does not need. The query waits
+    // for the bridge's initial snapshot to resolve before the region exists.
+    const region = await screen.findByRole('region', { name: 'Codex is not signed in' });
+    expect(
+      within(region).getByRole('heading', { level: 2, name: 'Codex is not signed in' }),
+    ).not.toBeNull();
+  });
+});
+
 // Group behavior around Usage honesty guarantees from section 25 of the product specification.
 describe('Usage presentation honesty', () => {
   it('presents chart and table views from the same normalized day source', async () => {
