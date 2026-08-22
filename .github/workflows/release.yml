@@ -243,6 +243,9 @@ jobs:
       - name: Create the draft release and attach files
         env:
           GH_TOKEN: ${{ github.token }}
+          # This job checks out no repository — it assembles downloaded artifacts —
+          # so the CLI is told which repository to act on instead of asking git.
+          GH_REPO: ${{ github.repository }}
         run: |
           gh release create "${GITHUB_REF_NAME}" \
             --draft \

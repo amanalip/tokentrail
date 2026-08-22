@@ -43,7 +43,7 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
-    <release version="0.5.2" date="2026-08-22">
+    <release version="0.5.3" date="2026-08-22">
       <description>
         <p>Development preview of the read-only Codex usage dashboard.</p>
       </description>
