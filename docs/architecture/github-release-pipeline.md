@@ -21,9 +21,9 @@ How changes are verified on shared infrastructure, and how an approved version t
 - **Trigger:** exactly a pushed `v*` tag. Branch pushes and pull requests cannot reach it, whatever their contents change.
 - **Guard:** each build job first asserts tag equals `v<manifest version>` and fails closed on mismatch, so a draft can never mix versions.
 - **Environments:** all build/SBOM jobs declare the protected `release` environment; required-reviewer configuration is a named operator task in repository settings.
-- **Build jobs:** distinct x64 and arm64 jobs build all four formats via the single reviewed builder configuration, emit per-format SHA-256 checksums, and record machine-readable provenance (`scripts/write-build-provenance.mjs`, schema `tokentrail-build-provenance/1`: arch, tag, commit, runner identity, toolchain, UTC capture time, per-artifact sizes and digests).
+- **Build jobs:** distinct x64 and arm64 jobs run the production build first (the bundles must exist before archiving), then package all four formats through the single reviewed configuration with an explicit `--publish never` — without that flag electron-builder attempts implicit GitHub publishing whenever a git tag is present. Runner tooling: Ubuntu's `rpm` package for rpmbuild plus `libarchive-tools` for fpm's Pacman backend. Each job emits per-format SHA-256 checksums and records machine-readable provenance (`scripts/write-build-provenance.mjs`, schema `tokentrail-build-provenance/1`: arch, tag, commit, runner identity, toolchain, UTC capture time, per-artifact sizes and digests).
 - **SBOM job:** emits a CycloneDX document from the lockfile using npm's built-in generator — supply-chain metadata adds no new dependency to audit.
-- **Draft assembly:** the only write-capable step (scoped `contents: write`) downloads all uploads, merges per-arch checksums into one `SHA256SUMS.txt`, writes honest notes labeling the artifacts unsigned previews, and creates a **draft prerelease** through GitHub's own CLI. Nothing publishes automatically.
+- **Draft assembly:** the only write-capable step (scoped `contents: write`) downloads all uploads, merges per-arch checksums into one `SHA256SUMS.txt`, writes honest notes labeling the artifacts unsigned previews, and creates a **draft prerelease** through GitHub's own CLI with the target repository named explicitly (`GH_REPO`) because this job checks out no git context. Nothing publishes automatically.
 
 ## Invariants
 
@@ -38,9 +38,9 @@ Frozen install fails on lockfile drift; budget gate fails oversized bundles; sec
 
 ## Evidence
 
-First shared-runner CI execution completed green in 56 seconds on `ubuntu-24.04` (quality + built-security), recorded in commit tracker entry for `a9e9c36`. The tag-driven path awaits its first real tag during Phase 6 candidate work.
+First shared-runner CI execution completed green in 56 seconds on `ubuntu-24.04` (quality + built-security), recorded in commit tracker entry for `a9e9c36`. The tag-driven path was then proven end to end: candidate tags `v0.5.0`, `v0.5.1`, and `v0.5.2` each failed fast on distinct runner-environment defects (missing build step, implicit-publish attempt, absent `bsdtar`) with zero release objects created, and `v0.5.3` completed successfully — all eight artifacts across four formats and both architectures assembled, checksums merged, provenance recorded, SBOM attached, and one draft prerelease created containing exactly the reviewed file set.
 
 ## Known limitations
 
-- rpm steps install Ubuntu's `rpm` package but have not executed yet (no local rpm-tools at time of writing).
 - Required reviewers on the `release` environment and tag-immutability settings are operator actions that must be completed before any real candidate.
+- Failed candidate tags (`v0.5.0`–`v0.5.2`) remain as immutable history; none ever produced a draft or release object.

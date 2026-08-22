@@ -122,3 +122,18 @@ Installer formats were exercised to payload level: deb control fields, Pacman `.
 Captured August 22, 2026 from the packaged application launching with an isolated profile; values show honest unavailable states (no fixture data in packaged mode).
 
 ![Packaged launch, Overview with honest unavailable states](screenshots/packaged-launch-wayland.png)
+
+## 15. Addendum — tag-driven pipeline proof (August 22, 2026)
+
+Recorded after this report's finalization, per integrity rules that failures and remediations stay visible:
+
+| Candidate | Run | Outcome |
+| --- | --- | --- |
+| `v0.5.0` | 32554394985 | Failed fast: build jobs lacked the bundle-build step; electron-builder attempted implicit tag publishing; SBOM job wrote into a nonexistent directory. Zero release objects created. Fixed in `af03499`. |
+| `v0.5.1` | 32554726866 | Failed at the Pacman target: fpm requires `bsdtar` (Ubuntu package `libarchive-tools`). AppImage and deb built on runners; zero release objects created. Fixed in `c052fd2`. |
+| `v0.5.2` | 32555040028 | All builds green including both rpm architectures; draft assembly failed because `gh` had no git context in an artifact-only job. Zero release objects created. Fixed in `515f806`. |
+| `v0.5.3` | 32555728767 | **Success.** One draft prerelease containing exactly: eight artifacts (`x86_64`/`arm64` AppImage, `amd64`/`arm64` deb, `x86_64`/`aarch64` rpm and Pacman), merged `SHA256SUMS.txt`, two provenance records, and the CycloneDX SBOM. |
+
+Checksum verification from the real draft location: `SHA256SUMS.txt` plus sampled artifact downloaded via `gh release download`; `sha256sum -c --ignore-missing` reported OK. The draft remains maintainer-only and unpublished.
+
+The recommendation stands at `preview-only`; this addendum upgrades section 10's installation evidence from "CI-bound" to "runner-proven builds with payload-level inspection," while executed install campaigns remain owed by section 9.6.

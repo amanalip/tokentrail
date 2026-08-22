@@ -39,7 +39,7 @@ This matrix states what Token Trail's v1 development actually verified versus wh
 | AppImage | Verified (reference machine only); payload-inspected | x64/arm64 artifacts built, contents-gated; x64 image launches on the reference desktop with a clean exit. Second distribution family still owed |
 | deb | Payload-inspected only | Control fields, paths, and dependency set read back from the built package; no install execution yet |
 | Pacman | Payload-inspected only | `.PKGINFO` and file list read back from the built package; no install execution yet |
-| rpm | CI-bound | Local assembly skipped by operator decision; release runners provide `rpmbuild`; first tag exercises it |
+| rpm | Payload-inspected (runner-built) | Local assembly skipped by operator decision; release runners build both rpm architectures, verified in the `v0.5.3` draft run. No install execution yet |
 | Installation, upgrade, uninstall execution | Deferred | Clean-environment campaign named in plan section 9.6 |
 
 ## Development environments

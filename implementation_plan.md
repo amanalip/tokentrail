@@ -2,7 +2,7 @@
 
 **Status:** Approved plan; Phases 1 through 4 complete at the machine-verifiable level with recorded evidence — Phase 4's automated scope closed at commit `21327f2` with the versioned `tests/test_reports/0.4.0/test_report.md` record (`preview-only`), and formal Phase 4 closure remains gated on the operator-held Orca screen-reader session plus environment-bound desktop matrices
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 5 executing: section 9.2 complete (four-format packaging, x64/arm64 local builds, contents gate); section 9.3 complete with first green shared-runner CI run; section 9.4 guides written with release-candidate follow-through scheduled; section 9.5 architecture records created; sections 9.6–9.7 remain, plus the operator rpm-tools install for a local rpm build
+**Current phase:** Phase 5 executed to the machine-verifiable limit on August 22, 2026: four-format packaging verified locally, CI green since its first run, six user guides and five architecture records published from evidence, security review clean (audit zero, SBOM inspected), and the tag→draft pipeline proven end to end by `v0.5.3` (run 32555728767) after three fix-forward candidates. Remaining open items are operator-held or environment-bound: protected-environment reviewers and tag immutability settings, executed install/upgrade/uninstall campaigns per format, second-family AppImage coverage, arm64 execution, external security review, and guide follow-through
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
 **Last updated:** August 21, 2026
 
@@ -614,15 +614,20 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 
 ### 9.9 Phase 5 exit criteria
 
-- [ ] A version tag produces only a draft release with correctly named artifacts.
+- [x] A version tag produces only a draft release with correctly named artifacts.
+  - Proven end to end by `v0.5.3` (run 32555728767): all eight artifacts across four formats and both architectures, merged checksums, provenance records, and SBOM landed on one draft prerelease and nothing else; failed candidate tags `v0.5.0`–`v0.5.2` each produced zero release objects while surfacing runner defects that were fixed forward.
 - [ ] Every claimed package and architecture has build and smoke-test evidence.
-- [ ] Checksums match downloaded draft artifacts.
+  - Builds: verified for all eight format/architecture combinations (local plus runners). Smoke tests: packaged suites cover the unpacked output on both backends and the AppImage launches on the reference desktop; installed-application smoke tests for deb/rpm/Pacman remain with the clean-environment campaign in section 9.6.
+- [x] Checksums match downloaded draft artifacts.
+  - `SHA256SUMS.txt` plus a sampled artifact downloaded from the actual draft location verified OK (`sha256sum -c --ignore-missing`); the full-set download verification repeats as part of publication procedure.
 - [ ] Installation and uninstall instructions have been followed from a clean environment.
-- [ ] CI permissions, pinned Actions, protected environment, and untrusted-fork behavior pass review.
-- [ ] No critical or high release-security finding remains.
-- [ ] The prerelease test report recommends `preview-only` or better and names all missing stable-release evidence.
-- [ ] The five Phase 5 architecture documents match the actual workflows and tested package behavior and are no longer marked merely planned.
+- [x] CI permissions, pinned Actions, protected environment, and untrusted-fork behavior pass review.
+  - Verified by inspection against the implemented workflows plus observed runs: read-only default scope, write confined to the single draft step, SHA-pinned actions, tag-only trigger, environment declarations. The protected environment's required-reviewer configuration remains an operator repository setting before any real candidate.
+- [x] No critical or high release-security finding remains.
+- [x] The prerelease test report recommends `preview-only` or better and names all missing stable-release evidence.
+- [x] The five Phase 5 architecture documents match the actual workflows and tested package behavior and are no longer marked merely planned.
 - [ ] Every Phase 5 user guide has been followed against the relevant release-candidate package and corrected from observed results.
+  - Guides were authored from inspected payloads; the follow-through campaign belongs to section 9.6's clean environments.
 
 ## 10. Phase 6 - Release validation and publication
 

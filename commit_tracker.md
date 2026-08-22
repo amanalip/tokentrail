@@ -10,6 +10,8 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 039 - Prove the tag-driven draft-release pipeline](#commit-039---prove-the-tag-driven-draft-release-pipeline)
+- [Commit 038 - Verify the from-git flow and record the 0.5.0 evidence](#commit-038---verify-the-from-git-flow-and-record-the-050-evidence)
 - [Commit 037 - Document the Phase 5 release-engineering architecture](#commit-037---document-the-phase-5-release-engineering-architecture)
 - [Commit 036 - Add the six user guides and refresh the README for Phase 5](#commit-036---add-the-six-user-guides-and-refresh-the-readme-for-phase-5)
 - [Commit 035 - Add least-privilege CI and tag-driven draft-release pipeline](#commit-035---add-least-privilege-ci-and-tag-driven-draft-release-pipeline)
@@ -109,9 +111,125 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `3343e64`
-**Last updated:** August 22, 2026 at 1:30 AM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 22, 2026 after commit `515f806`
+**Last updated:** August 22, 2026 at 2:15 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+The pending verification entry below was finalized as commit `bb705f7`, and the three pipeline-fix commits are recorded together as Commit 039. This entry closes Phase 5's machine-verifiable scope: the exit-criteria sweep from tag-run evidence, architecture and support documents reconciled with actual pipeline behavior, the versioned report's addendum recording all four candidate runs, and the sampled checksum verification performed against the real draft.
+
+### Intent
+
+Convert the successful `v0.5.3` draft run into recorded exit-criteria evidence and leave Phase 5 with only operator-held or environment-bound items open — mirroring how Phase 4 closed.
+
+### Important changes
+
+- Plan section 9.9 swept from evidence: tag→draft criterion proven (`v0.5.3`, run 32555728767), checksums verified by downloading `SHA256SUMS.txt` plus a sampled artifact from the real draft location with an OK result, security-findings and documentation criteria completed; installed-smoke, clean-environment instruction follow-through, and full-set download verification stay honestly open with named reasons.
+- `docs/architecture/github-release-pipeline.md` updated to describe actual behavior: build-before-package ordering, explicit `--publish never` defense against implicit tag publishing, runner tooling (`rpm`, `libarchive-tools`), `GH_REPO` context for the artifact-only draft job, and the four-candidate evidence trail.
+- Support matrix rpm row advanced from CI-bound to runner-built payload-inspected.
+- Versioned report gained its addendum section recording every candidate run, its defect, remediation commit, and the zero-release-object guarantee for failed attempts.
+- Plan status header moved to the Phase 5 executed-to-the-limit state with the complete open-items list named.
+
+### Decisions and assumptions
+
+- Failed candidate tags remain pushed as immutable history; each is documented as having produced no release object whatsoever, keeping the record honest without rewriting refs.
+- Checksum sampling satisfies this phase's criterion with the full-set verification explicitly deferred into the publication procedure where it belongs.
+
+### Verification
+
+- Draft contents enumerated via API: eight artifacts, merged sums, two provenance records, one SBOM; draft plus prerelease flags confirmed true.
+- Documentation link check re-run across 51 files after edits.
+
+### Fact check
+
+- Run identifiers, asset names, and flags were read from the GitHub CLI/API outputs quoted in this session, not reconstructed from memory.
+
+### Sanity check
+
+- Nothing published: the release remains a maintainer-visible draft; no signing, update, or network claims entered any document.
+
+### User lessons
+
+- A release pipeline proves itself only against real tags; three cheap failures bought certainty no amount of local reasoning could.
+- Sampling plus an explicit repeat-at-publication note keeps verification honest without pretending one download proved everything.
+
+### Agent lessons
+
+- Runner images differ from developer machines in exactly the tools a packaging backend shells out to (`bsdtar`); enumerate subprocess dependencies before first CI use.
+- Artifact-only jobs have no git context; first-party CLIs need the repository named explicitly.
+
+### Risks or limitations
+
+- All remaining Phase 5 items require environments or operator settings this repository cannot self-provide; none are hidden.
+
+### Follow-up
+
+Begin Phase 6 preparation that requires no publication: candidate-freeze checklist work, validation-matrix runs available locally, and the documentation set under `docs/release/`, `docs/support/`, and `docs/maintenance/` — with publication itself remaining explicitly user-gated.
+
+---
+
+## Commit 039 - Prove the tag-driven draft-release pipeline
+
+**Commit:** `af03499` - `Fix the three defects surfaced by the first tag-driven run`; combined with `c052fd2` - `Install bsdtar for the Pacman target on release runners` and `515f806` - `Give the release CLI its repository context explicitly`
+**Timestamps:** August 22, 2026 at 1:34:43 AM, 1:42:19 AM, and 1:58:21 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+The pending verification entry below was finalized as commit `bb705f7`. These three fix-forward commits prove plan section 9.9's first exit criterion end to end: a pushed version tag now produces exactly one correctly named draft prerelease and nothing else.
+
+### Intent
+
+Exercise the release pipeline with real tags so its guarantees rest on observed runs rather than configuration intent, fixing every exposed defect forward under new candidate versions.
+
+### Important changes
+
+- `v0.5.0` (run 32554394985) exposed three defects at once: build jobs never compiled the Vite bundles before packaging (`dist/main/index.cjs` missing from ASAR), electron-builder attempted **implicit GitHub publishing** because a tag existed — directly contrary to the draft-only model — and the SBOM job wrote into an output directory nothing had created. Fixed by adding the build step, making `--publish never` explicit on every builder invocation including local package scripts as defense-in-depth, and creating the output directory first.
+- `v0.5.1` (run 32554726866) got through AppImage and deb on runners, then failed at fpm's Pacman target: it shells out to `bsdtar`, which ubuntu-24.04 lacks. `libarchive-tools` added beside `rpm` in both build jobs' tooling install.
+- `v0.5.2` (run 32555040028) produced all eight artifacts on runners — including both rpm architectures cross-built without emulation — but draft assembly failed because the artifact-only job has no git checkout, leaving `gh` unable to resolve the repository. `GH_REPO: ${{ github.repository }}` names it directly.
+- `v0.5.3` (run 32555728767) completed successfully: one draft prerelease ("Token Trail v0.5.3 (draft)") containing the eight artifacts, merged `SHA256SUMS.txt`, provenance-x64/arm64.json, and the CycloneDX SBOM — nothing more.
+- Working version advanced 0.5.0 → 0.5.3 per the candidate model; metainfo release entries kept in step; failed tags retained unchanged with zero release objects ever created from them.
+
+### Decisions and assumptions
+
+- Fix-forward over tag deletion: each attempt stays visible in history, satisfying immutability instincts while the candidate model supplies fresh versions.
+- Implicit publishing is treated as a release-safety defect, not a convenience: only this pipeline's final scoped step may create anything on GitHub.
+
+### Verification
+
+- Each run observed through the workflow-run API; final draft contents enumerated via `gh release view --json`; sampled checksum verification OK from the downloaded draft location.
+- Local suites re-ran green after each fix (format, unit 220); YAML validated before every push.
+
+### Fact check
+
+- Failure causes quoted from runner logs (`fpm` exit 127 naming bsdtar; electron-builder's own implicit-publish notice; `fatal: not a git repository`).
+
+### Sanity check
+
+- The draft-only invariant held through every failure mode: nothing public was ever created, matching the plan's release-safety requirements exactly.
+
+### User lessons
+
+- Release automation earns trust by failing visibly and fixably, not by being perfect on paper.
+- Defense-in-depth flags like `--publish never` matter most precisely when a tool's default disagrees with your safety model.
+
+### Agent lessons
+
+- Chain every packaging entry point through its real prerequisites (bundles exist, host tools present, repository context named) rather than assuming the development script's environment travels.
+- Tag-driven workflows should be exercised with throwaway candidate versions before they are trusted with real ones.
+
+### Risks or limitations
+
+- Installed-package smoke tests, protected-environment reviewer settings, and tag immutability remain outside what automation alone can provide.
+
+### Follow-up
+
+Close out Phase 5 with the evidence sweep, then begin the publication-independent portion of Phase 6.
+
+---
+
+## Commit 038 - Verify the from-git flow and record the 0.5.0 evidence
+
+**Commit:** `bb705f7` - `Verify the from-git flow and record the 0.5.0 evidence`
+**Timestamp:** August 22, 2026 at 1:27:06 AM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 The pending architecture-records entry below was finalized as commit `3343e64`. This entry executes the locally available portion of plan sections 9.6 and 9.7: clean-clone git-flow proof, AppImage reference launch, dependency audit with SBOM inspection, packaged security re-verification, the versioned 0.5.0 test report with curated screenshot, support-matrix updates, and one harness hardening born from a transient failure.
 
