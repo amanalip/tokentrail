@@ -21,7 +21,8 @@ This directory explains how Token Trail works as a complete system. The product 
 12. [Testing architecture](testing-architecture.md) — which test layer proves each boundary.
 13. Phase 3 system documents: [calculations and precision](calculations-and-precision.md), [preferences and storage](preferences-and-storage.md), [diagnostics and redaction](diagnostics-and-redaction.md), [navigation and route composition](navigation-and-route-composition.md), and [accessibility architecture](accessibility-architecture.md).
 14. Phase 4 product-quality documents as they enter implementation: [design system and theming](design-system-and-theming.md), [resilience and lifecycle](resilience-and-lifecycle.md), [performance and resource model](performance-and-resource-model.md), and [linux desktop integration](linux-desktop-integration.md) are now implementation-in-progress.
-15. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
+15. Phase 5 release-engineering documents: [packaging architecture](packaging-architecture.md), [GitHub release pipeline](github-release-pipeline.md), [installation and upgrade model](installation-and-upgrade-model.md), [software supply chain security](software-supply-chain-security.md), and [artifact and versioning model](artifact-and-versioning-model.md).
+16. Existing reference documents: [data flow](data-flow.md), [data inventory](data-inventory.md), [threat model](threat-model.md), [protocol compatibility](protocol-compatibility.md), and [dependency rationale](dependency-rationale.md).
 
 ## Document ownership and status
 
@@ -48,6 +49,11 @@ This directory explains how Token Trail works as a complete system. The product 
 | `resilience-and-lifecycle.md` | Phase 4 implementation-in-progress: failure isolation, bounds, clocks, restart | Lifecycle, retry, bound, or recovery-behavior change |
 | `performance-and-resource-model.md` | Phase 4 implementation-in-progress: runtime gates, bundle budgets, interaction timing | Budget, measurement method, or resource-behavior change |
 | `linux-desktop-integration.md` | Phase 4 implementation-in-progress: identity, backends, Wayland conduct | Desktop identity, backend coverage, or session-behavior change |
+| `packaging-architecture.md` | Phase 5 four-format packaging configuration and gates | Target, metadata, allowlist, fuse, or verification-gate change |
+| `github-release-pipeline.md` | Phase 5 CI and tag-driven draft-release workflows | Trigger, permission, job, pinning, or draft-assembly change |
+| `installation-and-upgrade-model.md` | Phase 5 install/upgrade/uninstall ownership model | Install location, format behavior, or retention-rule change |
+| `software-supply-chain-security.md` | Phase 5 dependency/build/artifact trust controls | Dependency policy, pinning, SBOM, checksum, or permission change |
+| `artifact-and-versioning-model.md` | Phase 5 version source, tags, artifact names, immutability | Version rule, naming template, or release-labeling change |
 | `data-flow.md` | Trust-boundary diagram | Data source, destination, or persistence change |
 | `data-inventory.md` | Approved data classes | Any new field or storage path |
 | `threat-model.md` | Threats and controls | New capability or trust boundary |
@@ -75,13 +81,13 @@ Phase 4 creates the following from implemented product-quality behavior and test
 
 Phase 5 creates the following alongside implemented packaging and release-candidate workflows:
 
-- `packaging-architecture.md`;
-- `github-release-pipeline.md`;
-- `installation-and-upgrade-model.md`;
-- `software-supply-chain-security.md`;
-- `artifact-and-versioning-model.md`.
+- `packaging-architecture.md` (opened; tracks the implemented four-format configuration, payload allowlist, and contents gate);
+- `github-release-pipeline.md` (opened; tracks the implemented CI and tag-driven draft-release workflows);
+- `installation-and-upgrade-model.md` (opened; tracks install locations, upgrade behavior, and uninstall ownership);
+- `software-supply-chain-security.md` (opened; tracks dependency, build-integrity, authorization, and artifact-verification controls);
+- `artifact-and-versioning-model.md` (opened; tracks version source, tag rules, artifact naming, and immutability rules).
 
-Phase 5 also creates the user-facing `docs/user/getting-started.md`, `installing.md`, `upgrading.md`, `troubleshooting.md`, `uninstalling.md`, and `privacy.md` guides.
+Phase 5 also creates the user-facing `docs/user/getting-started.md`, `installing.md`, `upgrading.md`, `troubleshooting.md`, `uninstalling.md`, and `privacy.md` guides (all six now exist with release-candidate verification scheduled).
 
 Phase 6 creates:
 

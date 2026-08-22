@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 036 - Add the six user guides and refresh the README for Phase 5](#commit-036---add-the-six-user-guides-and-refresh-the-readme-for-phase-5)
 - [Commit 035 - Add least-privilege CI and tag-driven draft-release pipeline](#commit-035---add-least-privilege-ci-and-tag-driven-draft-release-pipeline)
 - [Commit 034 - Open Phase 5 with the four-format Linux release packaging](#commit-034---open-phase-5-with-the-four-format-linux-release-packaging)
 - [Commit 033 - Close Phase 4 automated scope with the 0.4.0 evidence record](#commit-033---close-phase-4-automated-scope-with-the-040-evidence-record)
@@ -107,9 +108,72 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `a9e9c36`
-**Last updated:** August 21, 2026 at 11:59 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `6996bc2`
+**Last updated:** August 22, 2026 at 12:10 AM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+The pending guides entry below was finalized as commit `6996bc2`. This entry implements plan section 9.5: five architecture records created from the implemented packaging and release systems, the architecture index updated to own them, and an operator decision recorded — local rpm assembly is skipped because installing host rpm tooling through pacman is not wanted; rpm artifacts remain the release CI's job on runners where that tooling installs cleanly.
+
+### Intent
+
+Document the implemented Phase 5 release-engineering system for future maintainers at the same evidence standard as the product architecture records, and settle the local-rpm question by operator decision instead of leaving it as an open loop.
+
+### Important changes
+
+- Created `docs/architecture/packaging-architecture.md`: inputs table, per-format assembly, identity wiring, hardening posture including the honest Linux ASAR-integrity gap, verification gates, failure behavior, limitations.
+- Created `docs/architecture/github-release-pipeline.md`: CI job structure, least-privilege permission model, SHA-pinning invariant, tag-driven draft assembly, operator settings still owed.
+- Created `docs/architecture/installation-and-upgrade-model.md`: format selection, install-location inventory from inspected payloads, manual-only upgrades with settings-compatibility reasoning, uninstall ownership.
+- Created `docs/architecture/software-supply-chain-security.md`: dependency controls, build integrity, CI/CD authorization, artifact verification, invariants, named gaps.
+- Created `docs/architecture/artifact-and-versioning-model.md`: version authority, tag rules, naming templates across both architectures and four formats, prerelease/immutability rules, source-archive labeling.
+- Architecture README reading order and ownership table extended; Phase 5 document list marked opened rather than planned.
+- Plan sections 9.3, 9.4, and 9.5 swept from evidence: only the protected-environment configuration (operator), the release-note structure (Phase 6 changelog dependency), and section 9.4's final guide-following remain open there.
+
+### Decisions and assumptions
+
+- Operator decision recorded verbatim: normal installation from git must keep working; if pacman-hosted tooling does not cooperate, local rpm building is skipped. Consequence: rpm build evidence comes exclusively from the Ubuntu-runner release pipeline until a clean rpm environment exists elsewhere.
+- All five documents cite executed inspections (payload listings), observed CI runs, or contract tests for every current-state claim, keeping the no-aspirational-claims rule.
+
+### Verification
+
+- `npm run check:docs`: 50 files scanned, zero broken links after adding five cross-linked documents and index rows.
+- Formatting gate clean.
+- Honest limit: these documents describe implemented behavior; their status headers keep sections 9.6–9.7 evidence visibly owed.
+
+### Fact check
+
+- Install paths, artifact names, fuse flags, workflow triggers, and permission scopes were transcribed from this repository's actual files and earlier payload inspections, not from upstream documentation.
+
+### Sanity check
+
+- The operator's rpm decision is consistent with plan section 15 stop conditions (no scope expansion) and keeps support-matrix honesty intact: rpm stays labeled unverified-installed until CI or another environment proves it.
+- No document claims signing, auto-update, or publication capabilities that remain gated.
+
+### User lessons
+
+- Tooling friction is a signal to record, not fight: choosing "CI builds it where tooling works" preserves momentum without faking local coverage.
+- Architecture documents written from inspection artifacts double as regression checklists when formats change.
+
+### Agent lessons
+
+- When an environment lacks a tool, the honest move is recording the decision and rerouting evidence to where the tool exists, not softening language about what was tested.
+- Index updates are part of document creation: an unindexed architecture file is invisible to the reading order contract.
+
+### Risks or limitations
+
+- rpm path remains entirely CI-dependent; any runner-image change affecting the `rpm` package would surface first during a real tag push.
+- Protected-environment reviewer configuration and tag immutability remain operator settings before any candidate tag.
+
+### Follow-up
+
+Execute section 9.6 verification within available environments (AppImage reference launch plus clean-clone git flow proof), run the section 9.7 security review with SBOM generation, then assemble the 0.5.0 versioned test report and sweep Phase 5 exit criteria.
+
+---
+
+## Commit 036 - Add the six user guides and refresh the README for Phase 5
+
+**Commit:** `6996bc2` - `Add the six user guides and refresh the README for Phase 5`
+**Timestamp:** August 21, 2026 at 11:44:06 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 The pending pipeline entry below was finalized as commit `a9e9c36`, whose first CI run then completed green on shared runners. This entry implements plan section 9.4: the six user-facing guides under `docs/user/` plus a README refresh that finally reflects Phase 5 reality and links the guides.
 

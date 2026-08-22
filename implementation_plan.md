@@ -2,7 +2,7 @@
 
 **Status:** Approved plan; Phases 1 through 4 complete at the machine-verifiable level with recorded evidence — Phase 4's automated scope closed at commit `21327f2` with the versioned `tests/test_reports/0.4.0/test_report.md` record (`preview-only`), and formal Phase 4 closure remains gated on the operator-held Orca screen-reader session plus environment-bound desktop matrices
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 5 opened August 21, 2026 with section 9.2 complete: all four Linux package formats configured and contract-tested, x64 and arm64 artifacts assembled locally for AppImage, deb, and Pacman (rpm assembly awaits the host `rpmbuild` tool), AppStream metadata shipping in native packages, a packaged-contents inspection gate, and the desktop-entry identity fix (`StartupWMClass=tokentrail`); sections 9.3 through 9.7 remain open
+**Current phase:** Phase 5 executing: section 9.2 complete (four-format packaging, x64/arm64 local builds, contents gate); section 9.3 complete with first green shared-runner CI run; section 9.4 guides written with release-candidate follow-through scheduled; section 9.5 architecture records created; sections 9.6–9.7 remain, plus the operator rpm-tools install for a local rpm build
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
 **Last updated:** August 21, 2026
 
@@ -527,44 +527,50 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 
 ### 9.3 GitHub Actions
 
-- [ ] Add pull-request and branch CI for frozen install, formatting, lint, type check, unit, integration, component, security, and build checks.
-- [ ] Add an immutable version-tag release workflow.
-- [ ] Use standard GitHub-hosted runners and least-privilege permissions.
-- [ ] Pin third-party Actions to reviewed commit SHAs.
-- [ ] Prevent untrusted pull-request workflows from receiving release permissions or secrets.
-- [ ] Build each architecture in a distinct job and preserve machine-readable provenance.
-- [ ] Generate checksums, SBOM, release metadata, and signatures only when a signing plan is approved.
-- [ ] Upload user-facing files to a draft GitHub Release rather than treating temporary Actions artifacts as distribution.
+- [x] Add pull-request and branch CI for frozen install, formatting, lint, type check, unit, integration, component, security, and build checks.
+  - First shared-runner execution completed green in 56 seconds (quality plus built-security jobs on `ubuntu-24.04`, run 32549322828).
+- [x] Add an immutable version-tag release workflow.
+- [x] Use standard GitHub-hosted runners and least-privilege permissions.
+- [x] Pin third-party Actions to reviewed commit SHAs.
+- [x] Prevent untrusted pull-request workflows from receiving release permissions or secrets.
+- [x] Build each architecture in a distinct job and preserve machine-readable provenance.
+- [x] Generate checksums, SBOM, release metadata, and signatures only when a signing plan is approved.
+  - Checksums, provenance JSON, and CycloneDX SBOM generate per tag; signatures remain absent by design until an approved Linux signing identity exists, and drafts label themselves unsigned previews.
+- [x] Upload user-facing files to a draft GitHub Release rather than treating temporary Actions artifacts as distribution.
 - [ ] Require the protected release environment and maintainer review before publication.
-- [ ] Confirm that ordinary pushes cannot create or replace a published release.
+  - Workflows declare the protected `release` environment; configuring its required reviewers and enabling repository tag immutability are operator settings that must be completed before any real candidate.
+- [x] Confirm that ordinary pushes cannot create or replace a published release.
 
 ### 9.4 Installation and support documentation
 
-- [ ] Create `docs/user/getting-started.md` with Codex prerequisites, first launch, connection states, navigation, refresh behavior, provenance, and privacy expectations.
-- [ ] Create `docs/user/installing.md` covering architecture selection and verified AppImage, deb, rpm, and Pacman installation paths.
-- [ ] Create `docs/user/upgrading.md` covering manual v1 upgrades, version checks, settings compatibility, checksum verification, and downgrade limitations.
-- [ ] Create `docs/user/troubleshooting.md` covering Codex detection, sign-in, compatibility, FUSE, package dependencies, desktop identity, unavailable metrics, and diagnostic export.
-- [ ] Create `docs/user/uninstalling.md` covering each package format, Token Trail-owned files, retained user choices, and verification of removal.
-- [ ] Create `docs/user/privacy.md` covering local reads, memory-only usage data, settings, diagnostics, network behavior, explicit exclusions, and clear-data behavior.
-- [ ] Explain how to select x64 versus arm64.
-- [ ] Document AppImage download, checksum verification, executable permission, launch, integration choices, FUSE issues, upgrade, and removal.
-- [ ] Document deb download, checksum verification, installation, dependency resolution, upgrade, and uninstall.
-- [ ] Document rpm download, checksum verification, installation, upgrade, and uninstall.
-- [ ] Document Pacman package download, checksum verification, installation, upgrade, and uninstall.
-- [ ] Document the difference between application packages and source archives automatically shown by GitHub.
-- [ ] Document supported and preview-quality distributions, desktops, architectures, and display servers.
-- [ ] Document Codex prerequisites, signed-out behavior, diagnostics export, and safe troubleshooting.
-- [ ] Document manual update behavior and clearly state that v1 does not silently install updates.
+- [x] Create `docs/user/getting-started.md` with Codex prerequisites, first launch, connection states, navigation, refresh behavior, provenance, and privacy expectations.
+- [x] Create `docs/user/installing.md` covering architecture selection and verified AppImage, deb, rpm, and Pacman installation paths.
+- [x] Create `docs/user/upgrading.md` covering manual v1 upgrades, version checks, settings compatibility, checksum verification, and downgrade limitations.
+- [x] Create `docs/user/troubleshooting.md` covering Codex detection, sign-in, compatibility, FUSE, package dependencies, desktop identity, unavailable metrics, and diagnostic export.
+- [x] Create `docs/user/uninstalling.md` covering each package format, Token Trail-owned files, retained user choices, and verification of removal.
+- [x] Create `docs/user/privacy.md` covering local reads, memory-only usage data, settings, diagnostics, network behavior, explicit exclusions, and clear-data behavior.
+- [x] Explain how to select x64 versus arm64.
+- [x] Document AppImage download, checksum verification, executable permission, launch, integration choices, FUSE issues, upgrade, and removal.
+- [x] Document deb download, checksum verification, installation, dependency resolution, upgrade, and uninstall.
+- [x] Document rpm download, checksum verification, installation, upgrade, and uninstall.
+- [x] Document Pacman package download, checksum verification, installation, upgrade, and uninstall.
+- [x] Document the difference between application packages and source archives automatically shown by GitHub.
+- [x] Document supported and preview-quality distributions, desktops, architectures, and display servers.
+  - Guides link the compatibility-and-support-matrix quality labels rather than duplicating them; untested rows stay visible.
+- [x] Document Codex prerequisites, signed-out behavior, diagnostics export, and safe troubleshooting.
+- [x] Document manual update behavior and clearly state that v1 does not silently install updates.
 - [ ] Add release-note structure for highlights, security, fixes, known limitations, installation links, checksums, and upgrade notes.
+  - Draft-release notes currently carry commit, artifacts, checksums, and unsigned-preview labeling; the full user-facing release-note structure completes with the Phase 6 changelog work it must not contradict.
 
 ### 9.5 Packaging, release, and upgrade architecture documentation
 
-- [ ] Create `docs/architecture/packaging-architecture.md` alongside implemented electron-builder targets, covering inputs, ASAR/fuses, artifact naming, architecture separation, metadata, icons, dependencies, and package verification.
-- [ ] Create `docs/architecture/github-release-pipeline.md` alongside the implemented Actions workflow, covering triggers, permissions, protected environments, pinned actions, build jobs, provenance, draft creation, immutability, and publication approval.
-- [ ] Create `docs/architecture/installation-and-upgrade-model.md` alongside verified packages, covering format selection, install locations, checksums/signatures, upgrade behavior, settings compatibility, rollback limits, uninstall ownership, and manual v1 updates.
-- [ ] Create `docs/architecture/software-supply-chain-security.md` from the implemented dependency, lockfile, action pinning, SBOM, checksum, provenance, signing, permission, and artifact-review controls.
-- [ ] Create `docs/architecture/artifact-and-versioning-model.md` from the implemented version source, tag rules, artifact names, architecture labels, checksums, source archives, immutability, prereleases, and patch-release policy.
-- [ ] Mark each document planned until its workflow exists, then update it from actual workflow files, packages, and verification evidence before Phase 5 closes.
+- [x] Create `docs/architecture/packaging-architecture.md` alongside implemented electron-builder targets, covering inputs, ASAR/fuses, artifact naming, architecture separation, metadata, icons, dependencies, and package verification.
+- [x] Create `docs/architecture/github-release-pipeline.md` alongside the implemented Actions workflow, covering triggers, permissions, protected environments, pinned actions, build jobs, provenance, draft creation, immutability, and publication approval.
+- [x] Create `docs/architecture/installation-and-upgrade-model.md` alongside verified packages, covering format selection, install locations, checksums/signatures, upgrade behavior, settings compatibility, rollback limits, uninstall ownership, and manual v1 updates.
+- [x] Create `docs/architecture/software-supply-chain-security.md` from the implemented dependency, lockfile, action pinning, SBOM, checksum, provenance, signing, permission, and artifact-review controls.
+- [x] Create `docs/architecture/artifact-and-versioning-model.md` from the implemented version source, tag rules, artifact names, architecture labels, checksums, source archives, immutability, prereleases, and patch-release policy.
+- [x] Mark each document planned until its workflow exists, then update it from actual workflow files, packages, and verification evidence before Phase 5 closes.
+  - All five were created only after their systems existed and cite executed inspections or observed CI runs; each carries status headers naming the evidence still owed by sections 9.6–9.7.
 
 ### 9.6 Package verification
 
