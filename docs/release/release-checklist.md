@@ -36,9 +36,11 @@ Evidence notes for the checked candidate-creation items: the manifest was frozen
 - [x] Evidence and unresolved limitations presented to the user.
 - [x] User approval to publish recorded.
 - [x] Protected environment reviewers configured; repository tag immutability enabled.
-- [ ] Draft published without asset changes; immutability confirmed afterward.
-- [ ] Every artifact re-downloaded from the public page and checksum-verified.
-- [ ] One clean install performed from the public location.
+- [x] Draft published without asset changes; immutability confirmed afterward.
+- [x] Every artifact re-downloaded from the public page and checksum-verified.
+- [x] One clean install performed from the public location.
 - [ ] Publication time, URL, final commit, and tag recorded in tracker and report.
+
+Publication evidence (August 22, 2026): `v1.0.0` published at 22:25:44 UTC from draft without asset changes at https://github.com/amanalip/tokentrail/releases/tag/v1.0.0; GitHub reports the release `isImmutable: true` under ruleset `21213599`. All twelve public files were re-downloaded and all eight package artifacts verified OK against the merged `SHA256SUMS.txt`. The clean install is the AppImage format executed twice on the reference machine from the downloaded public artifact with the window observed on screen; deb/rpm/Pacman clean-environment installs remain owed under LIM-004. Tracker recording is complete in Commit 047; the versioned `1.0.0` report awaits the Validation-section campaign above, which is why this final item stays open.
 
 Evidence notes for the checked publication items: the operator issued the explicit go-live approval on August 22, 2026, and the two repository settings that workflows cannot set themselves were completed through the API before publication — required reviewer `amanalip` on the `release` environment, and ruleset `21213599` ("Immutable release tags") actively blocking deletion and non-fast-forward updates of `refs/tags/v*` with zero bypass actors. Former limitation LIM-002 is recorded as cleared in the known-limitations document.

@@ -1,6 +1,6 @@
 # Release Validation Process
 
-**Status:** Implemented process from the executed Phase 5 candidate runs; the `v1.0.0` candidate is frozen and tagged, with downloaded-artifact validation, soak, and publication approval remaining
+**Status:** Executed through v1.0.0 publication on August 22, 2026: candidate frozen, tagged, built by the pipeline, and published after review with public checksums verified; per-format clean-environment installs, second-family AppImage coverage, and the soak campaign remain recorded-open work
 **Last updated:** August 22, 2026
 
 This document describes how a Token Trail release candidate is created, validated, corrected, and (only with explicit user approval) published. The `v0.5.0`–`v0.5.3` sequence is the worked example cited throughout.

@@ -1,6 +1,6 @@
 # Support Policy
 
-**Status:** Proposed for v1.0.0 publication; boundaries follow the verified compatibility matrix
+**Status:** In effect as of the v1.0.0 publication (August 22, 2026); boundaries follow the verified compatibility matrix
 **Last updated:** August 22, 2026
 
 ## Supported versions

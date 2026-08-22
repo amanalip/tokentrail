@@ -128,13 +128,13 @@ const shortCommit = options.commit.slice(0, 12);
  * Changelog text supplies highlights, security, and fix content; everything else
  * is operational guidance that must not contradict those records.
  */
-const notes = `# Token Trail ${options.tag} — development preview draft
+const notes = `# Token Trail ${options.tag}
 
 Built from commit \`${shortCommit}\` in ${options.repo} by the tag-driven release
-pipeline. Nothing here becomes public until a maintainer reviews and explicitly
-publishes this draft.
+pipeline. Publication is a deliberate maintainer action after review; failed
+candidates produce no release objects at all.
 
-**These builds are unsigned previews.** No Linux signing identity has been approved
+**These builds are unsigned.** No Linux signing identity has been approved
 yet, so verifying against \`SHA256SUMS.txt\` below is the integrity mechanism
 (limitation LIM-007 in the known-limitations record).
 

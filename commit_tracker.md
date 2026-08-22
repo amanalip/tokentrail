@@ -10,6 +10,8 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 047 - Freeze v1.0.0, publish the first stable release, and take the site live](#commit-047---freeze-v100-publish-the-first-stable-release-and-take-the-site-live)
+- [Commit 046 - Accept real Codex aggregate-usage spellings so Usage renders](#commit-046---accept-real-codex-aggregate-usage-spellings-so-usage-renders)
 - [Commit 045 - Verify semantics, lifecycle, and support promises ahead of freeze](#commit-045---verify-semantics-lifecycle-and-support-promises-ahead-of-freeze)
 - [Commit 044 - Re-run the full validation matrix and fix the lazy-route focus skip](#commit-044---re-run-the-full-validation-matrix-and-fix-the-lazy-route-focus-skip)
 - [Commit 043 - Generate structured draft-release notes from the tagged changelog and refresh the companion site](#commit-043---generate-structured-draft-release-notes-from-the-tagged-changelog-and-refresh-the-companion-site)
@@ -117,11 +119,81 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 22, 2026 after commit `6f010fa`
-**Last updated:** August 22, 2026 at 5:35 PM EDT (`America/Toronto`, UTC-04:00)
-**State:** Pending; not yet a Git commit when this entry was written
+None. The go-live session's recording commit is the last piece of its own entry (Commit 047); after it lands, the tree is clean, v1.0.0 is published and immutable, and every remaining open item lives in the known-limitations record or the release checklist's Validation section rather than in uncommitted work.
 
-The operator reported the Usage route showing "Aggregate usage is unavailable" against their real Codex installation while quota windows kept working. Diagnosis captured the real app-server's approved-read responses and proved a protocol naming drift: real Codex 0.149.0 emits `dailyUsageBuckets` with per-bucket `startDate` keys and `longestRunningTurnSec`, while Token Trail validated only its originally reviewed spellings — so every real usage read failed schema validation and degraded to the honest-but-wrong unavailable state. The fix canonicalizes both observed spellings onto one internal shape and hardens the read against partial data.
+---
+
+## Commit 047 - Freeze v1.0.0, publish the first stable release, and take the site live
+
+**Commits:** `5d4e307` - `Freeze v1.0.0, ship the release docs, and take the site to go-live state`; combined with `d5e8786` - `Record reviewer and immutability configuration clearing LIM-002 before publication`
+**Timestamps:** August 22, 2026; freeze pushed 6:14 PM EDT, publication recorded at 6:25:44 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Finalized by this tracker update. This entry records the go-live itself: the manifest frozen at `1.0.0`, the changelog finalized from the verified Unreleased record, the companion site moved to released-state copy, a genuine go-live blocker caught and fixed, the two operator-held repository settings closed before publication, tag `v1.0.0` built by the pipeline into a reviewed draft, and that draft published as the project's first stable release with every public artifact checksum-verified.
+
+### Intent
+
+Execute the release checklist's candidate-creation and approval-and-publication sections end to end under explicit operator go-live approval: freeze exactly what was verified, make every public surface describe the released truth, publish through the proven pipeline without touching assets, and verify the public result before calling it done.
+
+### Important changes
+
+- Manifest frozen at `1.0.0` with the lockfile following (`npm version --no-git-tag-version`); `CHANGELOG.md`'s Unreleased record finalized as `## 1.0.0` dated August 22, 2026 — the exact heading the notes generator matches, so draft notes source from "Released 1.0.0" instead of an unreleased fallback.
+- Companion website taken to go-live state: hero note now reads "v1.0.0 · first stable release · verify checksums before running"; the install lede reworded from "unsigned development previews" to unsigned release artifacts per LIM-007; the status band and FAQ status answer rewritten around the frozen-and-released fact; the FAQ example artifact name updated to `tokentrail-1.0.0-linux-amd64.deb`.
+- README, implementation-plan header, and living process documents moved to released-state wording while keeping operator/environment-held limitations open; historical phase records deliberately untouched.
+- **Go-live blocker found and fixed:** `.gitignore`'s unanchored `release/` pattern had silently excluded `docs/release/` from every previous commit — the release checklist, validation process, and rollback/incident documents existed only on disk while the website linked all three at `blob/main` URLs, which would have gone live pointing at missing pages. The pattern was anchored to `/release/` (electron-builder output stays ignored) and all three documents shipped for the first time.
+- The full local gate matrix executed green on the exact freeze tree (= tag commit `5d4e307`): format/lint/five-project typecheck, 229 unit tests, 32 integration tests, budget-gated production build, 32 e2e, 8 accessibility/development, 3 security, 4 packaged, performance gate, 55-file documentation check.
+- Checklist pre-publication gate completed through the API as the operator: required reviewer `amanalip` configured on the protected `release` environment, and ruleset `21213599` ("Immutable release tags") set active over `refs/tags/v*` blocking deletion and repointing with zero bypass actors (`current_user_can_bypass: never`) — LIM-002 cleared and so recorded.
+- Annotated tag `v1.0.0` pushed from `5d4e307`; pipeline run `32601895640` completed green in 7m10s assembling one draft prerelease with all eight packages (4 formats × 2 architectures), merged `SHA256SUMS.txt`, both provenance records binding artifacts to `5d4e3076d01b…`, and the CycloneDX SBOM. CI, CodeQL, and the Pages deploy on the freeze push were green alongside it.
+- Draft published without asset changes at 22:25:44 UTC; GitHub reports the release `isImmutable: true`. Title corrected from the pipeline's "(draft)" suffix, and the generated body regenerated against the same evidence to drop draft-only phrasing ("development preview draft", "nothing becomes public until review") — prose metadata only; bytes of every asset untouched.
+- Post-publication verification: all twelve public files re-downloaded from the release page; `sha256sum -c SHA256SUMS.txt` prints OK for all eight artifacts; provenance JSON confirmed to bind the public bytes to the tagged commit; live Pages site confirmed serving the v1.0.0 copy (hero note present, FAQ HTTP 200).
+- One clean install performed from the public location: the downloaded public x86_64 AppImage launched twice on the reference machine via `--appimage-extract-and-run`; the operator observed the real window (closing it accidentally, then requesting the relaunch), and the process tree showed the hardened profile — sandboxed renderer, native Wayland ozone platform, `tokentrail` scheme, preferences document under `~/.config/Token Trail`.
+
+### Decisions and assumptions
+
+- Publication proceeded on the operator's explicit "this is go live" instruction, with the checklist's settings-first ordering honored by configuring reviewers and immutability BEFORE publishing rather than skipping them.
+- The LIM-002 clearance postdates the freeze commit by one documentation commit, so the limitations record pinned to the `v1.0.0` tag still lists it as open; accepted because tags are snapshots by design and main carries the cleared state. Repointing the tag was never considered.
+- Release-page title/body edits after publication are treated as presentation metadata, not asset mutations: the immutability principle protects artifact bytes and history, which checksums and provenance continue to prove.
+
+### Verification
+
+- Every claim above traces to an executed observation: workflow run logs, API reads of environment/ruleset/release state, the checksum run over re-downloaded public files, and the two live AppImage launches.
+- Documentation checks (55 files) and formatting passed on each recording commit; the tracker update itself is this commit.
+
+### Fact check
+
+- `isImmutable: true` was read back from the release after publication, not inferred; the ruleset response carried enforcement `active` and empty bypass list; the checksum verification ran against files fetched from the public release URL, not the staging copies.
+
+### Sanity check
+
+- No product source changed anywhere in this entry; application code is byte-identical to the matrix-verified `4db2ff8` tree except the version string.
+- All remaining open work stays visible: LIM-001/003–010 plus the checklist's Validation section (per-format clean installs, second-family coverage, soak, network trace, versioned report).
+
+### User lessons
+
+- A release can be blocked by a dotfile: ignore patterns need the same review as code, because the website linked documents git had been quietly refusing to track for weeks.
+
+### Agent lessons
+
+- Verify what the release page will actually serve before go-live: checking tracked-files-versus-linked-URLs caught the missing-pages defect that no test suite covered.
+- Annotated tags resolve to tag objects, not commits; peel with `<tag>^{commit}` when generating anything that must name the released commit.
+
+### Risks or limitations
+
+- Artifacts remain unsigned (LIM-007); deb/rpm/Pacman clean-environment install campaigns, second-family AppImage coverage, arm64 execution, and the soak/network-trace campaign remain owed and are recorded as such, not implied done.
+
+### Follow-up
+
+The Validation section of the release checklist is now the live work queue; next natural steps are the second-family AppImage execution and the soak campaign when environments allow, then the versioned `1.0.0` report closing the loop.
+
+---
+
+## Commit 046 - Accept real Codex aggregate-usage spellings so Usage renders
+
+**Commit:** `4db2ff8` - `Accept real Codex aggregate-usage spellings so Usage renders`
+**Timestamp:** August 22, 2026 at 5:42 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+Promoted from the pending entry below after landing. The operator-facing summary: aggregate token activity (the Usage route) now renders against current Codex CLI installations instead of showing a permanent unavailable state while quota windows kept working.
 
 ### Intent
 
