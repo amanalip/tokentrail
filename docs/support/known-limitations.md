@@ -11,7 +11,8 @@ This page lists every known limitation honestly. Items are removed only when evi
 | ID | Limitation | Why it is open |
 | --- | --- | --- |
 | LIM-001 | Human Orca screen-reader session has not been performed | Requires operator judgment; all automated accessibility gates pass |
-| LIM-002 | Protected release environment lacks required reviewers; repository tag immutability not yet enabled | Operator repository settings that workflows cannot set themselves |
+
+Cleared on August 22, 2026, before the v1.0.0 publication: former LIM-002 (missing release-environment reviewers and tag immutability) was closed by configuring required reviewer `amanalip` on the `release` environment and an active repository ruleset that blocks deletion and repointing of `v*` tags with no bypass actors — both confirmed through the GitHub API immediately before publication.
 
 ## Environment coverage
 
