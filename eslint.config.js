@@ -43,6 +43,15 @@ export default typescriptEslint.config(
     },
   },
 
+  // electron-builder loads its configuration through CommonJS require, so the builder
+  // configuration file keeps `require` even though authored sources otherwise forbid it.
+  {
+    files: ['electron-builder.config.cjs'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
   // Give renderer code browser globals while deliberately withholding Node globals from that trust boundary.
   {
     files: ['src/renderer/**/*.{ts,tsx}'],

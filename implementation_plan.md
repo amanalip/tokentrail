@@ -1,8 +1,8 @@
 # Token Trail Implementation Plan
 
-**Status:** Approved plan; Phases 1 through 3 complete with recorded evidence; Phase 4 started August 21, 2026 from commit `26f73fe902d54713d6f128ba0e6424adb08c6efa` and reached substantially-complete state the same day — versioned evidence recorded in `tests/test_reports/0.4.0/test_report.md` (`preview-only`), with formal closure gated on the human screen-reader session and deferred desktop-environment matrices
+**Status:** Approved plan; Phases 1 through 4 complete at the machine-verifiable level with recorded evidence — Phase 4's automated scope closed at commit `21327f2` with the versioned `tests/test_reports/0.4.0/test_report.md` record (`preview-only`), and formal Phase 4 closure remains gated on the operator-held Orca screen-reader session plus environment-bound desktop matrices
 **Controlling specification:** [product_spec_electron.md](product_spec_electron.md)
-**Current phase:** Phase 3 closed locally with the shared domain library, six routes, contextual navigation, live preferences, sanitized diagnostics health counters, runtime icon identity, the typography matrix, the complete section 21.2 fixture catalog, and expanded architecture documents; Phase 4 executed sections 8.2 through 8.8 on August 21, 2026 and awaits only operator-held manual evidence plus Phase 6 soak items named in its report
+**Current phase:** Phase 5 opened August 21, 2026 with section 9.2 complete: all four Linux package formats configured and contract-tested, x64 and arm64 artifacts assembled locally for AppImage, deb, and Pacman (rpm assembly awaits the host `rpmbuild` tool), AppStream metadata shipping in native packages, a packaged-contents inspection gate, and the desktop-entry identity fix (`StartupWMClass=tokentrail`); sections 9.3 through 9.7 remain open
 **Target completion:** Public-ready Linux v1.0.0 after Phase 6
 **Last updated:** August 21, 2026
 
@@ -508,15 +508,22 @@ Create reproducible Linux packages, protected GitHub release automation, complet
 
 ### 9.2 electron-builder packaging
 
-- [ ] Enable ASAR with an explicit packaged-file allowlist.
-- [ ] Exclude development files and public production source maps.
-- [ ] Configure product name, executable, application ID, icons, desktop entry, categories, startup WM class, and AppStream metadata.
-- [ ] Configure AppImage, deb, rpm, and Pacman targets.
-- [ ] Declare format-specific dependencies and uninstall behavior.
-- [ ] Build x64 and arm64 separately without relabeling architecture output.
-- [ ] Use artifact names containing product, version, platform, architecture, and format.
-- [ ] Inspect unpacked and packaged contents for accidental secrets or unnecessary files.
-- [ ] Verify Electron fuses, ASAR integrity posture, and only-load-from-ASAR behavior.
+- [x] Enable ASAR with an explicit packaged-file allowlist.
+- [x] Exclude development files and public production source maps.
+- [x] Configure product name, executable, application ID, icons, desktop entry, categories, startup WM class, and AppStream metadata.
+  - Verified inside built artifacts: `StartupWMClass=tokentrail` desktop entries (deb and AppImage payload), `tokentrail.desktop` file name via `syncDesktopName`, hicolor icons, and `/usr/share/metainfo/com.tokentrail.app.metainfo.xml` in deb and Pacman payloads. AppImage-embedded AppStream stays deferred because electron-builder 26 offers no per-target mapping for that format; recorded in decision 011 rather than shipped as a stray duplicate.
+- [x] Configure AppImage, deb, rpm, and Pacman targets.
+  - All four targets are configured and contract-tested; AppImage, deb, and Pacman artifacts were assembled locally on x64. rpm assembly reached fpm but requires the host `rpmbuild` tool (rpm-tools), which was not installed on the reference machine during this session; local rpm output and full install verification belong to section 9.6 and CI.
+- [x] Declare format-specific dependencies and uninstall behavior.
+  - Dependency sets remain owned by electron-builder's maintained per-format defaults and were verified in generated control files (deb `Depends`, Pacman `depend` list). No post-install or post-remove hooks are declared because v1 ships no tray, autostart, MIME daemon, or service; package removal takes only its own files and leaves user preferences untouched.
+- [x] Build x64 and arm64 separately without relabeling architecture output.
+  - Separate `--x64`/`--arm64` invocations produced correctly labeled artifacts for AppImage (`x86_64`/`arm64`), deb (`amd64`/`arm64`), and Pacman (`x86_64`/`aarch64`) using each format's native machine labels; rpm follows once the host tool above is available.
+- [x] Use artifact names containing product, version, platform, architecture, and format.
+  - Machine-safe template `${name}-${version}-${os}-${arch}.${ext}` verified as e.g. `tokentrail-0.5.0-linux-amd64.deb`.
+- [x] Inspect unpacked and packaged contents for accidental secrets or unnecessary files.
+  - New `npm run check:package-contents` gate parses the ASAR header listing, enforces an exact unpacked-entry allowlist plus Electron license presence, and scans the archive and every release artifact for credential-shaped markers. It passed after catching one real defect: its own initial allowlist omitted Electron's license artifacts, which it flagged before any release use.
+- [x] Verify Electron fuses, ASAR integrity posture, and only-load-from-ASAR behavior.
+  - Fuse flags are pinned by unit contract tests; runtime posture continues to be exercised by the packaged suites on both display-server backends.
 
 ### 9.3 GitHub Actions
 

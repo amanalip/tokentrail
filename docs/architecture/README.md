@@ -58,7 +58,7 @@ This directory explains how Token Trail works as a complete system. The product 
 
 Phase 3 implements the complete v1 route set over the Phase 2 boundary. Electron main owns the Codex child process and all raw protocol input, performs the three approved reads plus the sparse-update notification, and derives in-memory session deltas. Preload exposes eight purpose-specific methods (three Overview, two preferences, two diagnostics, one clear-data). The renderer receives normalized in-memory snapshots and cannot access Node, Electron, raw IPC, the filesystem, environment variables, or arbitrary Codex methods.
 
-Token Trail persists only the validated preferences document. Usage snapshots, session deltas, and diagnostics content stay in memory; diagnostics export writes only a user-previewed document through a native save dialog. There is no telemetry and no application-initiated update request. Packaging formats and GitHub release automation remain Phase 5.
+Token Trail persists only the validated preferences document. Usage snapshots, session deltas, and diagnostics content stay in memory; diagnostics export writes only a user-previewed document through a native save dialog. There is no telemetry and no application-initiated update request. All four Linux package formats are configured with contract tests as of Phase 5 section 9.2; GitHub release automation remains Phase 5 work under sections 9.3 through 9.7.
 
 ## Planned documents by implementation phase
 

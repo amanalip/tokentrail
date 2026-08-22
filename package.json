@@ -1,10 +1,15 @@
 {
   "name": "tokentrail",
   "productName": "Token Trail",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A privacy-first desktop dashboard for understanding local Codex usage.",
   "license": "GPL-3.0-only",
-  "author": "Aman Ali",
+  "author": {
+    "name": "Aman Ali",
+    "email": "pamanalionline@gmail.com"
+  },
+  "homepage": "https://github.com/amanalip/tokentrail",
+  "desktopName": "tokentrail.desktop",
   "private": true,
   "type": "module",
   "main": "dist/main/index.cjs",
@@ -36,6 +41,10 @@
     "test:packaged": "npm run package:dir && playwright test tests/packaged",
     "test:performance": "npm run package:dir && playwright test tests/performance",
     "package:dir": "npm run build && electron-builder --dir --config electron-builder.config.cjs",
+    "package:linux": "npm run build && electron-builder --linux AppImage deb rpm pacman --config electron-builder.config.cjs",
+    "package:x64": "npm run build && electron-builder --linux AppImage deb rpm pacman --x64 --config electron-builder.config.cjs",
+    "package:arm64": "npm run build && electron-builder --linux AppImage deb rpm pacman --arm64 --config electron-builder.config.cjs",
+    "check:package-contents": "node scripts/verify-package-contents.mjs",
     "export:branding": "node scripts/export-brand-rasters.mjs",
     "package:appimage": "npm run build && electron-builder --linux AppImage --config electron-builder.config.cjs",
     "verify": "npm run check:format && npm run lint && npm run typecheck && npm run test && npm run test:integration"

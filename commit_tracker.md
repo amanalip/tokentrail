@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 033 - Close Phase 4 automated scope with the 0.4.0 evidence record](#commit-033---close-phase-4-automated-scope-with-the-040-evidence-record)
 - [Commit 032 - Verify desktop identity across backends and enforce Wayland conduct](#commit-032---verify-desktop-identity-across-backends-and-enforce-wayland-conduct)
 - [Commit 031 - Move focus to new route content on navigation](#commit-031---move-focus-to-new-route-content-on-navigation)
 - [Commit 030 - Open section 8.3 with keyboard-only workflow evidence](#commit-030---open-section-83-with-keyboard-only-workflow-evidence)
@@ -104,9 +105,80 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `7b47f47`
-**Last updated:** August 21, 2026 at 8:35 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `21327f2`
+**Last updated:** August 21, 2026 at 11:05 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
+
+The pending Phase 4 close-out entry below was finalized as commit `21327f2`. This entry opens Phase 5 per the approved sequence and completes plan section 9.2 in one coherent increment: all four approved Linux package formats become configured, contract-tested release targets with AppStream metadata, machine-safe artifact names, corrected desktop window-association identity, and an automated packaged-contents inspection gate.
+
+### Intent
+
+Turn the single-target Phase 1 packaging prototype into the reviewed four-format release-candidate configuration — AppImage, deb, rpm, and Pacman — so every later packaging, CI, and verification task operates on the final artifact shape instead of a development placeholder.
+
+### Important changes
+
+- Bumped the working version to 0.5.0 in the manifest and lockfile because code changed after the tested 0.4.0 record.
+- `electron-builder.config.cjs` now builds all four formats from one configuration; artifact names switched from the spaced product name to the machine-safe `${name}` stem, matching decision 008's filesystem-facing identity rule.
+- Desktop window association fixed: manifest gains `desktopName: "tokentrail.desktop"` plus `linux.syncDesktopName`, so the installed `.desktop` file name matches Electron's derived WM_CLASS and Wayland app_id; verified inside the built deb (`StartupWMClass=tokentrail`, `/usr/share/applications/tokentrail.desktop`) and the AppImage payload.
+- Added `build/metainfo/com.tokentrail.app.metainfo.xml` and shipped it into deb, rpm, and Pacman payloads at `/usr/share/metainfo/` through fpm's typed passthrough; AppImage-side AppStream embedding deferred with rationale (electron-builder 26 has no per-target mapping for that format).
+- Manifest gains `homepage` and object-form `author` with email because fpm-based targets hard-require both for maintainer metadata.
+- Added `npm run check:package-contents` (`scripts/verify-package-contents.mjs`): exact unpacked-entry allowlist, Electron license presence, parsed ASAR header listing rejecting development paths, and credential-marker scans across the archive and every release artifact.
+- Added `src/build/packaging-config.test.ts`: fourteen contract tests pinning target set, artifact template, slug/category, syncDesktopName wiring, maintainer/vendor, payload allowlist, fuse posture, and metainfo delivery including its honest-description guard.
+- Added `package:linux`, `package:x64`, and `package:arm64` commands building architectures separately.
+
+### Decisions and assumptions
+
+- Dependency sets stay owned by electron-builder's maintained per-format defaults (verified in generated deb `Depends` and Pacman `depend` lists) rather than hand-pinned lists that would silently drift across Electron upgrades.
+- No post-install or post-remove hooks are declared because v1 ships no tray, autostart, MIME daemon, or service; uninstall takes only package-owned files.
+- Maintainer identity mirrors the repository's established Git author (`Aman Ali <pamanalionline@gmail.com>`); confirmed with the operator when packages demanded a contact address.
+- rpm assembly is configured but was not completed locally: fpm requires host `rpmbuild` (rpm-tools), which was not yet installed on the reference machine during this session; recorded honestly instead of claimed.
+
+### Verification
+
+- `npm run verify`: formatting, lint, strict type checks across five projects, unit tests 220 passed across 29 files (fourteen new), integration tests 32 passed.
+- x64 builds assembled locally: `tokentrail-0.5.0-linux-x86_64.AppImage` (127.9 MB), `-linux-amd64.deb` (100.5 MB), `-linux-x64.pacman` (91.0 MB).
+- Separate arm64 invocations produced correctly labeled `arm64`/`aarch64` AppImage, deb, and Pacman artifacts without relabeling.
+- Artifact inspection: deb control fields (Package, Version, Maintainer, Depends, Homepage, License), data paths (desktop entry, hicolor icon, metainfo), Pacman `.PKGINFO`, and the AppImage embedded desktop entry all read back correct values.
+- `npm run test:packaged`: four passed on both display-server backends after the configuration change.
+- `npm run check:package-contents`: passed after it caught one real defect during development — its own initial allowlist omitted Electron's license artifacts.
+
+### Fact check
+
+- electron-builder 26.15.3 option surface verified from installed sources: `LinuxTargetSpecificOptions` carries no `extraFiles`; AppStream delivery uses `deb`/`rpm`/`pacman.fpm` mappings; `syncDesktopName`/manifest `desktopName` drive `getDesktopFileName` and `StartupWMClass`; FpmTarget errors without project homepage or author email; `--arm64` exists as a CLI flag.
+- Generated control files were read directly (`ar p … control.tar.xz`, `tar -xOf .PKGINFO`, `--appimage-extract`) rather than inferred from logs.
+
+### Sanity check
+
+- No privacy, security, lifecycle, or network behavior changed: the Codex allowlist, IPC surface, CSP, and fuse posture are untouched; new tests pin exactly that posture.
+- The metainfo document describes only implemented read-only behavior and its content test rejects telemetry/cloud/sync/update-check language, so packaged claims cannot outrun the product.
+
+### User lessons
+
+- Native package formats require maintainer accountability metadata before anything builds; identity decisions made casually early (author string without email) surface as hard build failures later.
+- Window↔launcher association on Linux depends on three names agreeing: executable slug, installed desktop-file name, and WM_CLASS/app_id; one config pair (`desktopName` + `syncDesktopName`) keeps them aligned.
+- Each package format labels architecture in its own native vocabulary (`amd64` versus `x86_64` versus `aarch64`); correct labeling means using each format's convention, not one global string.
+
+### Agent lessons
+
+- Read installed dependency sources instead of trusting memory: two assumed facts (per-target extraFiles support; built-in AppStream generation) were both false for electron-builder 26.
+- An inspection gate earns its keep immediately when it flags its own author's mistakes; write gates to fail loudly before any release use.
+
+### Risks or limitations
+
+- rpm output is configured but unverified until the host `rpmbuild` tool exists; full install/upgrade/uninstall evidence remains section 9.6 and CI work regardless.
+- AppImage lacks embedded AppStream metadata by design decision; store-style indexing of the image itself stays out of scope for v1.
+
+### Follow-up
+
+Build the local rpm once rpm-tools is available, then proceed to plan sections 9.3 (GitHub Actions CI and protected release workflow) and 9.4 (user installation documentation).
+
+---
+
+## Commit 033 - Close Phase 4 automated scope with the 0.4.0 evidence record
+
+**Commit:** `21327f2` - `Close Phase 4 automated scope with the 0.4.0 evidence record`
+**Timestamp:** August 21, 2026 at 8:18:14 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
 
 The previously pending desktop-identity entry was finalized as commit `7b47f47`. This entry completes the remaining section 8.7 deliverable, records the Phase 4 evidence report as version `0.4.0`, and performs the exit-criteria sweep.
 

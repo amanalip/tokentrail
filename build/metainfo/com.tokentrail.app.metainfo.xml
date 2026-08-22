@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AppStream metainfo for the Token Trail desktop application.
+  Installed by the deb, rpm, and Pacman payloads into /usr/share/metainfo so
+  package-aware software centers can describe the installed application.
+  Claims in this file must stay bounded by verified behavior: Token Trail is a
+  local, read-only dashboard and this description may never advertise network
+  features, updates, or data collection that do not exist.
+-->
+<component type="desktop-application">
+  <id>com.tokentrail.app</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <name>Token Trail</name>
+  <summary>Privacy-first dashboard for understanding local Codex usage</summary>
+  <description>
+    <p>
+      Token Trail connects to a locally installed OpenAI Codex app-server and presents
+      account quota windows, token usage, and credit information in one read-only
+      desktop dashboard.
+    </p>
+    <p>
+      All usage values are read through approved Codex methods, kept in memory only,
+      and never transmitted anywhere by Token Trail. Every displayed value identifies
+      whether it was reported by Codex, observed locally, calculated from complete or
+      partial ranges, or is unavailable.
+    </p>
+    <ul>
+      <li>Quota windows with used and remaining percentages, reset times, and provenance</li>
+      <li>Daily token usage with charts, calendar heatmap, statistics, and an accessible table</li>
+      <li>Credit balance, spending limits, and reset-credit expiry overview</li>
+      <li>Redacted diagnostics export containing no account data</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">tokentrail.desktop</launchable>
+  <url type="homepage">https://github.com/amanalip/tokentrail</url>
+  <developer_name>Aman Ali</developer_name>
+  <provides>
+    <binary>tokentrail</binary>
+  </provides>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.5.0" date="2026-08-21">
+      <description>
+        <p>Development preview of the read-only Codex usage dashboard.</p>
+      </description>
+    </release>
+  </releases>
+</component>

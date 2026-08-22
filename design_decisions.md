@@ -44,6 +44,7 @@ This document records product and technical design decisions in chronological or
 - [008 - User-facing product name separated from repository identifier](#008---user-facing-product-name-separated-from-repository-identifier)
 - [009 - Development styling must not weaken production CSP](#009---development-styling-must-not-weaken-production-csp)
 - [010 - Phase 2 renderer boundary uses normalized snapshots](#010---phase-2-renderer-boundary-uses-normalized-snapshots)
+- [011 - Four-format Linux packaging identity and metadata ownership](#011---four-format-linux-packaging-identity-and-metadata-ownership)
 
 ## Decision status guide
 
@@ -608,3 +609,31 @@ Codex app-server responses are experimental, may add unknown fields, and can con
 ### Decision outcome
 
 The Phase 2 vertical slice proves this boundary with fixture transport, normalization, controller, IPC authorization, component, development, built Electron, and packaged-executable tests. Phase 3 must extend the same pattern rather than bypass it for new routes.
+
+---
+
+## 011 - Four-format Linux packaging identity and metadata ownership
+
+**Recorded:** August 21, 2026 at 11:00 PM EDT (`America/Toronto`, UTC-04:00)
+**Status:** Approved and implemented in Phase 5
+
+### Context
+
+Phase 5 requires reproducible AppImage, deb, rpm, and Pacman artifacts. The Phase 1 prototype configuration proved only an unpacked AppImage target and left three packaging questions open: which machine-facing artifact stem the release files use, how installed windows associate with their desktop entry, and who owns per-format dependency lists and AppStream metadata.
+
+### Decision
+
+- Artifact file names use the machine-safe template `${name}-${version}-${os}-${arch}.${ext}` (for example `tokentrail-0.5.0-linux-amd64.deb`), consistent with decision 008's split: `tokentrail` for filesystem-facing names, `Token Trail` for every people-facing label.
+- The manifest gains `desktopName: "tokentrail.desktop"` and the Linux configuration enables `syncDesktopName`, so the installed `.desktop` file name matches Electron's derived WM_CLASS and Wayland app_id (`tokentrail`). Without this wiring, desktop environments cannot associate running windows with the launcher entry.
+- Per-format dependency sets remain owned by electron-builder's maintained defaults, which track Chromium runtime libraries as Electron upgrades. Hand-pinning those lists inside Token Trail would create silent drift; instead the generated control files are inspected after each build.
+- No post-install or post-remove hooks are declared because v1 ships no tray, autostart entry, MIME handler, or daemon; package removal takes only its own files and leaves user preferences in the user-data directory untouched.
+- AppStream metainfo is a single checked-in document shipped into deb, rpm, and Pacman payloads at `/usr/share/metainfo/com.tokentrail.app.metainfo.xml`. electron-builder 26 has no per-target mapping to embed it inside an AppImage, so AppImage-side AppStream integration stays deferred rather than shipping a duplicate copy into `/opt`.
+- Native packages declare maintainer `Aman Ali <pamanalionline@gmail.com>` and vendor `Aman Ali`, mirroring the repository's established Git author identity and project homepage.
+
+### Security and privacy effect
+
+The packaged payload allowlist, fuse posture, and ASAR-only loading are unchanged and are now pinned by unit contract tests plus a new packaged-contents inspection gate that rejects unexpected files and credential-shaped markers. The metainfo document may only describe verified read-only behavior; its content test rejects telemetry, cloud, sync, and update-check language.
+
+### Decision outcome
+
+Section 9.2 completed on August 21, 2026: all four targets configured and contract-tested; x64 and arm64 AppImage, deb, and Pacman artifacts assembled locally with correct format-native architecture labels; rpm assembly reached fpm but awaits the host `rpmbuild` tool on the reference machine, so rpm output and install verification belong to section 9.6 and CI evidence.
