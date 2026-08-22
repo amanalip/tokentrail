@@ -24,6 +24,7 @@
           <li><a href="#features">Features</a></li>
           <li><a href="#privacy">Privacy</a></li>
           <li><a href="#install">Install</a></li>
+          <li><a href="faq.html">FAQ</a></li>
           <li><a href="#docs">Docs</a></li>
         </ul>
       </nav>
@@ -61,33 +62,13 @@
         </div>
         <p class="hero-note">Development preview · v0.5.x · verify checksums before running</p>
 
-        <!-- Decorative trail chart echoing the app icon -->
-        <div class="hero-art" aria-hidden="true">
-          <svg viewBox="0 0 720 300" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="fade-line" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#55f5de" stop-opacity="0.15"/>
-                <stop offset="1" stop-color="#55f5de" stop-opacity="1"/>
-              </linearGradient>
-            </defs>
-            <g stroke-width="1">
-              <line x1="60" y1="60"  x2="660" y2="60"  opacity="0.08"/>
-              <line x1="60" y1="120" x2="660" y2="120" opacity="0.08"/>
-              <line x1="60" y1="180" x2="660" y2="180" opacity="0.08"/>
-              <line x1="60" y1="240" x2="660" y2="240" opacity="0.08"/>
-            </g>
-            <polyline points="80,250 170,205 280,175 380,150 480,105 600,70"
-                      fill="none" stroke="url(#fade-line)" stroke-width="5"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="80"  cy="250" r="9" fill="#0b1230" stroke="#55f5de" stroke-width="4"/>
-            <circle cx="170" cy="205" r="8" fill="#55f5de"/>
-            <circle cx="280" cy="175" r="8" fill="#55f5de"/>
-            <circle cx="380" cy="150" r="8" fill="#55f5de"/>
-            <circle cx="480" cy="105" r="8" fill="#55f5de"/>
-            <circle cx="600" cy="70" r="14" fill="none" stroke="#9087fe" stroke-width="4"/>
-            <circle cx="600" cy="70" r="8" fill="#55f5de"/>
-          </svg>
-        </div>
+        <!-- Real application screenshot in a window frame -->
+        <figure class="hero-art">
+          <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+          <img src="assets/app-overview.png" width="1180" height="780"
+               alt="Token Trail Overview screen showing a Codex quota window at 63% remaining, with used percentage, reset date, countdown, and last-updated time." />
+          <figcaption>Overview, dark theme. Sample fixture data from the 0.4.0 test evidence.</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -144,10 +125,14 @@
             <p>Light/dark/system themes, refresh choices, and a fully previewed redacted diagnostics export. Clear-data wipes your preferences after confirmation.</p>
           </article>
         </div>
+
+        <figure class="showcase">
+          <img src="assets/app-usage.png" width="1180" height="780" loading="lazy"
+               alt="Token Trail Usage screen with lifetime token totals, a daily activity bar chart, and a calendar heatmap section." />
+          <figcaption>Usage, dark theme. Daily activity chart with lifetime totals, peak day, and streaks.</figcaption>
+        </figure>
       </div>
     </section>
-
-    <!-- ============ Privacy ============ -->
     <section id="privacy" class="privacy section">
       <div class="container">
         <h2>Privacy is not a promise.<br /><span class="accent">It is an architecture.</span></h2>
@@ -308,7 +293,7 @@
         </ul>
       </nav>
       <p class="footer-note">
-        GPL-3.0-only · This site makes zero network requests beyond its own files.
+        © 2026, made by Aman Ali · GPL-3.0-only · This site makes zero network requests beyond its own files.
       </p>
     </div>
   </footer>
