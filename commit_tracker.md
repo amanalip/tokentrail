@@ -10,6 +10,7 @@ All displayed times use the `America/Toronto` timezone. Lessons are recorded onl
 - [Tracking rules](#tracking-rules)
 - [Verification standards](#verification-standards)
 - [Current uncommitted work](#current-uncommitted-work)
+- [Commit 035 - Add least-privilege CI and tag-driven draft-release pipeline](#commit-035---add-least-privilege-ci-and-tag-driven-draft-release-pipeline)
 - [Commit 034 - Open Phase 5 with the four-format Linux release packaging](#commit-034---open-phase-5-with-the-four-format-linux-release-packaging)
 - [Commit 033 - Close Phase 4 automated scope with the 0.4.0 evidence record](#commit-033---close-phase-4-automated-scope-with-the-040-evidence-record)
 - [Commit 032 - Verify desktop identity across backends and enforce Wayland conduct](#commit-032---verify-desktop-identity-across-backends-and-enforce-wayland-conduct)
@@ -106,11 +107,73 @@ A sanity-check report should confirm that the change makes sense within Token Tr
 
 ## Current uncommitted work
 
-**First recorded:** August 21, 2026 after commit `23dddba`
-**Last updated:** August 21, 2026 at 11:45 PM EDT (`America/Toronto`, UTC-04:00)
+**First recorded:** August 21, 2026 after commit `a9e9c36`
+**Last updated:** August 21, 2026 at 11:59 PM EDT (`America/Toronto`, UTC-04:00)
 **State:** Pending; not yet a Git commit when this entry was written
 
-The pending packaging entry below was finalized as commit `23dddba`. This entry implements plan section 9.3: a least-privilege continuous-integration workflow for pull requests and main-branch pushes, and an immutable tag-driven pipeline that assembles all four package formats for both architectures onto one draft GitHub Release.
+The pending pipeline entry below was finalized as commit `a9e9c36`, whose first CI run then completed green on shared runners. This entry implements plan section 9.4: the six user-facing guides under `docs/user/` plus a README refresh that finally reflects Phase 5 reality and links the guides.
+
+### Intent
+
+Give future users honest, per-format installation, upgrade, troubleshooting, uninstall, and privacy documentation that can be followed verbatim against release-candidate packages during verification.
+
+### Important changes
+
+- Added all six section 9.4 guides: getting-started (Codex prerequisites including PATH-visible CLI and Codex-owned sign-in), installing (architecture mapping table across each format's native labels, checksum verification, FUSE notes, installed-location inventory), upgrading (manual-only updates, version checks, settings compatibility, downgrade limits), troubleshooting (menu-versus-shell PATH differences, signed-out recovery through Codex, AppImage FUSE fallbacks, desktop-entry association checks, unavailable-value reading, diagnostics export), uninstalling (per-format removal, retained preferences location, removal verification), and privacy (approved reads, memory-only usage data, single preferences file on disk, redacted diagnostics, no-network statement, explicit exclusions).
+- Every guide carries a status header stating it is being followed against release-candidate packages in plan section 9.6 before any stable release — instructions claim nothing beyond current evidence.
+- README updated: project status now names Phases 1–4 machine-complete with Phase 5 in progress; user-guides index added; the stale 0.2.0 evidence pointer moved to 0.4.0.
+- Documentation link checker extended coverage from 37 to 45 files with zero broken links.
+
+### Decisions and assumptions
+
+- Guides document the four-format artifact naming actually produced by the verified pipeline (`tokentrail-<version>-linux-<arch>.<format>`), including the per-format architecture vocabulary (`amd64`/`arm64`, `x86_64`/`aarch64`) that previously had no user-facing explanation anywhere.
+- Draft-release visibility is described from the maintainer perspective honestly: drafts are maintainer-only until published.
+- The privacy guide's network statement is written to the implemented boundary and explicitly marks the Phase 6 captured-trace campaign as the pending evidence upgrade rather than claiming it already happened.
+
+### Verification
+
+- `npm run check:docs`: 45 files scanned, no broken links after the new cross-links.
+- Technical claims traced to implementation facts read from source during authoring: PATH-based discovery without shell invocation, `codex app-server --stdio` argument list, preferences under the `Token Trail` userData directory, `/opt/Token Trail` install prefix plus system paths confirmed earlier by direct deb/Pacman/AppImage payload inspection.
+- Honest limit: package-manager commands in installing/upgrading/uninstalling have not yet been executed against real installs; their guides' headers mark that verification as scheduled work.
+
+### Fact check
+
+- Every quoted path in the uninstall guide was checked against electron-builder's fpm mappings recorded in Commit 034's inspection output rather than assumed.
+- The `--appimage-extract-and-run` fallback is the documented AppImage runtime option matching the toolset version in use.
+
+### Sanity check
+
+- No guide promises signing, auto-update, notifications, or any other gated capability; preview status is stated at the top of every download instruction.
+- Terminology matches the product-identity rules: people see "Token Trail"; machine paths use `tokentrail`.
+
+### User lessons
+
+- GUI applications inherit the desktop session's PATH, not a terminal's; documenting this early prevents the most common "works in terminal, not in app" support case.
+- Uninstall documentation must cover both package-owned files and deliberately retained user state for trust to survive an uninstall/reinstall cycle.
+
+### Agent lessons
+
+- Write guides against inspected artifacts, not generic distribution conventions; every path claim here traces to a payload listing performed earlier.
+- Status headers that name the exact scheduled verification turn aspirational docs into testable checklists for later phases.
+
+### Risks or limitations
+
+- Package-install command sequences remain unverified until clean-environment testing (section 9.6); corrections will be committed from observed results.
+- The support matrix's untested rows mean some guide advice (for example GNOME specifics) has no environment evidence behind it yet.
+
+### Follow-up
+
+Create the five section 9.5 architecture records alongside the implemented systems, monitor CI on subsequent pushes, and build the local rpm once rpm-tools becomes available.
+
+---
+
+## Commit 035 - Add least-privilege CI and tag-driven draft-release pipeline
+
+**Commit:** `a9e9c36` - `Add least-privilege CI and tag-driven draft-release pipeline`
+**Timestamp:** August 21, 2026 at 11:33:49 PM EDT (`America/Toronto`, UTC-04:00)
+**Author:** Aman Ali
+
+The pending packaging entry below was finalized as commit `23dddba`, whose first CI run then completed green on shared runners. This entry implements plan section 9.3: a least-privilege continuous-integration workflow for pull requests and main-branch pushes, and an immutable tag-driven pipeline that assembles all four package formats for both architectures onto one draft GitHub Release.
 
 ### Intent
 
@@ -136,8 +199,8 @@ Make every future change independently verifiable on shared infrastructure and t
 
 - Both workflow files parse as valid YAML (`js-yaml`).
 - The provenance script executed locally against the existing six built artifacts and produced correct schema-shaped output including hashes; it was also fixed during development after its own first run exposed a missing import.
-- Formatting and lint pass; the maintainer email appears only in reviewed metadata contexts already public in Git history.
-- Honest limit: workflow execution itself cannot be exercised before push; the first real CI run is observed evidence scheduled immediately after this commit lands.
+- Formatting and lint pass.
+- Observed after push: the pipeline's first shared-runner execution completed successfully in 56 seconds on `ubuntu-24.04` (run 32549322828), with both the quality and built-security jobs green — frozen install, all static gates, unit/component suites, integration fixtures, the bundle-budget-gated build, and the Xvfb-driven security suite.
 
 ### Fact check
 
@@ -163,7 +226,7 @@ Make every future change independently verifiable on shared infrastructure and t
 ### Risks or limitations
 
 - rpm assembly inside the release pipeline remains unexercised until rpm-tools-equivalent runners build it; the workflow installs Ubuntu's `rpm` package for that step.
-- First-run CI may expose runner-image differences (library names, npm global install behavior); fixes will be recorded as they land.
+- Runner-image drift (library names, npm global install behavior) could break CI in future Ubuntu refreshes; the first run surfaced no such issue.
 
 ### Follow-up
 

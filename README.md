@@ -1,6 +1,6 @@
 # Token Trail
 
-> **Project status:** Phase 2 core read-only Overview complete locally
+> **Project status:** Phase 5 packaging and release engineering in progress; Phases 1–4 complete at the machine-verifiable level with recorded evidence
 
 ## Contents
 
@@ -14,7 +14,7 @@ Token Trail is a privacy-first desktop dashboard intended to help people underst
 
 The user-facing product name is **Token Trail**. The repository, npm package, executable slug, custom protocol, and code identifiers may use the machine-safe form `tokentrail` or `TokenTrail`; those identifiers must never replace the spaced product name in visible interface copy.
 
-The approved Electron application now has a tested Phase 2 read-only Codex-to-Overview slice. Publication, signing, update deployment, telemetry, and broader Codex access remain separately gated.
+The approved Electron application implements the complete v1 read-only product scope and is now moving through packaging, release automation, and release validation. Publication, signing, update deployment, telemetry, and broader Codex access remain separately gated.
 
 ## Development
 
@@ -59,4 +59,13 @@ Electron security and packaged tests may need to run outside a restricted contai
 - [Dependency rationale](docs/architecture/dependency-rationale.md)
 - [Codex protocol compatibility](docs/architecture/protocol-compatibility.md)
 
-The current screenshot-backed development evidence is recorded in [tests/test_reports/0.2.0/test_report.md](tests/test_reports/0.2.0/test_report.md). Each later executable version receives its own `tests/test_reports/<version>/test_report.md`.
+User guides:
+
+- [Getting started](docs/user/getting-started.md)
+- [Installing](docs/user/installing.md)
+- [Upgrading](docs/user/upgrading.md)
+- [Troubleshooting](docs/user/troubleshooting.md)
+- [Uninstalling](docs/user/uninstalling.md)
+- [Privacy](docs/user/privacy.md)
+
+The current screenshot-backed development evidence is recorded in [tests/test_reports/0.4.0/test_report.md](tests/test_reports/0.4.0/test_report.md). Each later executable version receives its own `tests/test_reports/<version>/test_report.md`.
