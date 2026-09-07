@@ -250,3 +250,61 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 - **Impact:** Keyboard focus can be lost when the initiating button is replaced, and repeated confirmation clicks can enqueue multiple clears while I/O is pending.
 - **Improvement/verification:** Move focus deliberately into the confirmation, restore it on cancel/completion, provide Escape cancellation, and disable repeated submission while clearing. Verify a complete keyboard-only workflow.
 - **Status:** Accessibility/reliability improvement based on component structure; assistive-technology interaction not executed.
+
+## Build, release, and verification tooling
+
+### BUG-031 : P2: Development readiness can accept old bundles and launch after shutdown
+
+- **Evidence:** `scripts/dev.mjs:70-86,172-210` waits for output-file existence without requiring a build from the current run. It also launches Electron after the readiness promises resolve without rechecking `isShuttingDown`.
+- **Trigger/impact:** Keep old `dist/main/index.cjs` and preload output, then restart development while a new build is slow or broken. Existing files satisfy readiness and Electron can execute old code. If a service exits during readiness, shutdown can signal the existing children and the resumed startup can still create a new Electron process afterward.
+- **Improvement/verification:** Use current-build completion signals and check shutdown state immediately before launch. Test stale outputs, compilation failure, and a service exit while waiting for renderer readiness.
+- **Status:** Code-supported startup races.
+
+### BUG-032 : P2: The release-notes parser includes subsequent version sections
+
+- **Evidence:** `scripts/write-release-notes.mjs:99-105` searches the remaining changelog with `/^## /` without multiline mode, starting immediately after the current heading. It therefore fails to locate the next section and uses end-of-file as the boundary.
+- **Trigger/impact:** Add another `##` version section to the currently single-version changelog. Notes for the earlier selected section include every following release, misattributing historical changes to the selected version.
+- **Improvement/verification:** Determine boundaries from consecutive heading matches or a multiline next-heading search. Test a changelog with Unreleased and at least two releases, asserting exact section isolation.
+- **Status:** Code-supported dormant defect; the current single-section changelog does not expose it in normal generation.
+
+### BUG-033 : P2: Package-content inspection misses files outside app.asar
+
+- **Evidence:** `scripts/verify-package-contents.mjs` allowlists only top-level unpacked entries, then inspects `resources/app.asar`. It does not recursively inventory `resources/`, `locales/`, or `app.asar.unpacked`; distributable packages are searched as compressed raw bytes instead of extracted payloads.
+- **Trigger/impact:** An unexpected file in `resources/` alongside the ASAR is not rejected. A credential marker present only inside compressed package content is not reliably detectable by the raw-byte search. The final claim that only reviewed runtime files shipped is stronger than the inspection.
+- **Improvement/verification:** Recursively validate application-owned package payloads, including unpacked resources, and inspect extracted format contents. Use synthetic canary files outside ASAR and inside a compressed payload to prove the gate catches both.
+- **Status:** Code-supported coverage gap; no real credential was introduced or searched for in personal data.
+
+### BUG-034 : P3: Provenance records arbitrary matching files and loses the npm version in CI
+
+- **Evidence:** `scripts/write-build-provenance.mjs:50-73` hashes every file starting with `tokentrail-`, with no selected-version, architecture, extension, or exact inventory check. `npmVersion` comes solely from `npm_config_user_agent`; `.github/workflows/release.yml` invokes the script directly with `node`.
+- **Trigger/impact:** A reused local release directory can associate stale versions, another architecture, or unrelated matching files with the current build. In a normal direct CI shell without npm's user-agent variable, the installed npm version is recorded as null.
+- **Improvement/verification:** Require the exact expected format/architecture/version inventory and capture the actual toolchain version explicitly. Test stale artifacts, missing formats, and a direct node invocation with no npm user-agent variable.
+- **Status:** Code-supported provenance accuracy gaps; hosted CI environment not inspected.
+
+### IMP-004 : P2: Gate tagged artifacts on the checks for the exact tagged commit
+
+- **Evidence:** `.github/workflows/release.yml` builds and packages without running or requiring lint, types, unit, integration, security, or `check:package-contents`. `.github/workflows/ci.yml` triggers on pull requests and main pushes, not tags, and its security job uses the built development Electron launcher rather than a fused package.
+- **Impact:** A tag can produce release artifacts without this workflow proving its exact source and packaged bytes passed the validation suite. Protected-environment review is a separate human control, not an executable quality gate.
+- **Improvement/verification:** Add or reuse exact-ref verification jobs and validate produced artifacts before draft assembly. Test a tagged commit with an intentional failing test in an isolated workflow-validation exercise.
+- **Status:** Pipeline improvement; no claim about current remote branch/environment protections.
+
+### IMP-005 : P2: Expand automated regression gates to cover exposed product behavior
+
+- **Evidence:** `npm run verify` and CI's quality job omit docs, coverage, end-to-end, accessibility, development, packaged, and performance suites. `vitest.config.ts` declares no coverage thresholds. Existing timezone coverage compares refresh instants in New York/Tokyo, not date-only bucket labels; preferences restart coverage restores System before relaunch rather than proving a nondefault value survives.
+- **Impact:** The green core suite does not verify automatic refresh scheduling, negative rendered differences, extreme timezone labels, delayed saves, or nondefault restart persistence. Several findings in this document pass all current core checks.
+- **Improvement/verification:** Add focused regressions for documented failure cases and choose explicit PR/release gates appropriate to their cost. Preserve a nondefault preference through restart and compare exact date-only labels across extreme zones.
+- **Status:** Test-quality improvement supported by the checked-in test/configuration paths and this review's passing core suite.
+
+### IMP-006 : P3: Make documentation-link checks robust to supported Markdown inputs
+
+- **Evidence:** `scripts/check-doc-links.mjs` passes non-Markdown fragment targets to `collectHeadingSlugs` via an absent map entry, decodes URLs without handling malformed escapes, and claims to skip fenced code while only removing inline backtick spans. Its heading slug logic also does not account for collisions between duplicate headings and existing suffixed headings.
+- **Impact:** A relative HTML link with a fragment or malformed percent escape can crash the sweep instead of reporting a finding; fenced examples and heading collisions can produce false results.
+- **Improvement/verification:** Parse or explicitly scope supported links, handle decoding failures as findings, ignore fenced examples, and test duplicate-slug collisions. Keep current passing documentation checks as baseline evidence rather than assuming broader syntax is covered.
+- **Status:** Tooling improvement from source review; current repository documentation check passes.
+
+### IMP-007 : P3: Pin Pages workflow actions to immutable commits and scope deployment triggers
+
+- **Evidence:** `.github/workflows/static.yml` uses floating action tags, `ubuntu-latest`, and deploys on every main push without a site path filter. The CI/release workflows use commit-pinned actions and explicit runner versions.
+- **Impact:** Website deployment has a different reproducibility policy and redeploys for unrelated source/documentation commits, including this audit's incremental pushes.
+- **Improvement/verification:** Align action pinning with the other workflows, decide an explicit runner policy, and filter automatic deployment to website/workflow inputs while preserving manual dispatch.
+- **Status:** Supply-chain and CI-efficiency improvement, not a demonstrated compromised action.
