@@ -188,7 +188,10 @@ describe('application navigation', () => {
 
     // Navigate to Usage through its visible link.
     await user.click(screen.getByRole('link', { name: 'Usage' }));
-    expect(await screen.findByRole('heading', { level: 1, name: 'Usage' })).not.toBeNull();
+    // The first navigation imports the chart chunk; allow cold transforms under parallel test load.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Usage' }, { timeout: 5_000 }),
+    ).not.toBeNull();
 
     // Navigate to Learn and confirm its local explanation content.
     await user.click(screen.getByRole('link', { name: 'Learn' }));

@@ -6,6 +6,7 @@ import { access } from 'node:fs/promises';
 
 // Import platform path handling for absolute executable resolution.
 import path from 'node:path';
+import { version as applicationVersion } from '../../../package.json';
 
 // Import the stable public error category type without carrying raw exceptions across boundaries.
 import type { ApplicationErrorCategory } from '../../shared/contracts/application-error';
@@ -158,6 +159,10 @@ export class CodexProcessClient {
   // Prevent work after explicit shutdown or fatal protocol failure.
   #isStopped = false;
 
+  #isStarting = false;
+
+  #terminationTimer: ReturnType<typeof setTimeout> | null = null;
+
   // Construct a client without starting external work until `start` is called.
   public constructor(options: CodexProcessClientOptions = {}) {
     this.#options = Object.freeze({ ...options });
@@ -166,13 +171,20 @@ export class CodexProcessClient {
   // Start and initialize the one owned app-server process.
   public async start(): Promise<void> {
     // Reject duplicate or post-stop starts so lifecycle ownership remains unambiguous.
-    if (this.#child !== null || this.#isStopped) {
+    if (this.#child !== null || this.#isStopped || this.#isStarting) {
       throw new CodexProcessError('internal-error');
     }
+
+    this.#isStarting = true;
 
     // Use an injected absolute fixture executable only when a caller supplied one explicitly.
     const executablePath =
       this.#options.executablePath ?? (await resolveCodexExecutable(process.env['PATH']));
+
+    // Discovery can finish after shutdown; never create a child once ownership has ended.
+    if (this.#isStopped) {
+      throw new CodexProcessError('codex-unavailable');
+    }
 
     // Convert discovery failure into a stable user-actionable category.
     if (executablePath === null) {
@@ -204,15 +216,20 @@ export class CodexProcessClient {
 
     // Convert process creation failure into an unavailable state without retaining the raw operating-system error.
     child.once('error', () => this.#failConnection('codex-unavailable'));
+    child.stdin.on('error', () => this.#failConnection('codex-unavailable'));
 
     // Reject pending work and stop using the connection when the owned child exits.
-    child.once('exit', () => this.#failConnection('codex-unavailable'));
+    child.once('exit', () => {
+      this.#releaseChild(child);
+      this.#failConnection('codex-unavailable');
+    });
+    child.once('close', () => this.#releaseChild(child));
 
     // Complete the required protocol handshake before permitting account reads.
     const initializationResult = await this.request(
       'initialize',
       {
-        clientInfo: { name: 'tokentrail', title: 'Token Trail', version: '0.2.0' },
+        clientInfo: { name: 'tokentrail', title: 'Token Trail', version: applicationVersion },
         capabilities: {
           experimentalApi: true,
           requestAttestation: false,
@@ -325,16 +342,13 @@ export class CodexProcessClient {
     this.#isStopped = true;
 
     // Ask the exact owned process to terminate gracefully when it is still running.
-    if (this.#child !== null && this.#child.exitCode === null && this.#child.signalCode === null) {
-      this.#child.kill('SIGTERM');
-    }
+    this.#terminateChild();
 
     // Reject every unresolved request with a safe local category.
     this.#rejectAllPending('codex-unavailable');
 
-    // Release listeners and the process reference for garbage collection.
+    // Release listeners; the exit handler releases the owned process.
     this.#notificationListeners.clear();
-    this.#child = null;
   }
 
   // Serialize and write one bounded application-owned protocol value.
@@ -358,7 +372,9 @@ export class CodexProcessClient {
     }
 
     // Write one framed message without a shell, interpolation, or raw diagnostic copy.
-    this.#child.stdin.write(`${serializedValue}\n`);
+    this.#child.stdin.write(`${serializedValue}\n`, (error) => {
+      if (error) this.#failConnection('codex-unavailable');
+    });
   }
 
   // Add one stdout chunk and dispatch every complete bounded line.
@@ -368,12 +384,8 @@ export class CodexProcessClient {
       return;
     }
 
-    // Append only up to the maximum line plus delimiter; larger incomplete input is a fatal invalid response.
+    // Append the stream chunk, then check complete lines and the remaining partial line separately.
     this.#stdoutBuffer = Buffer.concat([this.#stdoutBuffer, chunk]);
-    if (this.#stdoutBuffer.length > CODEX_PROTOCOL_LIMITS.maximumMessageBytes + 1) {
-      this.#failConnection('invalid-response');
-      return;
-    }
 
     // Process all complete newline-delimited values in the current buffer.
     let delimiterIndex = this.#stdoutBuffer.indexOf(10);
@@ -391,9 +403,14 @@ export class CodexProcessClient {
 
       // Parse and dispatch the complete line without ever logging it.
       this.#handleProtocolLine(line.toString('utf8'));
+      if (this.#isStopped) return;
 
       // Locate the next delimiter in the reduced buffer.
       delimiterIndex = this.#stdoutBuffer.indexOf(10);
+    }
+
+    if (this.#stdoutBuffer.length > CODEX_PROTOCOL_LIMITS.maximumMessageBytes) {
+      this.#failConnection('invalid-response');
     }
   }
 
@@ -474,13 +491,34 @@ export class CodexProcessClient {
     this.#rejectAllPending(category);
 
     // Terminate only the retained owned handle when it is still active.
-    if (this.#child !== null && this.#child.exitCode === null && this.#child.signalCode === null) {
-      this.#child.kill('SIGTERM');
-    }
+    this.#terminateChild();
 
-    // Release the handle and notification callbacks after failure.
-    this.#child = null;
+    // Release notification callbacks while retaining process ownership until exit.
     this.#notificationListeners.clear();
+  }
+
+  // Retain the exact handle until exit and escalate a non-cooperative child after one second.
+  #terminateChild(): void {
+    const child = this.#child;
+    this.#stdoutBuffer = Buffer.alloc(0);
+    if (child === null) return;
+    if (child.exitCode !== null || child.signalCode !== null) {
+      this.#releaseChild(child);
+      return;
+    }
+    child.kill('SIGTERM');
+    this.#terminationTimer = setTimeout(() => {
+      if (this.#child === child && child.exitCode === null && child.signalCode === null) {
+        child.kill('SIGKILL');
+      }
+    }, 1_000);
+  }
+
+  #releaseChild(child: ChildProcessWithoutNullStreams): void {
+    if (this.#child !== child) return;
+    if (this.#terminationTimer !== null) clearTimeout(this.#terminationTimer);
+    this.#terminationTimer = null;
+    this.#child = null;
   }
 
   // Reject and clear every outstanding request without exposing method, params, or raw server details.

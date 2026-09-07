@@ -416,3 +416,10 @@ Existing known limitations remain in `docs/support/known-limitations.md`, includ
 ### Delivery record
 
 Findings were committed and pushed in separate batches covering transport/controller, normalization, renderer workflows, storage/diagnostics, build/release tooling, arithmetic/navigation/website, dependencies, and final evidence consolidation. Commit messages describe each batch's scope and findings. All changes are documentation only; no bugs were fixed.
+
+
+## Fix progress (after review)
+
+The review above describes the original baseline. Fixes below are incremental source changes; no release is being created.
+
+- BUG-001, BUG-002, BUG-003, BUG-004, BUG-008: stdin failures use sanitized rejection, discovery cannot spawn after stop or a concurrent start, shutdown retains the child and escalates to SIGKILL after one second unless it exits, NDJSON limits apply per line, and initialization uses the manifest version. Eight deterministic transport regression tests pass, including deferred discovery, pipe errors, termination escalation/cancellation, and near-limit lines across chunk partitions.
