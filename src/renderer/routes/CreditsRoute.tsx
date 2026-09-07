@@ -1,3 +1,4 @@
+import type { Preferences } from '../../shared/contracts/preferences';
 // Import the normalized snapshot contract for presentation.
 import type { OverviewSnapshot } from '../../shared/contracts/overview-snapshot';
 
@@ -11,7 +12,13 @@ import { formatPercentage, formatRemainingSeconds, formatResetTime } from '../fo
 import { useCurrentUnixSeconds } from '../hooks';
 
 /** Render credit balance, spending controls, and reset credits as read-only reported information. */
-export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
+export function CreditsRoute({
+  snapshot,
+  timeFormat = 'system',
+}: {
+  snapshot: OverviewSnapshot;
+  timeFormat?: Preferences['timeFormat'];
+}) {
   // Bind the credits section once for readable JSX below.
   const credits = snapshot.credits;
 
@@ -100,7 +107,8 @@ export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
 
       {credits.spendingControl !== null &&
       (credits.spendingControl.limitAmount !== null ||
-        credits.spendingControl.usedAmount !== null) ? (
+        credits.spendingControl.usedAmount !== null ||
+        credits.spendingControl.resetsAtSeconds !== null) ? (
         <section className="panel" aria-labelledby="control-title">
           <div className="section-heading">
             <div>
@@ -126,7 +134,7 @@ export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
             <div className="metric-line">
               <dt>Resets</dt>
               <dd>
-                <span>{formatResetTime(credits.spendingControl.resetsAtSeconds)}</span>
+                <span>{formatResetTime(credits.spendingControl.resetsAtSeconds, timeFormat)}</span>
                 <small>Codex-reported timestamp</small>
               </dd>
             </div>
@@ -152,8 +160,8 @@ export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
           <p className="empty-detail">No reset-credit details were reported.</p>
         ) : (
           <ul className="credit-list">
-            {orderedCredits.map((entry) => (
-              <li key={`${entry.detail.title}:${entry.detail.expiresAtSeconds ?? 'none'}`}>
+            {orderedCredits.map((entry, index) => (
+              <li key={`${entry.detail.title}:${entry.detail.expiresAtSeconds ?? 'none'}:${index}`}>
                 <div>
                   <strong>{entry.detail.title}</strong>
                   <p>{entry.detail.description}</p>
@@ -164,7 +172,7 @@ export function CreditsRoute({ snapshot }: { snapshot: OverviewSnapshot }) {
                   {entry.expiryGroup === 'expires-within-seven-days'
                     ? `Expires in ${formatRemainingSeconds(entry.remainingSeconds)}`
                     : entry.expiryGroup === 'expires-later'
-                      ? `Expires ${formatResetTime(entry.detail.expiresAtSeconds)}`
+                      ? `Expires ${formatResetTime(entry.detail.expiresAtSeconds, timeFormat)}`
                       : entry.expiryGroup === 'already-expired'
                         ? 'Already expired'
                         : 'No expiry reported'}

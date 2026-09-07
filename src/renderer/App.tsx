@@ -203,6 +203,12 @@ export function App() {
 
       {/* The negative tab index lets the skip link move focus here without joining Tab order. */}
       <main className="overview" id="overview" tabIndex={-1}>
+        {snapshot.state === 'stale' && ['windows', 'usage', 'credits'].includes(target.route) && (
+          <section className="stale-banner" role="alert">
+            The latest refresh failed. Previously reported values remain visible and may be out of
+            date.
+          </section>
+        )}
         {target.route === 'overview' && (
           <OverviewRoute
             snapshot={snapshot}
@@ -219,8 +225,16 @@ export function App() {
             <UsageRoute snapshot={snapshot} preferences={preferences} />
           </Suspense>
         )}
-        {target.route === 'credits' && <CreditsRoute snapshot={snapshot} />}
-        {target.route === 'learn' && <LearnRoute focusEntryId={target.learnEntryId} />}
+        {target.route === 'credits' && (
+          <CreditsRoute snapshot={snapshot} timeFormat={preferences.timeFormat} />
+        )}
+        {target.route === 'learn' && (
+          <LearnRoute
+            key={target.learnEntryId ?? 'learn'}
+            focusEntryId={target.learnEntryId}
+            reducedMotion={preferences.reducedMotion}
+          />
+        )}
         {target.route === 'settings' && (
           <SettingsDiagnosticsRoute
             snapshot={snapshot}

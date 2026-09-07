@@ -109,3 +109,14 @@ describe('daily chart options', () => {
     expect(option.series[0]?.data).toEqual([Number.MAX_SAFE_INTEGER]);
   });
 });
+
+it('uses exact values in oversized chart tooltips', () => {
+  const days = [
+    { date: '2026-09-07', tokens: '12345678901234567890', provenance: 'codex-reported' as const },
+  ];
+  const option = buildDailyChartOption(PALETTE, days);
+  expect(option.tooltip.formatter([{ dataIndex: 0 }])).toContain(
+    '12,345,678,901,234,567,890 tokens',
+  );
+  expect(option.series[0]?.data[0]).toBe(Number.MAX_SAFE_INTEGER);
+});

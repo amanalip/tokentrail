@@ -31,7 +31,12 @@ import type { OverviewSnapshot } from '../../shared/contracts/overview-snapshot'
 import type { Preferences } from '../../shared/contracts/preferences';
 
 // Import reviewed display formatters.
-import { formatCounter, formatCounterCompact, formatStatistic } from '../formatting';
+import {
+  formatCounter,
+  formatCounterCompact,
+  formatCounterDifference,
+  formatStatistic,
+} from '../formatting';
 
 // Convert one canonical decimal counter into a number for chart geometry when exactly representable.
 function toChartNumber(tokens: string): number | null {
@@ -97,6 +102,16 @@ export function buildDailyChartOption(
     animation: false as const,
     tooltip: {
       trigger: 'axis' as const,
+      renderMode: 'richText' as const,
+      formatter: (params: unknown): string => {
+        const point = Array.isArray(params) ? params[0] : params;
+        const index =
+          typeof point === 'object' && point !== null
+            ? (point as { dataIndex?: unknown }).dataIndex
+            : undefined;
+        const day = typeof index === 'number' ? days[index] : undefined;
+        return day ? `${formatDateKey(day.date)}\n${formatCounter(day.tokens)} tokens` : '';
+      },
       backgroundColor: palette.tooltipBackground,
       borderColor: palette.tooltipBorder,
       textStyle: { color: palette.tooltipText },
@@ -431,7 +446,7 @@ function ComparisonBlock({
   const differenceText =
     comparison.bothPeriodsZero && comparison.absoluteDifference === '0'
       ? 'No activity in either complete period.'
-      : `${comparison.absoluteDifference?.startsWith('-') ? '' : '+'}${formatCounter(
+      : `${comparison.absoluteDifference?.startsWith('-') ? '' : '+'}${formatCounterDifference(
           comparison.absoluteDifference,
         )} tokens`;
 
@@ -529,15 +544,32 @@ function DailyChart({
     const instance = echarts.init(container, undefined, { renderer: 'svg' });
     instance.setOption(option);
 
+    const resize = (): void => {
+      instance.resize();
+    };
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(resize) : null;
+    observer?.observe(container);
+    window.addEventListener('resize', resize);
+
     // Dispose deterministically so repeated views cannot leak instances.
     return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', resize);
       instance.dispose();
     };
   }, [option]);
 
+  const hasCappedValues = days.some((day) => BigInt(day.tokens) > BigInt(Number.MAX_SAFE_INTEGER));
+
   // Provide the canvas-free text alternative directly beneath the chart region.
   return (
     <div>
+      {hasCappedValues && (
+        <p>
+          Bar heights are capped at the largest safe chart value. Tooltips and the table show exact
+          totals.
+        </p>
+      )}
       <div
         ref={containerRef}
         role="img"
@@ -554,8 +586,8 @@ export function formatDateKey(dateKey: string): string {
   const parsed = parseCalendarDateKey(dateKey);
   if (parsed === null) return dateKey;
 
-  // Format through UTC noon so the calendar date cannot shift across timezone boundaries.
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(
+  // Fix the formatting timezone because calendar keys represent dates, not local instants.
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeZone: 'UTC' }).format(
     new Date(Date.UTC(parsed.year, parsed.month - 1, parsed.day, 12)),
   );
 }

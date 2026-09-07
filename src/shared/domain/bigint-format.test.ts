@@ -71,3 +71,13 @@ describe('formatDecimalCounterWithSeparators', () => {
     );
   });
 });
+
+it.each([
+  [-100n, 2n, 1, '-50'],
+  [-1n, 2n, 1, '-0.5'],
+  [-1n, 8n, 2, '-0.13'],
+  [-1n, 100n, 1, '0'],
+  [0n, 2n, 1, '0'],
+])('formats signed ratio %s/%s', (numerator, denominator, precision, expected) => {
+  expect(formatBigintRatio(numerator, denominator, precision)).toBe(expected);
+});

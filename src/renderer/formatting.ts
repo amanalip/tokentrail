@@ -155,3 +155,13 @@ function formatBigintRatioLocal(numerator: bigint, denominator: bigint): string 
   const fraction = scaled % 10n;
   return fraction === 0n ? `${whole}` : `${whole}.${fraction}`;
 }
+
+// Signed calculated changes have a different contract from nonnegative reported counters.
+export function formatCounterDifference(value: string | null): string {
+  if (value === null) return 'Unavailable';
+  const magnitude = value.startsWith('-') ? value.slice(1) : value;
+  const formatted = formatCounter(magnitude);
+  return value.startsWith('-') && formatted !== 'Unavailable' && magnitude !== '0'
+    ? `-${formatted}`
+    : formatted;
+}

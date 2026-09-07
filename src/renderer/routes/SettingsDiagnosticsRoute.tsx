@@ -225,7 +225,9 @@ export function SettingsDiagnosticsRoute({
               <div className="metric-line">
                 <dt>Last successful refresh</dt>
                 <dd>
-                  <span>{formatRefreshTime(snapshot.lastSuccessfulRefreshAt)}</span>
+                  <span>
+                    {formatRefreshTime(snapshot.lastSuccessfulRefreshAt, preferences.timeFormat)}
+                  </span>
                   <small>Locally observed</small>
                 </dd>
               </div>

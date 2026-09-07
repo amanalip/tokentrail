@@ -1,3 +1,4 @@
+import type { Preferences } from '../../shared/contracts/preferences';
 // Import React state, memoization, and effects for the local search filter and deep-link focus.
 import { useEffect, useMemo, useState } from 'react';
 
@@ -93,7 +94,13 @@ export const LEARN_ENTRY_IDS: readonly string[] = Object.freeze(ENTRIES.map((ent
  * Render the searchable local explanation library. When `focusEntryId` names a reviewed entry, that card is
  * highlighted and scrolled into view so contextual links from metrics land on the relevant explanation.
  */
-export function LearnRoute({ focusEntryId }: { focusEntryId?: string | null }) {
+export function LearnRoute({
+  focusEntryId,
+  reducedMotion = 'system',
+}: {
+  focusEntryId?: string | null;
+  reducedMotion?: Preferences['reducedMotion'];
+}) {
   // Track the local search text; it never leaves the renderer.
   const [query, setQuery] = useState('');
 
@@ -134,13 +141,17 @@ export function LearnRoute({ focusEntryId }: { focusEntryId?: string | null }) {
 
     // Scroll where the platform supports it; jsdom tests simply assert the highlight class instead.
     if (typeof card.scrollIntoView === 'function') {
-      card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      const reduce =
+        reducedMotion === 'reduced' ||
+        (reducedMotion === 'system' &&
+          window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+      card.scrollIntoView({ block: 'start', behavior: reduce ? 'instant' : 'smooth' });
     }
 
     // The negative tab index makes the card focusable without inserting it into Tab order.
     card.setAttribute('tabindex', '-1');
     card.focus();
-  }, [focusEntryId, filtered]);
+  }, [focusEntryId, reducedMotion]);
 
   // Render the complete Learn route.
   return (

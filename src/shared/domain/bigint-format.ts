@@ -30,21 +30,23 @@ export function formatBigintRatio(
 
   // Scale first, then divide once so rounding uses exact integer arithmetic throughout.
   const scale = 10n ** BigInt(maximumFractionDigits);
-  const scaled = (numerator * scale * 2n + denominator) / (denominator * 2n);
+  const magnitude = numerator < 0n ? -numerator : numerator;
+  const scaled = (magnitude * scale * 2n + denominator) / (denominator * 2n);
+  const sign = numerator < 0n && scaled !== 0n ? '-' : '';
 
   // Split the scaled value into whole and fractional parts for canonical assembly.
   const whole = scaled / scale;
   const fraction = scaled % scale;
 
   // Return the plain whole number when no fractional part remains after rounding.
-  if (fraction === 0n) return whole.toString();
+  if (fraction === 0n) return `${sign}${whole}`;
 
   // Render the fractional digits then trim trailing zeros so output stays compact and canonical.
   const fractionDigits = fraction
     .toString()
     .padStart(maximumFractionDigits, '0')
     .replace(/0+$/u, '');
-  return `${whole}.${fractionDigits}`;
+  return `${sign}${whole}.${fractionDigits}`;
 }
 
 /**

@@ -10,3 +10,11 @@ it('guards the inclusive timestamp boundary before rendering', () => {
     expect(formatResetTime(value)).toBe('Reset time unavailable');
   }
 });
+
+it('formats signed token differences independently of reported counters', async () => {
+  const { formatCounterDifference } = await import('./formatting');
+  expect(formatCounterDifference('-1234567')).toBe('-1,234,567');
+  expect(formatCounterDifference('70')).toBe('70');
+  expect(formatCounterDifference('0')).toBe('0');
+  expect(formatCounterDifference('--1')).toBe('Unavailable');
+});
