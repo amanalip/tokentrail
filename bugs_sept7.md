@@ -366,3 +366,13 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 - **Impact:** Reviewers cannot follow the stated per-version evidence convention to the released version, and users read stronger behavior claims than the implementation supports.
 - **Improvement/verification:** Provide one accurate evidence index for the released commit, distinguish consolidated historical evidence from dedicated reports, and audit feature copy against actual controls. Carry forward the already documented open environment/install/Orca/arm64 validation limitations rather than claiming those were resolved here.
 - **Status:** Documentation consistency improvement; does not dispute that historical commands may have run.
+
+## Dependency maintenance
+
+### IMP-010 : P2: Triage and refresh vulnerable transitive build dependencies
+
+- **Evidence:** September 7 `npm audit --json` reports two affected packages: `fast-uri@3.1.5` (high) and `@xmldom/xmldom@0.8.14` (moderate). `npm ls` places both under `electron-builder@26.15.3 > app-builder-lib@26.15.3`: fast-uri through `ajv@8.20.0`, xmldom through `plist@3.1.0`.
+- **Upstream evidence:** The [fast-uri maintainer advisory](https://github.com/fastify/fast-uri/security/advisories/GHSA-5jgf-p345-68v8) identifies host canonicalization problems affecting 3.1.5 and lists 3.1.6 as a patched version on that line. The [xmldom maintainer advisory](https://github.com/xmldom/xmldom/security/advisories/GHSA-6gmq-8vp8-gcm6) describes invalid entity-reference serialization affecting 0.8.14 and lists 0.8.15 as patched on that line. npm also groups three other URI normalization advisories under fast-uri.
+- **Impact/scope:** These are observed dependency advisories, not demonstrated Token Trail exploits. Both are build-tool dependencies; `npm audit --omit=dev --json` reports zero production dependency vulnerabilities. The packaging config excludes node_modules from the application payload and Vite bundles the application sources.
+- **Improvement/verification:** Triage whether affected operations process untrusted input in this build pipeline, update compatible locked transitive versions or their owning build dependencies, and rerun package/build validation and audit. Do not interpret npm's high severity as proof of a remotely exploitable desktop application bug.
+- **Status:** Dependency versions and audit output verified locally; the two maintainer advisories were checked online. No dependency changes or automatic audit fixes were applied.
