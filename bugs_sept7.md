@@ -133,7 +133,7 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 ### BUG-017 : P2: Falling usage displays “Unavailable tokens” instead of its signed difference
 
 - **Evidence:** `src/renderer/routes/UsageRoute.tsx:431-437` passes signed `absoluteDifference` into `formatCounter`. `src/renderer/formatting.ts:129-134` delegates to a nonnegative counter parser.
-- **Trigger/impact:** Latest period is 70 tokens below the preceding period. `formatCounter('-70')` returns `Unavailable`, while the relative change remains negative and valid, yielding inconsistent comparison output.
+- **Trigger/impact:** Latest period is 70 tokens below the preceding period. `formatCounter('-70')` returns `Unavailable`, even though the underlying signed difference is valid. Relative-change formatting has a separate defect recorded in BUG-035.
 - **Improvement/verification:** Format signed differences separately from nonnegative reported counters. Test rising, falling, and unchanged period totals in the rendered comparison.
 - **Status:** Formatter result reproduced directly against source.
 
@@ -308,3 +308,61 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 - **Impact:** Website deployment has a different reproducibility policy and redeploys for unrelated source/documentation commits, including this audit's incremental pushes.
 - **Improvement/verification:** Align action pinning with the other workflows, decide an explicit runner policy, and filter automatic deployment to website/workflow inputs while preserving manual dispatch.
 - **Status:** Supply-chain and CI-efficiency improvement, not a demonstrated compromised action.
+
+## Additional arithmetic, navigation, and website findings
+
+### BUG-035 : P2: Negative percentage changes are formatted as malformed decimal strings
+
+- **Evidence:** `src/shared/domain/bigint-format.ts:29-45` applies positive half-up rounding and unsigned fractional assembly to negative numerators. `computePeriodComparison` passes a negative numerator when usage falls.
+- **Trigger/impact:** `formatBigintRatio(-100n, 2n, 1)` returns `-49.-9` instead of `-50`; `formatBigintRatio(-1n, 2n, 1)` returns `0.-4` instead of `-0.5`. Falling period comparisons can show malformed percentages and incorrect rounding independently of BUG-017's absolute difference display.
+- **Improvement/verification:** Round the magnitude, format whole/fractional parts, then apply the sign consistently. Test negative whole values, fractions below one, half-way rounding, and zero.
+- **Status:** Reproduced against the actual shared formatter.
+
+### BUG-036 : P2: Website copy buttons report success when copying fails or is unavailable
+
+- **Evidence:** `site/script.js:58-76` calls the same `done()` success handler for clipboard fulfillment and rejection; absence of the clipboard API also calls `done()` without copying.
+- **Trigger/impact:** Deny clipboard permission or use a context without the API. The button says “Copied” while the clipboard still contains its previous contents. This affects installation command copying.
+- **Improvement/verification:** Show success only after a confirmed write; present failure/manual-selection guidance or a working fallback. Test rejected and absent clipboard APIs.
+- **Status:** Both failure branches reproduced with the actual script in jsdom; both displayed `Copied`.
+
+### BUG-037 : P3: Website menu's accessible label stays “Close menu” after closing
+
+- **Evidence:** `site/script.js:37-49` removes the open class and resets `aria-expanded` when a link is activated or Escape is pressed, but only the toggle-button handler updates `aria-label`.
+- **Trigger/impact:** Open the mobile menu and close it through a link or Escape. The closed menu's button announces “Close menu,” contradicting its collapsed state.
+- **Improvement/verification:** Centralize the open/closed state update so CSS state, expanded state, label, and focus stay consistent across all close paths.
+- **Status:** Link-close branch reproduced in jsdom: `aria-expanded="false"` alongside `aria-label="Close menu"`; Escape shares the same omission.
+
+### BUG-038 : P2: Advertised usage date-range controls are absent
+
+- **Evidence:** `CHANGELOG.md:13` claims a Usage route with date-range controls; `site/index.html:144` advertises date ranges. `src/renderer/routes/UsageRoute.tsx` has only chart/table selection and always calculates over all `snapshot.usage.days`. Its “Selected supplied range” label has no corresponding selector.
+- **Trigger/impact:** Open Usage to inspect a chosen subset or trailing period. No control exists to choose a date range, despite the release description and product specification's range selector mockup.
+- **Improvement/verification:** Either provide the documented range controls with honest coverage semantics or correct the shipped scope claims. Verify that chart, table, heatmap, statistics, and coverage use the same chosen range.
+- **Status:** Confirmed source/UI scope mismatch; not a request to implement it in this review.
+
+### BUG-039 : P2: Searching after a Learn deep link steals focus after each matching keystroke
+
+- **Evidence:** `src/renderer/routes/LearnRoute.tsx:141-160` focuses the deep-linked article in an effect depending on both `focusEntryId` and `filtered`. Typing changes `filtered`.
+- **Trigger/impact:** Follow `#learn/tokens-vs-quota`, focus Search explanations, and type `t`. The matching article takes focus immediately, interrupting further typing. Repeated matching queries repeat the focus move.
+- **Improvement/verification:** Move focus only for a navigation intent, not ordinary filtering; define fallback behavior when a new deep link is hidden by an existing query. Test uninterrupted multi-character search after a deep link.
+- **Status:** Reproduced by rendering the actual component with Testing Library/jsdom; active element became `ARTICLE` with `data-learn-entry="tokens-vs-quota"` after the first character.
+
+### BUG-040 : P3: Learn navigation forces smooth scrolling despite reduced-motion preferences
+
+- **Evidence:** `src/renderer/routes/LearnRoute.tsx:153` explicitly passes `behavior: 'smooth'` to `scrollIntoView`. The component receives neither motion preferences nor an effective reduced-motion flag.
+- **Trigger/impact:** Enable reduced motion and follow a contextual Learn link. Navigation still requests animated scrolling; CSS animation/transition overrides do not change this explicit JavaScript scroll request.
+- **Improvement/verification:** Resolve effective motion preference for navigation and choose immediate scrolling when reduced motion is active. Test both explicit reduced mode and system preference.
+- **Status:** Code-supported accessibility defect; actual compositor animation not observed in this review.
+
+### IMP-008 : P3: Give credit rows stable unique keys and preserve reset-only control details
+
+- **Evidence:** `src/renderer/routes/CreditsRoute.tsx` keys rows by title and expiry, which are not unique identifiers in its schema. It renders the spending detail panel only when limit or used amount exists, even if a reset timestamp is available.
+- **Impact:** Repeated title/expiry pairs can collide during reconciliation, and a valid reset-only spending control never exposes its reset time.
+- **Improvement/verification:** Define stable row identity without exposing sensitive identifiers and render each available control field independently. Test duplicate-looking rows and a control carrying only `resetsAt`.
+- **Status:** UI robustness/completeness improvement based on accepted input shapes.
+
+### IMP-009 : P3: Update release evidence indexing and make website claims match implemented behavior
+
+- **Evidence:** README's evidence link still targets 0.4.0 and promises a separate report per later executable version. Checked-in report directories stop at 0.5.0, whose report contains some later build records; no dedicated 1.0.0 report exists. Website/release copy also advertises completed range controls and clear-data deletion, contradicted by BUG-038 and BUG-028.
+- **Impact:** Reviewers cannot follow the stated per-version evidence convention to the released version, and users read stronger behavior claims than the implementation supports.
+- **Improvement/verification:** Provide one accurate evidence index for the released commit, distinguish consolidated historical evidence from dedicated reports, and audit feature copy against actual controls. Carry forward the already documented open environment/install/Orca/arm64 validation limitations rather than claiming those were resolved here.
+- **Status:** Documentation consistency improvement; does not dispute that historical commands may have run.
