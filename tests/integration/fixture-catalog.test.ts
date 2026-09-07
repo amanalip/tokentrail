@@ -216,7 +216,7 @@ describe('required fixture catalog coverage', () => {
     }
   });
 
-  it('covers fourteen complete dates with one gap, one zero, and one rejected duplicate', async () => {
+  it('excludes ambiguous dates while preserving reported zeros and gaps', async () => {
     // Start one isolated usage-gaps fixture.
     const client = createFixtureClient('usage-gaps');
 
@@ -225,13 +225,13 @@ describe('required fixture catalog coverage', () => {
       const result = await readFullFixture(client);
       const { usage, rejectedRecordCount } = normalizeUsageData(result.usage);
 
-      // Fifteen distinct dates were accepted (fourteen complete plus the reported zero).
-      expect(usage.days).toHaveLength(15);
-      expect(rejectedRecordCount).toBe(1);
+      // Both records for August 2 are ambiguous and excluded.
+      expect(usage.days).toHaveLength(14);
+      expect(rejectedRecordCount).toBe(2);
 
       // The reported zero stays visible and the gap is listed as missing, never filled.
       expect(usage.days.some((day) => day.date === '2026-08-04' && day.tokens === '0')).toBe(true);
-      expect(usage.coverage.missingDates).toEqual(['2026-08-08']);
+      expect(usage.coverage.missingDates).toEqual(['2026-08-02', '2026-08-08']);
       expect(usage.state).toBe('partial');
     } finally {
       // Stop the exact fixture process.

@@ -575,7 +575,8 @@ function CalendarHeatmap({ days }: { days: OverviewSnapshot['usage']['days'] }) 
   // Enumerate every calendar key in the supplied span so missing cells render explicitly.
   const start = parseCalendarDateKey(first)!;
   const end = parseCalendarDateKey(last)!;
-  const keys = enumerateConsecutiveDateKeys(end, calendarDayDifference(end, start) + 1);
+  const spanLength = calendarDayDifference(end, start) + 1;
+  const keys = enumerateConsecutiveDateKeys(end, Math.min(spanLength, 366));
 
   // Classify each cell into the closed visual states.
   const cells = keys.map((key) => {
@@ -588,30 +589,35 @@ function CalendarHeatmap({ days }: { days: OverviewSnapshot['usage']['days'] }) 
 
   // Render the grid with per-cell accessible labels that never confuse zero with missing.
   return (
-    <div className="heatmap-grid" role="list" aria-label="Calendar heatmap of daily activity">
-      {cells.map((cell) => (
-        <div
-          key={cell.key}
-          role="listitem"
-          className={`heatmap-cell heatmap-cell--${cell.state}`}
-          title={`${formatDateKey(cell.key)}: ${
-            cell.state === 'missing'
-              ? 'missing date, activity unknown'
-              : cell.state === 'zero'
-                ? 'reported zero'
-                : `${formatCounter(cell.value)} tokens`
-          }`}
-        >
-          <span className="visually-hidden">
-            {formatDateKey(cell.key)}:{' '}
-            {cell.state === 'missing'
-              ? 'missing date, activity unknown'
-              : cell.state === 'zero'
-                ? 'reported zero'
-                : `${formatCounter(cell.value)} tokens`}
-          </span>
-        </div>
-      ))}
-    </div>
+    <>
+      {spanLength > 366 && (
+        <p>Heatmap shows the latest 366 calendar dates in the supplied range.</p>
+      )}
+      <div className="heatmap-grid" role="list" aria-label="Calendar heatmap of daily activity">
+        {cells.map((cell) => (
+          <div
+            key={cell.key}
+            role="listitem"
+            className={`heatmap-cell heatmap-cell--${cell.state}`}
+            title={`${formatDateKey(cell.key)}: ${
+              cell.state === 'missing'
+                ? 'missing date, activity unknown'
+                : cell.state === 'zero'
+                  ? 'reported zero'
+                  : `${formatCounter(cell.value)} tokens`
+            }`}
+          >
+            <span className="visually-hidden">
+              {formatDateKey(cell.key)}:{' '}
+              {cell.state === 'missing'
+                ? 'missing date, activity unknown'
+                : cell.state === 'zero'
+                  ? 'reported zero'
+                  : `${formatCounter(cell.value)} tokens`}
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

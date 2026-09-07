@@ -1,3 +1,4 @@
+import { computePeriodComparison } from '../../shared/domain/usage-calculations';
 // Import Vitest assertions and grouping helpers.
 import { describe, expect, it } from 'vitest';
 
@@ -32,11 +33,10 @@ describe('normalizeUsageData', () => {
 
     const { usage, rejectedRecordCount } = normalizeUsageData(result);
 
-    // Exactly four records were rejected: duplicate, impossible date, negative, fractional.
-    expect(rejectedRecordCount).toBe(4);
-    expect(usage.days.map((day) => day.date)).toEqual(['2026-08-12', '2026-08-13']);
-    expect(usage.days[1]?.tokens).toBe('124500');
-    expect(usage.coverage.rejectedRecordCount).toBe(4);
+    // Both ambiguous records, the impossible date, negative, and fractional counters are rejected.
+    expect(rejectedRecordCount).toBe(5);
+    expect(usage.days.map((day) => day.date)).toEqual(['2026-08-12']);
+    expect(usage.coverage.rejectedRecordCount).toBe(5);
     expect(usage.state).toBe('partial');
   });
 
@@ -53,6 +53,7 @@ describe('normalizeUsageData', () => {
     // August 13 is missing; August 12 is a supplied zero. Both stay distinguishable.
     expect(usage.coverage.reportedZeroCount).toBe(1);
     expect(usage.coverage.missingDates).toEqual(['2026-08-13']);
+    expect(usage.state).toBe('partial');
   });
 
   it('keeps huge counters exact as strings beyond safe integer range', () => {
@@ -214,4 +215,80 @@ describe('normalizeCreditsData', () => {
     );
     expect(credits.resetCreditDetails.map((row) => row.state)).toEqual(['expired', 'available']);
   });
+});
+
+it.each([undefined, null, {}])(
+  'preserves standalone spending-control reached with %j control',
+  (individualLimit) => {
+    const input = rateLimitsReadResultSchema.parse({
+      rateLimits: {
+        limitId: 'a',
+        limitName: null,
+        primary: null,
+        secondary: null,
+        planType: null,
+        rateLimitReachedType: null,
+        spendControlReached: true,
+        individualLimit,
+      },
+      rateLimitsByLimitId: null,
+    });
+    expect(normalizeCreditsData(input, 1).spendingControl?.reached).toBe(true);
+  },
+);
+
+it('skips empty credit fields and retains independent usable fields', () => {
+  const bucket = {
+    limitId: null,
+    limitName: null,
+    primary: null,
+    secondary: null,
+    planType: null,
+    rateLimitReachedType: null,
+  };
+  const input = rateLimitsReadResultSchema.parse({
+    rateLimits: null,
+    rateLimitsByLimitId: {
+      a: { ...bucket, credits: null, spendControlReached: false },
+      b: { ...bucket, credits: { balance: '25' } },
+      c: { ...bucket, individualLimit: { usedAmount: '5' }, spendControlReached: true },
+    },
+  });
+  const credits = normalizeCreditsData(input, 1);
+  expect(credits.balanceAmount).toBe('25');
+  expect(credits.spendingControl).toMatchObject({ usedAmount: '5', reached: true });
+});
+
+it('rejects unrenderable spending reset and credit expiry timestamps', () => {
+  const input = rateLimitsReadResultSchema.parse({
+    rateLimits: {
+      limitId: null,
+      limitName: null,
+      primary: null,
+      secondary: null,
+      planType: null,
+      rateLimitReachedType: null,
+      individualLimit: { usedAmount: '5', resetsAt: Number.MAX_SAFE_INTEGER },
+    },
+    rateLimitsByLimitId: null,
+    rateLimitResetCredits: {
+      availableCount: 1,
+      details: [{ title: 'Credit', expiresAt: Number.MAX_SAFE_INTEGER }],
+    },
+  });
+  const credits = normalizeCreditsData(input, 1);
+  expect(credits.spendingControl?.resetsAtSeconds).toBeNull();
+  expect(credits.resetCreditDetails[0]?.expiresAtSeconds).toBeNull();
+});
+
+it.each([3, 10])('withholds comparisons containing duplicate date %i', (duplicate) => {
+  const buckets = Array.from({ length: 14 }, (_, index) => ({
+    date: `2026-08-${String(index + 1).padStart(2, '0')}`,
+    tokens: '10',
+  }));
+  buckets.push({ date: `2026-08-${String(duplicate).padStart(2, '0')}`, tokens: '99' });
+  const { usage } = normalizeUsageData(
+    accountUsageReadResultSchema.parse({ summary: null, dailyBuckets: buckets }),
+  );
+  expect(computePeriodComparison(usage.days, 7).available).toBe(false);
 });

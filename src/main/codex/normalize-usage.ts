@@ -1,3 +1,4 @@
+import { normalizeUnixSeconds } from '../../shared/domain/unix-time';
 // Import the renderer-safe usage and credits sections produced by this boundary.
 import {
   createUnavailableUsageSection,
@@ -56,8 +57,7 @@ function normalizeDisplayString(value: unknown, maximumLength: number): string |
 /**
  * Normalize the approved aggregate-usage read into the renderer-safe usage section. Invalid records are
  * counted in coverage diagnostics and never silently participate in calculations. Duplicate dates are rejected
- * deterministically by keeping the first supplied record for a key, matching the coverage rule that duplicates
- * make affected comparisons unavailable through their rejection count.
+ * by excluding every record for an ambiguous date, so affected comparisons cannot use an arbitrary value.
  */
 export function normalizeUsageData(usageResult: AccountUsageReadResult | null): {
   readonly usage: UsageSection;
@@ -71,16 +71,11 @@ export function normalizeUsageData(usageResult: AccountUsageReadResult | null): 
   // Validate each bucket independently so one malformed record cannot erase valid neighbors.
   const acceptedDays: UsageDay[] = [];
   const seenDates = new Set<string>();
+  const ambiguousDates = new Set<string>();
   let rejectedRecordCount = 0;
 
   // Walk raw buckets in supplied order while enforcing the renderer's bounded day count.
   for (const bucket of usageResult.dailyBuckets ?? []) {
-    // Stop accepting beyond the contract bound and count every discarded record honestly.
-    if (acceptedDays.length >= 366) {
-      rejectedRecordCount += 1;
-      continue;
-    }
-
     // Validate the calendar key against real calendar semantics before accepting it.
     const parsedDate = parseCalendarDateKey(bucket.date);
     const tokens = normalizeCounterToken(bucket.tokens);
@@ -94,6 +89,7 @@ export function normalizeUsageData(usageResult: AccountUsageReadResult | null): 
 
     // Reject duplicate dates deterministically instead of merging or silently overwriting.
     if (seenDates.has(canonicalKey)) {
+      ambiguousDates.add(canonicalKey);
       rejectedRecordCount += 1;
       continue;
     }
@@ -121,7 +117,10 @@ export function normalizeUsageData(usageResult: AccountUsageReadResult | null): 
     summary === null ? null : normalizeReportedInteger(summary.longestTurnSeconds);
 
   // Sort accepted days chronologically before coverage computation and display.
-  const sortedDays = sortUsageDaysChronologically(acceptedDays);
+  const unambiguousDays = acceptedDays.filter((day) => !ambiguousDates.has(day.date));
+  rejectedRecordCount +=
+    acceptedDays.length - unambiguousDays.length + Math.max(0, unambiguousDays.length - 366);
+  const sortedDays = sortUsageDaysChronologically(unambiguousDays.slice(0, 366));
 
   // Compute the honest coverage record including missing dates inside the supplied span.
   const coverage = computeUsageCoverage(sortedDays, rejectedRecordCount);
@@ -137,7 +136,7 @@ export function normalizeUsageData(usageResult: AccountUsageReadResult | null): 
   const state: UsageSection['state'] =
     !hasBuckets && !hasAnySummary
       ? 'unavailable'
-      : rejectedRecordCount > 0 || !hasBuckets
+      : rejectedRecordCount > 0 || !hasBuckets || coverage.missingDates.length > 0
         ? 'partial'
         : 'ready';
 
@@ -159,13 +158,6 @@ export function normalizeUsageData(usageResult: AccountUsageReadResult | null): 
   };
 }
 
-// Describe the credit-shaped fields one quota snapshot may carry beside its windows.
-interface SnapshotCreditInput {
-  readonly credits?: unknown;
-  readonly individualLimit?: unknown;
-  readonly spendControlReached?: unknown;
-}
-
 // Normalize one optional spending-control object from unknown protocol input.
 function normalizeSpendingControl(input: unknown): CreditsSection['spendingControl'] {
   // Treat absence as absence rather than synthesizing an empty control.
@@ -183,12 +175,7 @@ function normalizeSpendingControl(input: unknown): CreditsSection['spendingContr
       ? record['remainingPercent']
       : null;
   const reached = record['reached'] === true;
-  const resetsCandidate =
-    typeof record['resetsAt'] === 'number' &&
-    Number.isSafeInteger(record['resetsAt']) &&
-    record['resetsAt'] > 0
-      ? record['resetsAt']
-      : null;
+  const resetsCandidate = normalizeUnixSeconds(record['resetsAt']);
 
   // Require at least one usable field before representing a control at all.
   if (
@@ -234,12 +221,7 @@ function normalizeResetCreditDetails(input: unknown): ResetCreditDetail[] {
     const description = normalizeDisplayString(record['description'], 512);
 
     // Accept a positive safe integer expiry or explicit absence; expired classification happens later.
-    const expiresCandidate =
-      typeof record['expiresAt'] === 'number' &&
-      Number.isSafeInteger(record['expiresAt']) &&
-      record['expiresAt'] > 0
-        ? record['expiresAt']
-        : null;
+    const expiresCandidate = normalizeUnixSeconds(record['expiresAt']);
 
     // Skip rows without any displayable content instead of fabricating placeholders.
     if (title === null && description === null && expiresCandidate === null) continue;
@@ -270,39 +252,30 @@ export function normalizeCreditsData(
     ...(rateLimitsResult.rateLimits !== null ? [rateLimitsResult.rateLimits] : []),
   ];
 
-  // Select the first snapshot carrying any credit information so multi-bucket responses stay deterministic.
-  let creditInput: SnapshotCreditInput | null = null;
-  for (const snapshot of snapshots) {
-    if (
-      snapshot !== null &&
-      (snapshot.credits !== undefined ||
-        snapshot.individualLimit !== undefined ||
-        snapshot.spendControlReached !== undefined)
-    ) {
-      creditInput = snapshot;
-      break;
-    }
-  }
-
-  // Interpret the balance field across the tolerated shapes: object, unlimited marker, or display string.
+  // Use the first usable balance and first usable control independently, in source precedence order.
   let balanceUnlimited = false;
   let balanceAmount: string | null = null;
   let spendingControl: CreditsSection['spendingControl'] = null;
-  if (creditInput !== null) {
-    const creditsField = creditInput.credits;
-    if (typeof creditsField === 'string') {
-      balanceAmount = normalizeDisplayString(creditsField, 64);
-    } else if (typeof creditsField === 'object' && creditsField !== null) {
-      const creditsRecord = creditsField as Record<string, unknown>;
-      balanceUnlimited = creditsRecord['unlimited'] === true;
-      balanceAmount = normalizeDisplayString(creditsRecord['balance'], 64);
+  let reached = false;
+  for (const snapshot of snapshots) {
+    if (snapshot === null) continue;
+    if (!balanceUnlimited && balanceAmount === null) {
+      const credits = snapshot.credits;
+      if (typeof credits === 'string') balanceAmount = normalizeDisplayString(credits, 64);
+      else if (typeof credits === 'object' && credits !== null) {
+        const record = credits as Record<string, unknown>;
+        balanceUnlimited = record['unlimited'] === true;
+        balanceAmount = normalizeDisplayString(record['balance'], 64);
+      }
     }
-
-    // Merge the explicit spend-control reached flag with the structured control object.
-    spendingControl = normalizeSpendingControl(creditInput.individualLimit);
-    if (creditInput.spendControlReached === true && spendingControl !== null) {
-      spendingControl = { ...spendingControl, reached: true };
-    }
+    spendingControl ??= normalizeSpendingControl(snapshot.individualLimit);
+    reached ||= snapshot.spendControlReached === true;
+  }
+  if (reached) {
+    spendingControl = {
+      ...(spendingControl ?? normalizeSpendingControl({ reached: true })!),
+      reached: true,
+    };
   }
 
   // Normalize reset credits from either accepted response spellings.

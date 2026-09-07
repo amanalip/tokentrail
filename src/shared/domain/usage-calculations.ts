@@ -86,19 +86,23 @@ export function computeUsageCoverage(
   // Index accepted keys for constant-time membership checks while building the span.
   const acceptedKeys = new Set(days.map((day) => day.date));
 
-  // Enumerate every calendar key in the span and collect the ones the source did not supply.
+  // At most accepted-count + 64 dates are needed to find the first 64 missing keys.
   const spanLength = calendarDayDifference(last, first) + 1;
-  const allSpanKeys = enumerateConsecutiveDateKeys(last, spanLength);
-  const missingKeys = allSpanKeys.filter((key) => !acceptedKeys.has(key));
-
-  // Bound the visible missing list and record truncation honestly instead of hiding gaps.
   const maximumVisibleMissingDates = 64;
+  const scanLength = Math.min(spanLength, acceptedKeys.size + maximumVisibleMissingDates);
+  const scanEnd = new Date(Date.UTC(first.year, first.month - 1, first.day + scanLength - 1));
+  const scanKeys = enumerateConsecutiveDateKeys(
+    { year: scanEnd.getUTCFullYear(), month: scanEnd.getUTCMonth() + 1, day: scanEnd.getUTCDate() },
+    scanLength,
+  );
+  const missingKeys = scanKeys.filter((key) => !acceptedKeys.has(key));
+
   return {
     validDateCount: days.length,
     rejectedRecordCount,
     reportedZeroCount,
     missingDates: missingKeys.slice(0, maximumVisibleMissingDates),
-    missingDatesTruncated: missingKeys.length > maximumVisibleMissingDates,
+    missingDatesTruncated: spanLength - acceptedKeys.size > maximumVisibleMissingDates,
     firstValidDate: days[0]?.date ?? null,
     lastValidDate: days[days.length - 1]?.date ?? null,
   };

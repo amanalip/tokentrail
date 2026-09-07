@@ -1,3 +1,4 @@
+import { normalizeUnixSeconds } from '../shared/domain/unix-time';
 // Import exact bigint formatting helpers for counter display.
 import {
   formatDecimalCounterWithSeparators,
@@ -50,13 +51,13 @@ export function formatResetTime(
   timeFormat: Preferences['timeFormat'] = 'system',
 ): string {
   // Preserve absence honestly.
-  if (timestampSeconds === null) return 'Reset time unavailable';
+  if (normalizeUnixSeconds(timestampSeconds) === null) return 'Reset time unavailable';
 
   // Convert the validated seconds value only at presentation time.
   return buildDateTimeFormat(timeFormat, {
     dateStyle: 'medium',
     timeStyle: 'short',
-  }).format(new Date(timestampSeconds * 1_000));
+  }).format(new Date(timestampSeconds! * 1_000));
 }
 
 // Calculate a conservative reset countdown from the reported timestamp and current local clock.
@@ -98,7 +99,8 @@ export function formatRefreshTime(
   timeFormat: Preferences['timeFormat'] = 'system',
 ): string {
   // Avoid implying a successful refresh before one occurred.
-  if (timestamp === null) return 'Not refreshed yet';
+  if (timestamp === null || !Number.isFinite(new Date(timestamp).getTime()))
+    return 'Not refreshed yet';
 
   // Present the already validated timestamp in the user's locale.
   return buildDateTimeFormat(timeFormat, {

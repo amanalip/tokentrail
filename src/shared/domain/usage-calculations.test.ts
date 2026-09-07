@@ -266,3 +266,10 @@ describe('sortUsageDaysChronologically', () => {
     expect(sorted.map((entry) => entry.date)).toEqual(['2025-12-31', '2026-01-02', '2026-08-13']);
   });
 });
+
+it('bounds sparse coverage across the entire supported calendar', () => {
+  const coverage = computeUsageCoverage([day('1000-01-01', '1'), day('9999-12-31', '2')], 0);
+  expect(coverage.missingDates).toHaveLength(64);
+  expect(coverage.missingDates[0]).toBe('1000-01-02');
+  expect(coverage.missingDatesTruncated).toBe(true);
+});

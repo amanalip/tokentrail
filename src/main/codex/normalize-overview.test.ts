@@ -122,3 +122,42 @@ describe('normalizeOverviewData', () => {
     ).toBe('unavailable');
   });
 });
+
+it('retains quota values when display metadata exceeds public bounds', () => {
+  const account = accountReadResultSchema.parse({
+    account: { type: 'chatgpt', planType: ' '.repeat(70) },
+    requiresOpenaiAuth: true,
+  });
+  const rateLimits = rateLimitsReadResultSchema.parse({
+    rateLimits: {
+      ...createRawQuota(),
+      limitId: 'x'.repeat(129),
+      limitName: 'x'.repeat(129),
+      planType: 'x'.repeat(65),
+    },
+    rateLimitsByLimitId: null,
+  });
+  const snapshot = createSuccessfulOverviewSnapshot(
+    normalizeOverviewData(account, rateLimits),
+    '2026-09-07T12:00:00.000Z',
+  );
+  expect(snapshot.planType).toBeNull();
+  expect(snapshot.quotas[0]?.name).toBe('Quota 1');
+  expect(snapshot.quotas[0]?.windows[0]?.usedPercent.value).toBe(37);
+});
+
+it('rejects reset timestamps outside the JavaScript date range', () => {
+  const account = accountReadResultSchema.parse({
+    account: { type: 'apiKey' },
+    requiresOpenaiAuth: false,
+  });
+  const quota = createRawQuota();
+  quota.primary.resetsAt = Number.MAX_SAFE_INTEGER;
+  const rateLimits = rateLimitsReadResultSchema.parse({
+    rateLimits: quota,
+    rateLimitsByLimitId: null,
+  });
+  expect(
+    normalizeOverviewData(account, rateLimits).quotas[0]?.windows[0]?.resetsAt.value,
+  ).toBeNull();
+});

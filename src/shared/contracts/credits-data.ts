@@ -1,3 +1,4 @@
+import { MAXIMUM_UNIX_SECONDS } from '../domain/unix-time';
 // Import Zod so credit data is runtime-validated at every boundary like the rest of the domain.
 import { z } from 'zod';
 
@@ -28,7 +29,7 @@ export const spendingControlSchema = z
     // Report only whether Codex explicitly reports this control as reached.
     reached: z.boolean(),
     // Preserve a nullable Unix reset timestamp in seconds for the control window.
-    resetsAtSeconds: z.number().int().safe().positive().nullable(),
+    resetsAtSeconds: z.number().int().safe().positive().max(MAXIMUM_UNIX_SECONDS).nullable(),
   })
   .strict();
 
@@ -46,7 +47,7 @@ export const resetCreditDetailSchema = z
     // Keep the backend description bounded and plain-text rendered.
     description: z.string().min(1).max(512),
     // Preserve a nullable future-or-past expiry timestamp; null means no expiry was reported.
-    expiresAtSeconds: z.number().int().safe().positive().nullable(),
+    expiresAtSeconds: z.number().int().safe().positive().max(MAXIMUM_UNIX_SECONDS).nullable(),
     // Carry the closed availability state derived from the reported fields at normalization time.
     state: z.enum(RESET_CREDIT_STATES),
   })

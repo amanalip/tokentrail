@@ -1,3 +1,4 @@
+import { normalizeUnixSeconds } from '../../shared/domain/unix-time';
 // Import the renderer-safe normalized shapes and boundary validator.
 import {
   overviewSnapshotSchema,
@@ -48,7 +49,12 @@ function safeLabel(value: string | null, fallback: string): string {
   const trimmedValue = value?.trim();
 
   // Use the bounded protocol string when meaningful, otherwise use local reviewed copy.
-  return trimmedValue ? trimmedValue : fallback;
+  return trimmedValue && trimmedValue.length <= 128 ? trimmedValue : fallback;
+}
+
+function safePlan(value: string | null): string | null {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length <= 64 ? trimmed : null;
 }
 
 // Normalize one nullable numeric protocol field without converting absence or invalidity into zero.
@@ -79,11 +85,7 @@ function normalizeWindow(
       : null;
 
   // Accept reset time only as a positive safe whole Unix timestamp in seconds.
-  const resetCandidate = finiteNumber(input.resetsAt);
-  const resetsAt =
-    resetCandidate !== null && Number.isSafeInteger(resetCandidate) && resetCandidate > 0
-      ? resetCandidate
-      : null;
+  const resetsAt = normalizeUnixSeconds(input.resetsAt);
 
   // Validate and freeze the normalized window before it can enter the shared snapshot.
   const window: QuotaWindow = Object.freeze({
@@ -160,7 +162,7 @@ function normalizeBucket(
   const bucket: QuotaBucket = Object.freeze({
     id,
     name: safeLabel(input.limitName, `Quota ${fallbackOrdinal}`),
-    planType: input.planType,
+    planType: safePlan(input.planType),
     reached: input.rateLimitReachedType !== null,
     windows,
   });
@@ -208,7 +210,7 @@ export function normalizeOverviewData(
   // Prefer the account plan, then the first safe quota plan, without deriving an account identity.
   const planType =
     accountResult.account?.type === 'chatgpt'
-      ? accountResult.account.planType
+      ? safePlan(accountResult.account.planType)
       : (normalizedBuckets.find(({ bucket }) => bucket.planType !== null)?.bucket.planType ?? null);
 
   // Return an immutable normalized result for the controller to timestamp and classify.
