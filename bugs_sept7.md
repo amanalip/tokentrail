@@ -151,12 +151,12 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 - **Improvement/verification:** Put freshness context in the shared shell or each data route. Test navigation among all data routes with a stale snapshot and retained values.
 - **Status:** Code-supported presentation omission.
 
-### BUG-020 : P2: Overview reset countdowns freeze while the screen is idle
+### BUG-020 : P2: Initial snapshot reads can overwrite a newer pushed snapshot
 
-- **Evidence:** `src/renderer/formatting.ts:63-84` samples `Date.now()` only when called. `src/renderer/routes/OverviewRoute.tsx` renders those strings without subscribing to `useCurrentUnixSeconds` or another display timer.
-- **Trigger/impact:** Leave Overview open without snapshot or preference changes across a reset deadline. The countdown remains at its last rendered value instead of moving to “Reset time passed.”
-- **Improvement/verification:** Drive countdowns from a bounded shared display clock. Advance a fake clock across a reset deadline without sending a snapshot and assert the label changes.
-- **Status:** Code-supported idle-display defect; separate from automatic data refresh.
+- **Evidence:** `src/renderer/hooks.ts:35-46` subscribes first, then unconditionally adopts the eventual `getOverviewSnapshot()` result. There is no revision comparison or guard recording whether a push arrived after the read started.
+- **Trigger/impact:** Delay the initial read's promise, deliver a newer snapshot through the subscription, then resolve the old read. The UI rolls back to older data and can stay there until another update.
+- **Improvement/verification:** Order snapshots by a monotonic revision or ignore an obsolete initial response after a newer event. Test deferred IPC resolution with an intervening pushed snapshot.
+- **Status:** Code-supported ordering risk; deferred-bridge reproduction is a proposed check. This entry replaces a withdrawn countdown finding after confirming that Overview already subscribes to a display timer.
 
 ### BUG-021 : P2: Oversized chart values silently become the same false tooltip value
 
@@ -185,3 +185,68 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 - **Impact:** Users see implementation identifiers and can mistake a reported historical peak for the highest day in the visible range; one available summary field is unused.
 - **Improvement/verification:** Map explanations to readable copy, distinguish reported peak from calculated range peak, and decide whether to expose longest streak. Review with a fixture whose reported peak exceeds every supplied day.
 - **Status:** Improvement opportunity based on rendered source.
+
+## Preferences, diagnostics, and error recovery
+
+### BUG-024 : P2: Rapid edits to different preferences lose earlier changes
+
+- **Evidence:** `src/renderer/hooks.ts:124-126` updates local preferences only after persistence resolves. Settings controls spread the current `preferences` object into each full replacement, for example `SettingsDiagnosticsRoute.tsx:100,118,133`.
+- **Trigger/impact:** With a slow save, choose Dark and immediately choose reduced motion. Both requests use the old preference object; the second replacement restores the old theme. The filesystem write queue serializes stale documents but does not merge their changes.
+- **Improvement/verification:** Serialize edits against the latest intended state or apply optimistic, rollback-aware updates. Test two distinct field edits before resolving the first bridge promise and verify both persist.
+- **Status:** Code-supported lost-update race.
+
+### BUG-025 : P2: Bridge failures are not converted into visible workflow errors
+
+- **Evidence:** `src/renderer/hooks.ts:44-46,60-64,115-117,124-126` lacks rejection handling for load/save/refresh operations. `src/renderer/routes/SettingsDiagnosticsRoute.tsx:36-60` also awaits clear/preview/export without catches, while click handlers discard the promises with `void`.
+- **Trigger/impact:** Deny preference writes, fail a diagnostics preview, or reject IPC during startup. The renderer produces unhandled promise rejections and either remains at defaults/loading or leaves the workflow without a useful failure message. `dialog.showSaveDialog` is outside the catch in `src/main/ipc/application-ipc.ts` as well.
+- **Improvement/verification:** Handle each failure with sanitized user feedback and retry/busy state while preserving the last confirmed state. Mock rejected bridge promises and verify recovery on the next successful attempt.
+- **Status:** Code-supported error-path omission.
+
+### BUG-026 : P2: Concurrent first preference loads can quarantine a valid replacement
+
+- **Evidence:** `src/main/preferences/preference-store.ts:72-94` caches only completed reads and has no shared in-flight load promise. Each failed read independently quarantines the path and enqueues a default save. Renderer startup and diagnostics can both call `load()`.
+- **Trigger/impact:** Two initial reads observe a missing file; one writes defaults (or is followed by a user save) before the other's catch renames the live path. The second load can quarantine a newly valid file and replace it with defaults. Concurrent successful reads can likewise race later saves when updating the cache.
+- **Improvement/verification:** Deduplicate initial load and coordinate it with the write queue. Use a filesystem seam to delay the second read failure until after the first save; ensure only one initialization occurs and later edits survive.
+- **Status:** Code-supported concurrency risk; controlled filesystem reproduction proposed.
+
+### BUG-027 : P2: Read failures are treated as corruption and may overwrite recoverable preferences
+
+- **Evidence:** `src/main/preferences/preference-store.ts:77-94,131-139` uses one catch for read I/O failure, JSON failure, and schema failure, attempts quarantine, ignores any rename failure, then saves defaults.
+- **Trigger/impact:** An existing file cannot be read temporarily but its directory permits replacement. Even though its contents have not been proved corrupt, the load path can replace valid settings with defaults. A failed quarantine does not stop the overwrite.
+- **Improvement/verification:** Distinguish absence, content corruption, and transient/access errors; preserve files when quarantine fails. Test read failure and failed rename against an existing valid document.
+- **Status:** Code-supported destructive recovery policy.
+
+### BUG-028 : P3: Clear-data copy promises deletion but the store recreates preferences
+
+- **Evidence:** `src/renderer/routes/SettingsDiagnosticsRoute.tsx:198-199` says clearing deletes the preferences document. `src/main/preferences/preference-store.ts:147-172` removes it and immediately writes a new default document; related renderer comments claim it is not recreated.
+- **Trigger/impact:** A user clears application data and still has a preferences file on disk. Actual behavior is reset-to-defaults, not the deletion described in the confirmation.
+- **Improvement/verification:** Align the operation and copy around one explicit contract; if retaining a default file is intended, call the action a reset and describe it accurately. Verify the resulting owned file inventory.
+- **Status:** Confirmed implementation/copy mismatch, not a claim that usage data is persisted.
+
+### BUG-029 : P2: Diagnostics count snapshot phases as separate attempts and miss failures
+
+- **Evidence:** `src/main/diagnostics/health-record.ts:34-57` counts every new `refreshAttemptedAt` and classifies immediately. The controller broadcasts loading or preserved ready state at attempt start, then success with completion time; failures reuse the attempt-start time.
+- **Trigger/impact:** One initial successful refresh can count as two attempts (loading/no-data plus success). A failed refresh after ready can be counted as success at its start, while the stale completion is ignored because its timestamp matches. Diagnostic health totals and last outcome are therefore misleading.
+- **Improvement/verification:** Observe explicit attempt-start/completion events with a stable attempt ID, or classify terminal states separately from start markers. Connect the actual controller to the recorder in tests for startup success, subsequent success, and failure.
+- **Status:** Code-supported producer/consumer mismatch; existing isolated recorder tests do not cover this sequence.
+
+### BUG-030 : P2: Diagnostic capability and discovery claims are fabricated from UI state
+
+- **Evidence:** `src/main/index.ts:223-234` sets discovery to `snapshot.state !== 'unavailable'`, always lists all three reads as supported, always leaves unsupported capabilities empty, and always reports a null Codex version.
+- **Trigger/impact:** Before discovery completes, loading is reported as discovered. A discovered server returning no data is reported as not discovered. A rejected usage method is still declared supported, hiding the exact compatibility problem diagnostics should explain.
+- **Improvement/verification:** Feed observed adapter discovery/handshake/method outcomes into diagnostics; use unknown when not observed. Test startup, missing executable, no-data, and method-not-found separately.
+- **Status:** Confirmed hardcoded/inferred diagnostic facts.
+
+### IMP-002 : P2: Tighten IPC authorization to the active application window and runtime mode
+
+- **Evidence:** `src/main/security/ipc-sender.ts:27-40` accepts both production and development roots unconditionally. IPC installers check URL and top-level frame status, but not the owning BrowserWindow/webContents identity or packaged mode.
+- **Impact:** The helper's comment promises a development exception only during unpackaged development, but its implementation is broader. Current navigation restrictions reduce exposure; this review does not establish a reachable external exploit.
+- **Improvement/verification:** Bind handlers to the actual application webContents and approved URL for its runtime mode. Add negative tests for a different top-level webContents and the development origin in packaged mode.
+- **Status:** Defense-in-depth improvement, not a demonstrated authorization bypass.
+
+### IMP-003 : P3: Give clear-data confirmation complete keyboard and busy-state behavior
+
+- **Evidence:** `src/renderer/routes/SettingsDiagnosticsRoute.tsx:194-218` creates an `alertdialog` without focus management, Escape handling, or pending-operation disabling.
+- **Impact:** Keyboard focus can be lost when the initiating button is replaced, and repeated confirmation clicks can enqueue multiple clears while I/O is pending.
+- **Improvement/verification:** Move focus deliberately into the confirmation, restore it on cancel/completion, provide Escape cancellation, and disable repeated submission while clearing. Verify a complete keyboard-only workflow.
+- **Status:** Accessibility/reliability improvement based on component structure; assistive-technology interaction not executed.
