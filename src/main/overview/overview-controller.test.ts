@@ -256,5 +256,55 @@ describe('OverviewController', () => {
     const afterReset = await controller.refresh();
     expect(afterReset.sessionObservation.resetTransitions).toHaveLength(1);
     expect(afterReset.sessionObservation.quotaDeltas).toHaveLength(0);
+    const afterRebase = await controller.refresh();
+    expect(afterRebase.sessionObservation.quotaDeltas).toHaveLength(1);
+    expect(afterRebase.sessionObservation.resetTransitions).toHaveLength(0);
+    expect(afterRebase.sessionObservation.startedAtIso).toBe(
+      afterReset.sessionObservation.startedAtIso,
+    );
+    resetsAt += 600_000;
+    expect((await controller.refresh()).sessionObservation.resetTransitions).toHaveLength(1);
+  });
+  it('coalesces notifications during a read into a follow-up and stops cleanly', async () => {
+    const client = createFakeClient();
+    let notify: (params: unknown) => void = () => undefined;
+    client.onNotification = (_method, listener) => {
+      notify = listener;
+      return () => undefined;
+    };
+    const original = client.request.getMockImplementation()!;
+    let quotaReads = 0;
+    client.request.mockImplementation(async (method, params) => {
+      if (method === 'account/rateLimits/read') quotaReads += 1;
+      if (method === 'account/usage/read' && quotaReads === 1) {
+        const notification = {
+          rateLimits: (
+            createSuccessfulResponses()['account/rateLimits/read'] as { rateLimits: unknown }
+          ).rateLimits,
+        };
+        notify(notification);
+        notify(notification);
+      }
+      return original(method, params);
+    });
+    const controller = new OverviewController({ createClient: () => client });
+    await controller.refresh();
+    await controller.refresh();
+    expect(quotaReads).toBe(2);
+    controller.stop();
+    await controller.refresh();
+    expect(quotaReads).toBe(2);
+  });
+
+  it('starts a fresh observation after explicit sign-out', async () => {
+    const client = createFakeClient();
+    const controller = new OverviewController({ createClient: () => client });
+    await controller.refresh();
+    client.request.mockResolvedValueOnce({ account: null, requiresOpenaiAuth: true });
+    expect((await controller.refresh()).state).toBe('signed-out');
+    const next = await controller.refresh();
+    expect(next.sessionObservation.validSnapshotCount).toBe(1);
+    expect(next.sessionObservation.quotaDeltas).toEqual([]);
+    expect(next.sessionObservation.counterDeltas).toEqual([]);
   });
 });

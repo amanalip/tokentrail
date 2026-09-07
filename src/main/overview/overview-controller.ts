@@ -106,6 +106,8 @@ export class OverviewController {
   // Prevent new lifecycle work after application shutdown begins.
   #isStopped = false;
 
+  #refreshPending = false;
+
   // Construct the controller without starting I/O, allowing IPC to register first.
   public constructor(options: OverviewControllerOptions = {}) {
     this.#createClient = options.createClient ?? (() => new CodexProcessClient());
@@ -151,6 +153,10 @@ export class OverviewController {
     // Start the private refresh and clear its deduplication slot after either outcome.
     this.#inFlightRefresh = this.#performRefresh().finally(() => {
       this.#inFlightRefresh = null;
+      if (this.#refreshPending) {
+        this.#refreshPending = false;
+        void this.refresh();
+      }
     });
 
     // Return the shared in-flight promise.
@@ -166,6 +172,7 @@ export class OverviewController {
 
     // Prevent new refresh work before stopping the process.
     this.#isStopped = true;
+    this.#refreshPending = false;
 
     // Remove the exact notification listener when present.
     this.#removeRateLimitNotification?.();
@@ -209,6 +216,8 @@ export class OverviewController {
 
       // Avoid a quota request when Codex explicitly reports no account.
       if (accountResult.account === null) {
+        this.#sessionBaseline = null;
+        this.#validSnapshotCount = 0;
         const signedOutSnapshot = createSuccessfulOverviewSnapshot(
           normalizeOverviewData(accountResult, {
             rateLimits: null,
@@ -326,6 +335,7 @@ export class OverviewController {
     const client = this.#createClient();
     this.#client = client;
     await client.start();
+    if (this.#isStopped) throw new CodexProcessError('codex-unavailable');
 
     // Treat sparse update notifications as a trigger for a full approved read because merge completeness is
     // uncertain across versions; malformed update input is ignored and cannot mutate the current snapshot.
@@ -333,7 +343,8 @@ export class OverviewController {
       'account/rateLimits/updated',
       (params) => {
         if (rateLimitsUpdatedParamsSchema.safeParse(params).success) {
-          void this.refresh();
+          if (this.#inFlightRefresh !== null) this.#refreshPending = true;
+          else void this.refresh();
         }
       },
     );
@@ -353,7 +364,10 @@ export class OverviewController {
   // Derive the in-memory session observation and advance baselines for this process lifetime only.
   #buildSessionObservation(current: OverviewSnapshot): SessionObservation {
     // Establish the baseline at the first valid snapshot without persisting anything.
-    if (this.#sessionBaseline === null) {
+    if (
+      this.#sessionBaseline === null ||
+      this.#sessionBaseline.accountKind !== current.accountKind
+    ) {
       this.#sessionBaseline = current;
       this.#validSnapshotCount = 1;
       return {
@@ -383,8 +397,12 @@ export class OverviewController {
         ...this.#sessionBaseline,
         quotas: this.#sessionBaseline.quotas.map((bucket) => ({
           ...bucket,
-          windows: bucket.windows.filter(
-            (window) => !transitionedIds.has(`${bucket.id}:${window.kind}`),
+          windows: bucket.windows.map((window) =>
+            transitionedIds.has(`${bucket.id}:${window.kind}`)
+              ? (current.quotas
+                  .find((candidate) => candidate.id === bucket.id)
+                  ?.windows.find((candidate) => candidate.kind === window.kind) ?? window)
+              : window,
           ),
         })),
       });
@@ -405,6 +423,8 @@ export class OverviewController {
 
   // Validate, store, and broadcast one complete snapshot.
   #setSnapshot(snapshot: OverviewSnapshot): void {
+    if (this.#isStopped) return;
+
     // Parse again at the storage boundary so internal refactors cannot introduce extra fields.
     this.#snapshot = overviewSnapshotSchema.parse(snapshot);
 
