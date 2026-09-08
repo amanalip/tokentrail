@@ -8,7 +8,7 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 
 ## Bug fix status
 
-Last reconciled: September 8, 2026. **39 fixed, 1 open, 40 total.**
+Last reconciled: September 8, 2026. **40 fixed, 0 open, 40 total.**
 
 This table tracks current implementation status. The original findings below describe the review baseline; their evidence/status bullets are historical. **Fixed** means a source fix was committed with the verification recorded below and in the fix-progress section, not that every environment or manual workflow has been tested. Existing desktop, packaging, installation, and assistive-technology validation limits still apply.
 
@@ -48,7 +48,7 @@ Update the affected row whenever a bug is worked on: use **Open**, **In progress
 | BUG-030 | P2 | Diagnostic capability and discovery claims are fabricated from UI state | Fixed | `196113c`, `99e34cd`, `5b695a2`, `3fc4d3a` | Unknown, missing, unsupported, and empty-data cases tested; CLI version remains unknown. |
 | BUG-031 | P2 | Development readiness can accept old bundles and launch after shutdown | Fixed | `155e745` | Three isolated startup regressions cover stale bundles, compilation failure, and service exit during renderer readiness. |
 | BUG-032 | P2 | The release-notes parser includes subsequent version sections | Fixed | `9ade471` | Three isolated script integration cases verify section boundaries. |
-| BUG-033 | P2 | Package-content inspection misses files outside app.asar | Open | Pending | Pending: recursive and extracted package-payload inspection. |
+| BUG-033 | P2 | Package-content inspection misses files outside app.asar | Fixed | `df62971` | Nine isolated package tests cover recursive canaries, clean and compressed payloads, Debian control files, AppImage extraction, and extraction failure; existing unpacked runtime passes. Real RPM and native installation remain untested. |
 | BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Fixed | `abeaed7` | Six isolated script tests cover exact hashes, stale and wrong-architecture artifacts, unrelated files, missing formats, tag mismatch, and direct-node npm capture. |
 | BUG-035 | P2 | Negative percentage changes are formatted as malformed decimal strings | Fixed | `10e979f` | Negative whole, fractional, halfway, and rounded-zero regressions. |
 | BUG-036 | P2 | Website copy buttons report success when copying fails or is unavailable | Fixed | `2d737d0` | Confirmed writes alone show success; four script tests cover success, rejection, missing API, and synchronous failure. |
@@ -493,9 +493,11 @@ The review above describes the original baseline. Fixes below are incremental so
 
 - BUG-038: Component regressions cover inclusive bounds, empty and reversed ranges, zero and missing days, refresh persistence, reset, synchronized views, and complete-period comparisons. Fix committed as `5728294`.
 
+- BUG-033: Nine isolated package tests cover recursive canaries, clean and compressed payloads, Debian control files, AppImage extraction, and extraction failure; existing unpacked runtime passes. Real RPM and native installation remain untested. Fix committed as `df62971`.
+
 ### Remaining work at the usage cutoff
 
-Current status: 39 fixed, 1 open. Remaining bug findings: BUG-033. Other improvement opportunities remain outside this six-bug fixing scope. See the BUG-007 fix note for the account-identity limit.
+Current status: 40 fixed, 0 open. Remaining bug findings: none. Other improvement opportunities remain outside this six-bug fixing scope. See the BUG-007 fix note for the account-identity limit.
 
 No version bump, tag, or release was created. Implementation stopped when the next available five-hour usage reading showed 91% used (9% remaining), after the previous check showed 83%. Final verification completed with 275 unit/component tests and 35 integration tests passing, along with formatting, lint, and all TypeScript checks. Production build/bundle budgets and documentation checks also passed. The interruption left BUG-030 and BUG-032 verified but uncommitted; delivery was resumed on September 8 in separate commits. Existing live desktop, packaging, installation, and assistive-technology verification limits from the original review remain; this fixing session does not claim to close those environment coverage gaps.
 
