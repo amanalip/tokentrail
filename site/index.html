@@ -71,7 +71,7 @@
           <a class="btn btn-primary" href="#install">Get Token Trail</a>
           <a class="btn btn-ghost" href="#features">See features</a>
         </div>
-        <p class="hero-note">v1.0.0 · first stable release · verify checksums before running</p>
+        <p class="hero-note">v2.0.0 · 40 audit fixes · release preparation in progress</p>
 
         <!-- Real application screenshot in a window frame -->
         <figure class="hero-art">
@@ -156,7 +156,7 @@
           <article class="feature-card">
             <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="17" r="2"/></svg></span>
             <h3>Settings &amp; Diagnostics</h3>
-            <p>Light/dark/system themes, refresh choices, and a fully previewed redacted diagnostics export. Clear-data wipes your preferences after confirmation.</p>
+            <p>Light/dark/system themes, working automatic refresh intervals, and a fully previewed redacted diagnostics export. Clear-data wipes your preferences after confirmation.</p>
           </article>
         </div>
 
@@ -237,6 +237,20 @@
       </div>
     </section>
 
+    <section id="whats-new" class="section">
+      <div class="container">
+        <h2>What is new in 2.0.0</h2>
+        <p class="section-lede">A reliability release with every September audit finding addressed.</p>
+        <div class="format-grid">
+          <article class="format-card"><h3>Choose your date range</h3><p>Inclusive start and end dates filter the daily chart, table, heatmap, statistics, comparisons, and coverage together. Reset to all supplied dates at any time.</p></article>
+          <article class="format-card"><h3>Refresh and recover reliably</h3><p>Automatic refresh follows your settings. Rapid preference edits save in order, late replies cannot replace newer data, and recoverable preferences survive read failures.</p></article>
+          <article class="format-card"><h3>Trust the displayed values</h3><p>Signed changes, large token tooltips, calendar dates, missing-day coverage, and credit controls now preserve their intended meaning. Stale values are labeled across data screens.</p></article>
+          <article class="format-card"><h3>Clearer support and access</h3><p>Diagnostics describe observed capabilities and completed refreshes. Learn search keeps keyboard focus, reduced motion is respected, and website copy failures have honest feedback.</p></article>
+        </div>
+        <p class="center"><a class="btn btn-ghost" href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Read the full 2.0.0 changelog</a></p>
+      </div>
+    </section>
+
     <!-- ============ Install ============ -->
     <section id="install" class="install section">
       <div class="container">
@@ -288,7 +302,7 @@
           <article class="format-card">
             <h3>Pacman</h3>
             <p class="distro">Arch · CachyOS · Manjaro</p>
-            <div class="code-block"><code>sudo pacman -U tokentrail-*-linux-x86_64.pacman</code><button class="copy-btn" data-copy="sudo pacman -U tokentrail-*-linux-x86_64.pacman" type="button" aria-label="Copy command">Copy</button></div>
+            <div class="code-block"><code>sudo pacman -U tokentrail-2.0.0-linux-x64.pacman</code><button class="copy-btn" data-copy="sudo pacman -U tokentrail-2.0.0-linux-x64.pacman" type="button" aria-label="Copy command">Copy</button></div>
             <p class="hint">Installed via pacman's local-package mode.</p>
           </article>
         </div>
@@ -307,25 +321,20 @@
         <div class="status-inner">
           <h2>Where the project stands</h2>
           <p>
-            Token Trail v1.0.0 was frozen and released on August 22, 2026: the complete
-            read-only scope is implemented and machine-verified across development
-            versions 0.1.0 through 0.5.x, each backed by recorded test reports, and the
-            entire automated validation matrix — unit, integration, end-to-end,
-            accessibility, security, packaged smoke, and performance gates — ran green
-            against the release commit on release day. The tag-driven pipeline turns the
-            v1.0.0 tag into one maintainer-reviewed draft carrying all four package
-            formats for both architectures, merged SHA-256 checksums, per-build
-            provenance, a CycloneDX SBOM, and structured release notes generated from
-            the tagged changelog; publishing that draft is a deliberate maintainer
-            action after review. The changelog, support policy, maintenance plan, and
-            known-limitations record are published with the release. Artifact signing,
-            update deployment, telemetry, and any broader Codex access remain
-            deliberately separate, gated steps rather than silent defaults.
+            Token Trail 2.0.0 resolves all 40 findings from the September audit.
+            It adds working usage date ranges and automatic refresh scheduling,
+            improves Codex process cleanup and preference recovery, and corrects
+            token calculations, credit states, diagnostics, and accessible navigation.
+            Release preparation is in progress. The release will carry four Linux
+            package formats for x64 and arm64, SHA-256 checksums, build provenance,
+            a CycloneDX SBOM, and detailed notes for every audited fix.
+            Usage remains read-only and in memory. Artifacts remain unsigned;
+            arm64 execution and native package installation campaigns remain unverified.
           </p>
           <ul class="status-chips" aria-label="Status summary">
-            <li>v1.0.0: frozen &amp; released</li>
-            <li>Full matrix: green Aug 22</li>
-            <li>Release pipeline: proven</li>
+            <li>v2.0.0: preparing release</li>
+            <li>40 audit findings resolved</li>
+            <li>Extracted package checks</li>
             <li>Signing: gated</li>
             <li>Telemetry: never</li>
           </ul>

@@ -52,7 +52,7 @@
         <p class="eyebrow">Frequently asked questions</p>
         <h1>Answers, straight<br /><span class="accent">from the docs.</span></h1>
         <p class="lede">
-          Answers describe implemented behavior in the released v1.0.0. Each
+          Answers describe implemented behavior in the 2.0.0 release candidate. Each
           one is checked against the source code and the user guides, and
           links to the full documentation where a deeper explanation exists.
         </p>
@@ -108,7 +108,7 @@
         <details class="faq">
           <summary>What is the project's status?</summary>
           <div class="faq-body">
-            <p>Token Trail v1.0.0 was frozen and released on August 22, 2026. The complete read-only product scope is implemented and machine-verified across development versions 0.1.0 through 0.5.x, each with a screenshot-backed test report under <code>tests/test_reports/&lt;version&gt;/</code>, covering unit, integration, accessibility, end-to-end, security, packaged, and performance suites — and the entire automated matrix ran green against the release commit on release day. The tag-driven pipeline assembles maintainer-reviewed drafts with structured notes, merged checksums, build provenance, and a CycloneDX SBOM; publishing each draft is a deliberate maintainer action. Artifacts remain unsigned until an approved signing plan exists.</p>
+            <p>Token Trail 2.0.0 resolves all 40 findings in the September audit, including usage date ranges, automatic refresh, recovery, calculations, diagnostics, and accessibility fixes. Release preparation is in progress. The release includes four Linux formats for x64 and arm64, checksums, provenance, a CycloneDX SBOM, and detailed changelog notes. Artifacts remain unsigned. arm64 execution, native package installation cycles, and human screen-reader validation remain unverified.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/CHANGELOG.md">Changelog</a></p>
           </div>
         </details>
@@ -246,7 +246,7 @@
         <details class="faq">
           <summary>Are the "Source code" links on release pages installable?</summary>
           <div class="faq-body">
-            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-1.0.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm and Pacman use x86_64/aarch64.</p>
+            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-2.0.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm uses x86_64/aarch64; Pacman filenames use x64/aarch64.</p>
           </div>
         </details>
 
@@ -275,7 +275,7 @@
         <details class="faq">
           <summary>How do upgrades work? Will it update itself?</summary>
           <div class="faq-body">
-            <p>v1 performs no update checks by design, so upgrading is always a manual act you decide on. Download the new artifact and its checksums, verify them, close Token Trail, then install over the old version with your package manager (or replace the AppImage file). Package managers replace application files in place; your preferences survive because they live in your user profile, not inside the package. Running copies refuse mid-flight replacement because of single-instance enforcement, which is why closing first matters.</p>
+            <p>Token Trail performs no update checks by design, so upgrading is always a manual act you decide on. Download the new artifact and its checksums, verify them, close Token Trail, then install over the old version with your package manager (or replace the AppImage file). Package managers replace application files in place; your preferences survive because they live in your user profile, not inside the package. Running copies refuse mid-flight replacement because of single-instance enforcement, which is why closing first matters.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/user/upgrading.md">Upgrading guide</a></p>
           </div>
         </details>
@@ -367,7 +367,7 @@
         <details class="faq">
           <summary>Will my history be there tomorrow?</summary>
           <div class="faq-body">
-            <p>No, by design. Changes since Token Trail opened compare the current snapshot against an in-memory baseline taken at startup; those observations disappear when the process exits and are never written to disk. v1 keeps no persistent history at all, which is the deliberate tradeoff behind its strongest privacy property: there is nothing stored to leak, subpoena, or sync.</p>
+            <p>No, by design. Changes since Token Trail opened compare the current snapshot against an in-memory baseline taken at startup; those observations disappear when the process exits and are never written to disk. Token Trail keeps no persistent history at all, which is the deliberate tradeoff behind its strongest privacy property: there is nothing stored to leak, subpoena, or sync.</p>
           </div>
         </details>
 
@@ -388,7 +388,7 @@
         <details class="faq">
           <summary>Is the app usable with a keyboard or a screen reader?</summary>
           <div class="faq-body">
-            <p>Keyboard-only navigation works everywhere; press Tab after loading to reach the skip-to-content link, every route moves focus to its heading after you navigate — including Usage, whose chart loads lazily — and all routes maintain visible focus. Verified structural contracts back this up: one stable landmark inventory with a single heading per route, named regions for signed-out and error guidance, polite status semantics for connection updates, and an accessible name on every interactive control. Automated axe-core audits run against the built application alongside these semantic suites and keyboard-only end-to-end workflows in real Electron sessions. One honest gap from the support record: a full human-operated Orca screen-reader session has not yet been performed, since that requires operator judgment beyond automated checks.</p>
+            <p>Keyboard-only navigation works everywhere; press Tab after loading to reach the skip-to-content link, every route moves focus to its heading after you navigate: including Usage, whose chart loads lazily: and all routes maintain visible focus. Verified structural contracts back this up: one stable landmark inventory with a single heading per route, named regions for signed-out and error guidance, polite status semantics for connection updates, and an accessible name on every interactive control. Automated axe-core audits run against the built application alongside these semantic suites and keyboard-only end-to-end workflows in real Electron sessions. One honest gap from the support record: a full human-operated Orca screen-reader session has not yet been performed, since that requires operator judgment beyond automated checks.</p>
           </div>
         </details>
 
