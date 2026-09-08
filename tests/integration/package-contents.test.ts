@@ -100,9 +100,20 @@ it('inspects Debian data and control archives after extraction', async () => {
     await execute('tar', ['-czf', path.join(root, 'data.tar.gz'), '-C', data, '.']);
     await execute('tar', ['-czf', path.join(root, 'control.tar.gz'), '-C', control, '.']);
     const artifact = path.join(root, 'release/tokentrail-1.0.0-linux-x64.deb');
-    await execute('ar', ['rc', artifact, 'debian-binary', 'control.tar.gz', 'data.tar.gz'], {
-      cwd: root,
-    });
+    // Construct the small ar envelope directly; host ar implementations may load
+    // toolchain plugins even though this fixture contains no object files.
+    const members = [Buffer.from('!<arch>\n')];
+    for (const name of ['debian-binary', 'control.tar.gz', 'data.tar.gz']) {
+      const bytes = await readFile(path.join(root, name));
+      members.push(
+        Buffer.from(
+          `${`${name}/`.padEnd(16)}${'0'.padEnd(12)}${'0'.padEnd(6)}${'0'.padEnd(6)}${'100644'.padEnd(8)}${String(bytes.length).padEnd(10)}\x60\n`,
+        ),
+      );
+      members.push(bytes);
+      if (bytes.length % 2) members.push(Buffer.from('\n'));
+    }
+    await writeFile(artifact, Buffer.concat(members));
     expect((await readFile(artifact)).includes(Buffer.from('AWS_ACCESS_KEY_ID='))).toBe(false);
     await expect(run()).rejects.toMatchObject({
       stderr: expect.stringContaining('control/postinst'),
