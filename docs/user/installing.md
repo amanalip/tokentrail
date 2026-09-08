@@ -41,9 +41,9 @@ Each format labels architectures in its own native vocabulary; the table above m
    sha256sum -c SHA256SUMS.txt --ignore-missing
    ```
 
-   The check must print `OK` for every file you downloaded. A mismatch means the file is not the reviewed build — do not run it.
+   The check must print `OK` for every file you downloaded. A mismatch means the file is not the reviewed build: do not run it.
 
-Artifact names follow `tokentrail-<version>-linux-<arch>.<format>`, for example `tokentrail-0.5.0-linux-amd64.deb`.
+Artifact names follow `tokentrail-<version>-linux-<arch>.<format>`, for example `tokentrail-2.0.0-linux-amd64.deb`.
 
 ## AppImage
 
@@ -85,12 +85,12 @@ sudo zypper install ./tokentrail-<version>-linux-x86_64.rpm
 ## Pacman package (Arch, CachyOS, Manjaro)
 
 ```bash
-sudo pacman -U tokentrail-<version>-linux-x86_64.pacman
+sudo pacman -U tokentrail-<version>-linux-x64.pacman
 ```
 
 ## Packages versus source archives
 
-GitHub also shows "Source code (zip/tar.gz)" links on every release. Those are automatic snapshots of the repository text — they are **not** the application, they do not contain a runnable build, and they have no checksums in `SHA256SUMS.txt`. Install only the `tokentrail-*` artifacts described above.
+GitHub also shows "Source code (zip/tar.gz)" links on every release. Those are automatic snapshots of the repository text: they are **not** the application, they do not contain a runnable build, and they have no checksums in `SHA256SUMS.txt`. Install only the `tokentrail-*` artifacts described above.
 
 ## Supported configurations
 

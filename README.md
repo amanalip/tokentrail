@@ -1,6 +1,6 @@
 # Token Trail
 
-> **Project status:** v1.0.0 frozen and released August 22, 2026; the complete read-only scope is machine-verified with recorded evidence
+> **Project status:** 2.0.0 release preparation: all 40 September audit findings resolved; detailed changes in [CHANGELOG.md](CHANGELOG.md)
 
 ## Contents
 
@@ -14,7 +14,7 @@ Token Trail is a privacy-first desktop dashboard intended to help people underst
 
 The user-facing product name is **Token Trail**. The repository, npm package, executable slug, custom protocol, and code identifiers may use the machine-safe form `tokentrail` or `TokenTrail`; those identifiers must never replace the spaced product name in visible interface copy.
 
-The approved Electron application implements the complete v1 read-only product scope, frozen at version 1.0.0 and released on August 22, 2026. Artifact signing, update deployment, telemetry, and broader Codex access remain separately gated.
+Token Trail 2.0.0 improves the read-only Codex dashboard with working usage date ranges and automatic refresh, safer lifecycle and preferences, accurate calculations, and observed diagnostics. See [the complete changelog](CHANGELOG.md) and [the September audit](bug_audits/bugs_sept7.md) for every fix. Artifact signing, update deployment, telemetry, and broader Codex access remain separately gated.
 
 ## Development
 
