@@ -124,3 +124,18 @@ describe('process ownership and framing', () => {
     child.emit('exit');
   });
 });
+
+it.each([
+  [-32601, 'codex-incompatible'],
+  [-32603, 'codex-unavailable'],
+])('distinguishes method absence from server error %i', async (code, category) => {
+  const { child, client, start } = fixture();
+  await start;
+  const request = client.request('account/usage/read', undefined);
+  child.stdout.write(
+    JSON.stringify({ id: 2, error: { code, message: 'private server details' } }) + '\n',
+  );
+  await expect(request).rejects.toMatchObject({ category });
+  client.stop();
+  child.emit('exit');
+});

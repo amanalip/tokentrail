@@ -451,7 +451,12 @@ export class CodexProcessClient {
 
       // Convert any upstream error object into a stable compatibility category.
       if ('error' in message) {
-        pendingRequest.reject(new CodexProcessError('codex-incompatible'));
+        const error = message['error'];
+        const methodMissing =
+          typeof error === 'object' && error !== null && 'code' in error && error.code === -32601;
+        pendingRequest.reject(
+          new CodexProcessError(methodMissing ? 'codex-incompatible' : 'codex-unavailable'),
+        );
         return;
       }
 
