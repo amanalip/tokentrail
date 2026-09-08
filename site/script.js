@@ -55,20 +55,28 @@
   }
 
   document.querySelectorAll(".copy-btn").forEach(function (button) {
-    button.addEventListener("click", function () {
+    var resetTimer;
+    button.setAttribute("aria-live", "polite");
+    button.addEventListener("click", async function () {
       var text = button.getAttribute("data-copy") || "";
-      function done() {
+      clearTimeout(resetTimer);
+      button.disabled = true;
+      button.classList.remove("copied");
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          throw new Error("Clipboard unavailable");
+        }
+        await navigator.clipboard.writeText(text);
         button.textContent = "Copied";
         button.classList.add("copied");
-        setTimeout(function () {
+        resetTimer = setTimeout(function () {
           button.textContent = "Copy";
           button.classList.remove("copied");
         }, 1600);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, done);
-      } else {
-        done();
+      } catch {
+        button.textContent = "Copy failed — select and copy the command manually";
+      } finally {
+        button.disabled = false;
       }
     });
   });
