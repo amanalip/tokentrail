@@ -211,9 +211,16 @@ async function extractArtifact(artifact, destination) {
   return destination;
 }
 
+const architecture = process.argv[2] ?? 'x64';
+if (!['x64', 'arm64'].includes(architecture) || process.argv.length > 3) {
+  throw new Error('Usage: node scripts/verify-package-contents.mjs [x64|arm64]');
+}
 const releaseDirectory = path.join(repositoryRoot, 'release');
 try {
-  const unpackedDirectory = path.join(releaseDirectory, 'linux-unpacked');
+  const unpackedDirectory = path.join(
+    releaseDirectory,
+    architecture === 'x64' ? 'linux-unpacked' : 'linux-arm64-unpacked',
+  );
   await inspectTree(unpackedDirectory, 'linux-unpacked');
   for (const name of await readdir(releaseDirectory)) {
     if (!/\.(AppImage|deb|rpm|pacman)$/.test(name)) continue;

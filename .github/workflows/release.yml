@@ -34,9 +34,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    name: Verify tagged source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: npm install --global npm@12.0.2
+      - run: npm ci
+      - run: sudo apt-get update && sudo apt-get install --yes libarchive-tools squashfs-tools
+      - run: npm run verify && npm run check:docs
+
   # One distinct build job per architecture keeps provenance unambiguous and lets
   # each architecture be rebuilt independently without relabeling its output.
   build-x64:
+    needs: verify
     name: Build x64 packages
     runs-on: ubuntu-24.04
     environment: release
@@ -65,7 +80,7 @@ jobs:
       # rpmbuild comes from Ubuntu's `rpm` package; the other three formats need no
       # extra host tooling beyond what electron-builder bundles.
       - name: Install rpm packaging tooling
-        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools
+        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools squashfs-tools
 
       # The Vite bundles must exist before packaging because electron-builder archives
       # only reviewed runtime files; then --publish never keeps artifact creation
@@ -77,6 +92,9 @@ jobs:
 
       - name: Build all four package formats for x64
         run: npx electron-builder --linux AppImage deb rpm pacman --x64 --publish never --config electron-builder.config.cjs
+
+      - name: Inspect unpacked and extracted package payloads
+        run: node scripts/verify-package-contents.mjs x64
 
       - name: Generate SHA-256 checksums
         run: |
@@ -106,6 +124,7 @@ jobs:
           retention-days: 14
 
   build-arm64:
+    needs: verify
     name: Build arm64 packages
     runs-on: ubuntu-24.04
     environment: release
@@ -130,7 +149,7 @@ jobs:
         run: npm ci
 
       - name: Install rpm packaging tooling
-        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools
+        run: sudo apt-get update && sudo apt-get install --yes rpm libarchive-tools squashfs-tools
 
       # Cross-building arm64 Linux targets on an x64 runner needs no emulation:
       # no native modules are rebuilt, and electron-builder fetches the matching
@@ -140,6 +159,9 @@ jobs:
 
       - name: Build all four package formats for arm64
         run: npx electron-builder --linux AppImage deb rpm pacman --arm64 --publish never --config electron-builder.config.cjs
+
+      - name: Inspect unpacked and extracted package payloads
+        run: node scripts/verify-package-contents.mjs arm64
 
       - name: Generate SHA-256 checksums
         run: |
