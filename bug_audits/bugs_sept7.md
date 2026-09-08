@@ -8,7 +8,7 @@ Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = f
 
 ## Bug fix status
 
-Last reconciled: September 8, 2026. **37 fixed, 3 open, 40 total.**
+Last reconciled: September 8, 2026. **38 fixed, 2 open, 40 total.**
 
 This table tracks current implementation status. The original findings below describe the review baseline; their evidence/status bullets are historical. **Fixed** means a source fix was committed with the verification recorded below and in the fix-progress section, not that every environment or manual workflow has been tested. Existing desktop, packaging, installation, and assistive-technology validation limits still apply.
 
@@ -49,7 +49,7 @@ Update the affected row whenever a bug is worked on: use **Open**, **In progress
 | BUG-031 | P2 | Development readiness can accept old bundles and launch after shutdown | Fixed | `155e745` | Three isolated startup regressions cover stale bundles, compilation failure, and service exit during renderer readiness. |
 | BUG-032 | P2 | The release-notes parser includes subsequent version sections | Fixed | `9ade471` | Three isolated script integration cases verify section boundaries. |
 | BUG-033 | P2 | Package-content inspection misses files outside app.asar | Open | Pending | Pending: recursive and extracted package-payload inspection. |
-| BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Open | Pending | Pending: exact artifact inventory and explicit npm-version capture. |
+| BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Fixed | `abeaed7` | Six isolated script tests cover exact hashes, stale and wrong-architecture artifacts, unrelated files, missing formats, tag mismatch, and direct-node npm capture. |
 | BUG-035 | P2 | Negative percentage changes are formatted as malformed decimal strings | Fixed | `10e979f` | Negative whole, fractional, halfway, and rounded-zero regressions. |
 | BUG-036 | P2 | Website copy buttons report success when copying fails or is unavailable | Fixed | `2d737d0` | Confirmed writes alone show success; four script tests cover success, rejection, missing API, and synchronous failure. |
 | BUG-037 | P3 | Website menu's accessible label stays “Close menu” after closing | Fixed | `5797011` | Script regression verifies toggle, link, and Escape closes, including Escape focus restoration. |
@@ -489,9 +489,11 @@ The review above describes the original baseline. Fixes below are incremental so
 
 - BUG-031: Three isolated startup regressions cover stale bundles, compilation failure, and service exit during renderer readiness. Fix committed as `155e745`.
 
+- BUG-034: Six isolated script tests cover exact hashes, stale and wrong-architecture artifacts, unrelated files, missing formats, tag mismatch, and direct-node npm capture. Fix committed as `abeaed7`.
+
 ### Remaining work at the usage cutoff
 
-Current status: 37 fixed, 3 open. Remaining bug findings: BUG-033, BUG-034, BUG-038. Other improvement opportunities remain outside this six-bug fixing scope. See the BUG-007 fix note for the account-identity limit.
+Current status: 38 fixed, 2 open. Remaining bug findings: BUG-033, BUG-038. Other improvement opportunities remain outside this six-bug fixing scope. See the BUG-007 fix note for the account-identity limit.
 
 No version bump, tag, or release was created. Implementation stopped when the next available five-hour usage reading showed 91% used (9% remaining), after the previous check showed 83%. Final verification completed with 275 unit/component tests and 35 integration tests passing, along with formatting, lint, and all TypeScript checks. Production build/bundle budgets and documentation checks also passed. The interruption left BUG-030 and BUG-032 verified but uncommitted; delivery was resumed on September 8 in separate commits. Existing live desktop, packaging, installation, and assistive-technology verification limits from the original review remain; this fixing session does not claim to close those environment coverage gaps.
 
