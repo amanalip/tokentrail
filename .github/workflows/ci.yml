@@ -74,6 +74,9 @@ jobs:
       - name: Unit and component tests
         run: npm test
 
+      - name: Install package-payload test extractors
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools squashfs-tools binutils
+
       # Integration tests drive the owned-process Codex transport through the
       # checked-in fixture catalog using Electron's own binary as Node.
       - name: Fixture integration tests

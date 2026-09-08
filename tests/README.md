@@ -9,10 +9,12 @@ This directory separates executable test suites from durable version evidence.
 - `e2e/` — built-content Electron flows driven by synthetic fixtures.
 - `fixtures/` — checked-in account-free Codex app-server scenarios.
 - `helpers/` — bounded launch and cleanup harnesses.
-- `integration/` — real child-process transport and protocol behavior.
+- `integration/` — real child-process transport, protocol behavior, and isolated build/package script regressions.
 - `packaged/` — fused packaged-executable smoke and isolation.
 - `performance/` — packaged startup, CPU, memory, and process measurements.
 - `security/` — renderer capability, navigation, popup, and production CSP tests.
+
+The package-payload integration tests require `bsdtar`, `mksquashfs`, `unsquashfs`, `ar`, and `tar` (Ubuntu packages: `libarchive-tools squashfs-tools binutils tar`). The package inspection script uses `bsdtar` for deb/rpm/Pacman payloads and `unsquashfs` for AppImage payloads, failing closed when extraction is unavailable.
 
 ## Durable reports
 
