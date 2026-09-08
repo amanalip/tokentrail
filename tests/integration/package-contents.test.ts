@@ -135,29 +135,41 @@ it('fails closed when a distributable cannot be extracted', async () => {
   }
 });
 
-it('extracts an embedded AppImage SquashFS without running its executable header', async () => {
-  const { root, runtime, run } = await fixture();
-  try {
-    await writeFile(
-      path.join(runtime, 'resources/canary.txt'),
-      'AWS_ACCESS_KEY_ID=synthetic\n'.repeat(100),
-    );
-    const squashfs = path.join(root, 'payload.squashfs');
-    await execute('mksquashfs', [runtime, squashfs, '-noappend', '-processors', '1', '-quiet']);
-    await rm(path.join(runtime, 'resources/canary.txt'));
-    const artifact = path.join(root, 'release/tokentrail-1.0.0-linux-x64.AppImage');
-    await writeFile(
-      artifact,
-      Buffer.concat([
-        Buffer.from('Not executable; fake hsqs before real superblock\n'),
-        await readFile(squashfs),
-      ]),
-    );
-    await expect(run()).rejects.toMatchObject({ stderr: expect.stringContaining('secret marker') });
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
+it.each(['clean', 'canary'])(
+  'extracts %s AppImage SquashFS without running its executable header',
+  async (mode) => {
+    const { root, runtime, run } = await fixture();
+    try {
+      await mkdir(path.join(runtime, 'usr/lib'), { recursive: true });
+      await writeFile(path.join(runtime, 'usr/lib/libXss.so.1'), 'reviewed library fixture');
+      await writeFile(path.join(runtime, 'resources/package-type'), 'appimage');
+      if (mode === 'canary')
+        await writeFile(
+          path.join(runtime, 'resources/canary.txt'),
+          'AWS_ACCESS_KEY_ID=synthetic\n'.repeat(100),
+        );
+      const squashfs = path.join(root, 'payload.squashfs');
+      await execute('mksquashfs', [runtime, squashfs, '-noappend', '-processors', '1', '-quiet']);
+      await rm(path.join(runtime, 'resources/canary.txt'), { force: true });
+      await rm(path.join(runtime, 'usr'), { recursive: true });
+      const artifact = path.join(root, 'release/tokentrail-1.0.0-linux-x64.AppImage');
+      await writeFile(
+        artifact,
+        Buffer.concat([
+          Buffer.from('Not executable; fake hsqs before real superblock\n'),
+          await readFile(squashfs),
+        ]),
+      );
+      if (mode === 'clean') expect((await run()).stdout).toContain('inspection passed');
+      else
+        await expect(run()).rejects.toMatchObject({
+          stderr: expect.stringContaining('secret marker'),
+        });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+);
 
 it('inspects the arm64 unpacked directory selected by the release job', async () => {
   const { root, runtime } = await fixture();

@@ -119,15 +119,47 @@ async function walk(directory, visit, prefix = '') {
 
 async function inspectRuntime(directory, appImage = false) {
   const required = new Set([...REQUIRED_UNPACKED_ENTRIES, 'resources/app.asar']);
-  const appImageEntries = new Set(['AppRun', '.DirIcon', 'tokentrail.desktop', 'tokentrail.png']);
+  const appImageEntries = new Set([
+    'AppRun',
+    '.DirIcon',
+    'tokentrail.desktop',
+    'tokentrail.png',
+    'usr/lib/libXss.so.1',
+    'usr/lib/libXtst.so.6',
+    'usr/lib/libappindicator.so.1',
+    'usr/lib/libgconf-2.so.4',
+    'usr/lib/libindicator.so.7',
+    'usr/lib/libnotify.so.4',
+    'usr/share/icons/hicolor/512x512/apps/tokentrail.png',
+  ]);
+  const appImageDirectories = new Set([
+    'usr',
+    'usr/lib',
+    'usr/share',
+    'usr/share/icons',
+    'usr/share/icons/hicolor',
+    'usr/share/icons/hicolor/512x512',
+    'usr/share/icons/hicolor/512x512/apps',
+  ]);
   await walk(directory, async (relative, absolute, info) => {
-    const allowed = !relative.includes('/')
-      ? EXPECTED_UNPACKED_ENTRIES.has(relative) || (appImage && appImageEntries.has(relative))
-      : relative.startsWith('locales/')
-        ? LOCALES.has(relative.slice('locales/'.length))
-        : ['resources/app.asar', 'resources/app-update.yml'].includes(relative);
+    const allowed =
+      appImage && (appImageEntries.has(relative) || appImageDirectories.has(relative))
+        ? true
+        : !relative.includes('/')
+          ? EXPECTED_UNPACKED_ENTRIES.has(relative) || (appImage && appImageEntries.has(relative))
+          : relative.startsWith('locales/')
+            ? LOCALES.has(relative.slice('locales/'.length))
+            : [
+                'resources/app.asar',
+                'resources/app-update.yml',
+                'resources/apparmor-profile',
+                'resources/package-type',
+              ].includes(relative);
     if (!allowed) findings.push(`unexpected runtime entry: ${relative}`);
-    if (['locales', 'resources'].includes(relative)) {
+    if (
+      ['locales', 'resources'].includes(relative) ||
+      (appImage && appImageDirectories.has(relative))
+    ) {
       if (!info.isDirectory()) findings.push(`runtime directory required: ${relative}`);
     } else if (
       !info.isFile() &&
