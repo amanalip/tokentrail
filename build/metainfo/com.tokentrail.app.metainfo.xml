@@ -43,6 +43,16 @@
   </categories>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="2.0.0" date="2026-09-08">
+      <description>
+        <p>Reliability and correctness release resolving all 40 September audit findings.</p>
+        <ul>
+          <li>Usage date ranges and working automatic refresh preferences.</li>
+          <li>Safer Codex process cleanup, preference recovery, and accurate diagnostics.</li>
+          <li>Correct token calculations, calendar labels, credits, and accessible navigation.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.3" date="2026-08-22">
       <description>
         <p>Development preview of the read-only Codex usage dashboard.</p>
