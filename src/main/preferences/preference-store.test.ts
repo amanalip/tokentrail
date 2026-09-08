@@ -1,5 +1,5 @@
 // Import Vitest assertions and grouping helpers.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Import the store under test and its filesystem seam.
 import { PreferenceStore, type PreferenceFileSystem } from './preference-store';
@@ -17,7 +17,7 @@ function createMemoryFilesystem(initial: Record<string, string> = {}): Preferenc
     files,
     readFile: async (path) => {
       const content = files.get(path);
-      if (content === undefined) throw new Error('not found');
+      if (content === undefined) throw Object.assign(new Error('not found'), { code: 'ENOENT' });
       return content;
     },
     writeFile: async (path, content) => {
@@ -25,7 +25,7 @@ function createMemoryFilesystem(initial: Record<string, string> = {}): Preferenc
     },
     rename: async (from, to) => {
       const content = files.get(from);
-      if (content === undefined) throw new Error('not found');
+      if (content === undefined) throw Object.assign(new Error('not found'), { code: 'ENOENT' });
       files.delete(from);
       files.set(to, content);
     },
@@ -150,13 +150,71 @@ describe('PreferenceStore', () => {
     });
     const store = new PreferenceStore({ userDataDirectory: '/data', filesystem });
 
-    // Clearing removes exactly the two owned files and repersists defaults.
+    // Clearing deletes the owned files and keeps defaults only in memory.
     const cleared = await store.clear();
     expect(cleared).toEqual(createDefaultPreferences());
     expect(filesystem.files.has('/data/preferences.json.corrupt')).toBe(false);
 
-    // The fresh defaults document exists and unrelated files are untouched.
-    expect(filesystem.files.has('/data/preferences.json')).toBe(true);
+    // No document is recreated, even when the cached defaults are loaded.
+    expect(filesystem.files.has('/data/preferences.json')).toBe(false);
+    expect(await store.load()).toEqual(createDefaultPreferences());
+    expect(filesystem.files.has('/data/preferences.json')).toBe(false);
     expect(filesystem.files.get('/data/unrelated.txt')).toBe('keep me');
   });
 });
+
+it('deduplicates initialization and orders a later save after it', async () => {
+  const filesystem = createMemoryFilesystem();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const readFile = vi.fn(async () => {
+    await gate;
+    throw Object.assign(new Error(), { code: 'ENOENT' });
+  });
+  const store = new PreferenceStore({
+    userDataDirectory: '/data',
+    filesystem: { ...filesystem, readFile },
+  });
+  const first = store.load();
+  const second = store.load();
+  expect(first).toBe(second);
+  const save = store.save({ ...createDefaultPreferences(), theme: 'dark' });
+  release();
+  await Promise.all([first, second, save]);
+  expect(readFile).toHaveBeenCalledTimes(1);
+  expect((await store.load()).theme).toBe('dark');
+  expect(filesystem.files.has('/data/preferences.json.corrupt')).toBe(false);
+});
+
+it.each(['read', 'rename'])(
+  'preserves files on %s failure and permits subsequent recovery',
+  async (stage) => {
+    const original =
+      stage === 'read'
+        ? JSON.stringify({ ...createDefaultPreferences(), theme: 'dark' })
+        : '{invalid';
+    const filesystem = createMemoryFilesystem({ '/data/preferences.json': original });
+    let fail = true;
+    const store = new PreferenceStore({
+      userDataDirectory: '/data',
+      filesystem: {
+        ...filesystem,
+        readFile: async (path) => {
+          if (stage === 'read' && fail) throw new Error('temporary I/O failure');
+          return filesystem.readFile(path);
+        },
+        rename: async (from, to) => {
+          if (stage === 'rename' && fail) throw new Error('permission failure');
+          return filesystem.rename(from, to);
+        },
+      },
+    });
+    await expect(store.load()).rejects.toThrow();
+    expect(filesystem.files.get('/data/preferences.json')).toBe(original);
+    expect(filesystem.files.size).toBe(1);
+    fail = false;
+    expect((await store.load()).theme).toBe(stage === 'read' ? 'dark' : 'system');
+  },
+);

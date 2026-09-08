@@ -1,3 +1,4 @@
+import { preferencesSchema, type Preferences } from '../../shared/contracts/preferences';
 // Import the stable public error category used to classify sanitized failures.
 import type { ApplicationErrorCategory } from '../../shared/contracts/application-error';
 
@@ -108,6 +109,13 @@ export class OverviewController {
 
   #refreshPending = false;
 
+  #refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+  #attemptId = 0;
+  readonly #completionListeners = new Set<
+    (snapshot: OverviewSnapshot, attemptId: number, durationMilliseconds: number) => void
+  >();
+
   // Construct the controller without starting I/O, allowing IPC to register first.
   public constructor(options: OverviewControllerOptions = {}) {
     this.#createClient = options.createClient ?? (() => new CodexProcessClient());
@@ -126,6 +134,15 @@ export class OverviewController {
 
     // Return cleanup that removes only this callback.
     return () => this.#listeners.delete(listener);
+  }
+
+  public onRefreshCompleted(
+    listener: (snapshot: OverviewSnapshot, attemptId: number, durationMilliseconds: number) => void,
+  ): () => void {
+    this.#completionListeners.add(listener);
+    return () => {
+      this.#completionListeners.delete(listener);
+    };
   }
 
   // Begin one deduplicated refresh and return its resulting safe state.
@@ -151,16 +168,37 @@ export class OverviewController {
     }
 
     // Start the private refresh and clear its deduplication slot after either outcome.
-    this.#inFlightRefresh = this.#performRefresh().finally(() => {
-      this.#inFlightRefresh = null;
-      if (this.#refreshPending) {
-        this.#refreshPending = false;
-        void this.refresh();
-      }
-    });
+    const attemptId = ++this.#attemptId;
+    const startedAt = this.#now().getTime();
+    this.#inFlightRefresh = this.#performRefresh()
+      .then((snapshot) => {
+        if (!this.#isStopped) {
+          for (const listener of this.#completionListeners)
+            listener(snapshot, attemptId, this.#now().getTime() - startedAt);
+        }
+        return snapshot;
+      })
+      .finally(() => {
+        this.#inFlightRefresh = null;
+        if (this.#refreshPending) {
+          this.#refreshPending = false;
+          void this.refresh();
+        }
+      });
 
     // Return the shared in-flight promise.
     return this.#inFlightRefresh;
+  }
+
+  // Schedule approved reads in main so minimized renderer throttling cannot disable the preference.
+  public configureAutomaticRefresh(preferences: Preferences): void {
+    const validated = preferencesSchema.parse(preferences);
+    if (this.#refreshTimer !== null) clearInterval(this.#refreshTimer);
+    this.#refreshTimer = null;
+    if (this.#isStopped || !validated.automaticRefreshEnabled) return;
+    this.#refreshTimer = setInterval(() => {
+      void this.refresh();
+    }, validated.refreshIntervalMinutes * 60_000);
   }
 
   // Stop subscriptions, timers, and only the exact process client this controller owns.
@@ -173,6 +211,8 @@ export class OverviewController {
     // Prevent new refresh work before stopping the process.
     this.#isStopped = true;
     this.#refreshPending = false;
+    if (this.#refreshTimer !== null) clearInterval(this.#refreshTimer);
+    this.#refreshTimer = null;
 
     // Remove the exact notification listener when present.
     this.#removeRateLimitNotification?.();
@@ -184,6 +224,7 @@ export class OverviewController {
 
     // Release renderer listeners after the application begins shutdown.
     this.#listeners.clear();
+    this.#completionListeners.clear();
   }
 
   // Perform one complete account and quota refresh inside the privileged boundary.

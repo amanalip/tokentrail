@@ -39,6 +39,8 @@ export class PreferenceStore {
   // Serialize write operations so concurrent saves cannot interleave.
   #writeQueue: Promise<unknown> = Promise.resolve();
 
+  #loading: Promise<Preferences> | null = null;
+
   public constructor(options: {
     readonly userDataDirectory: string;
     readonly filesystem?: PreferenceFileSystem;
@@ -59,98 +61,73 @@ export class PreferenceStore {
     };
   }
 
-  /** Load validated preferences once, quarantining corrupt documents back to defaults. */
-  public async load(): Promise<Preferences> {
-    // Return the cached value when already loaded so repeated IPC reads stay cheap.
-    if (this.#cached !== null) return this.#cached;
-
-    try {
-      // Read the raw document text from disk.
-      const raw = await this.#filesystem.readFile(this.#filePath);
-
-      // Validate strictly; any drift from the schema counts as corruption, not partial truth.
-      this.#cached = preferencesSchema.parse(JSON.parse(raw));
-      return this.#cached;
-    } catch {
-      // Quarantine the unreadable file when it exists so evidence is preserved without trusting it.
-      await this.#quarantineCorruptFile();
-
-      // Reset to reviewed defaults and persist them immediately for observability.
-      this.#cached = createDefaultPreferences();
-      await this.save(this.#cached);
-      return this.#cached;
-    }
+  /** Serialize reads with writes, sharing initialization across concurrent callers. */
+  public load(): Promise<Preferences> {
+    if (this.#loading !== null) return this.#loading;
+    const operation = this.#enqueue(async () => {
+      if (this.#cached !== null) return this.#cached;
+      let raw: string;
+      try {
+        raw = await this.#filesystem.readFile(this.#filePath);
+      } catch (error) {
+        if (
+          typeof error !== 'object' ||
+          error === null ||
+          !('code' in error) ||
+          error.code !== 'ENOENT'
+        )
+          throw error;
+        const defaults = createDefaultPreferences();
+        await this.#persist(defaults);
+        return defaults;
+      }
+      let validated: Preferences;
+      try {
+        validated = preferencesSchema.parse(JSON.parse(raw));
+      } catch {
+        // Only proven invalid content is quarantined. A failed rename must preserve the original.
+        await this.#filesystem.rename(this.#filePath, `${this.#filePath}${CORRUPT_SUFFIX}`);
+        const defaults = createDefaultPreferences();
+        await this.#persist(defaults);
+        return defaults;
+      }
+      this.#cached = validated;
+      return validated;
+    });
+    this.#loading = operation.finally(() => {
+      this.#loading = null;
+    });
+    return this.#loading;
   }
 
   /** Validate and atomically persist one complete preferences document. */
-  public async save(preferences: Preferences): Promise<void> {
-    // Chain onto the write queue so concurrent callers cannot interleave temp-file renames.
-    this.#writeQueue = this.#writeQueue.then(async () => {
-      // Re-validate at the storage boundary so internal callers cannot bypass the contract.
-      const validated = preferencesSchema.parse(preferences);
-
-      // Ensure the parent directory exists before the atomic write sequence.
-      await this.#filesystem.mkdir(dirname(this.#filePath));
-
-      // Write to a temporary sibling then rename for atomicity on local filesystems.
-      const temporaryPath = `${this.#filePath}.tmp`;
-      await this.#filesystem.writeFile(temporaryPath, JSON.stringify(validated, null, 2));
-      await this.#filesystem.rename(temporaryPath, this.#filePath);
-
-      // Update the cache only after a durable successful write.
-      this.#cached = validated;
-    });
-
-    // Propagate the first failure to every waiter while keeping later writes possible.
-    try {
-      await this.#writeQueue;
-    } catch (error) {
-      this.#writeQueue = Promise.resolve();
-      throw error;
-    }
+  public save(preferences: Preferences): Promise<void> {
+    return this.#enqueue(() => this.#persist(preferencesSchema.parse(preferences)));
   }
 
-  // Move an unreadable or invalid document aside so its content remains inspectable offline.
-  async #quarantineCorruptFile(): Promise<void> {
-    try {
-      // Attempt the rename; absence of the file lands here harmlessly.
-      await this.#filesystem.rename(this.#filePath, `${this.#filePath}${CORRUPT_SUFFIX}`);
-    } catch {
-      // A missing file needs no quarantine action.
-    }
+  async #persist(validated: Preferences): Promise<void> {
+    await this.#filesystem.mkdir(dirname(this.#filePath));
+    const temporaryPath = `${this.#filePath}.tmp`;
+    await this.#filesystem.writeFile(temporaryPath, JSON.stringify(validated, null, 2));
+    await this.#filesystem.rename(temporaryPath, this.#filePath);
+    this.#cached = validated;
   }
 
-  /**
-   * Delete only Token Trail-owned files: the preferences document and any quarantined sibling. The store
-   * removes nothing else because it owns nothing else, then resets to reviewed defaults in memory and on disk.
-   */
-  public async clear(): Promise<Preferences> {
-    // Chain behind pending writes so a clear cannot race an in-flight save.
-    const clearOperation = this.#writeQueue.then(async (): Promise<Preferences> => {
-      // Remove the live document and the quarantined sibling; absence lands here harmlessly.
+  // Recover the queue tail without changing the failure observed by the initiating caller.
+  #enqueue<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.#writeQueue.then(operation);
+    this.#writeQueue = result.catch(() => undefined);
+    return result;
+  }
+
+  /** Delete owned preference files and retain defaults in memory until the next explicit save. */
+  public clear(): Promise<Preferences> {
+    return this.#enqueue(async () => {
       await this.#filesystem.removeFile(this.#filePath);
       await this.#filesystem.removeFile(`${this.#filePath}${CORRUPT_SUFFIX}`);
-
-      // Reset to reviewed defaults and persist them directly; this runs inside the queue already,
-      // so calling save() here would deadlock against its own queue entry.
+      await this.#filesystem.removeFile(`${this.#filePath}.tmp`);
       this.#cached = createDefaultPreferences();
-      const validated = preferencesSchema.parse(this.#cached);
-      await this.#filesystem.mkdir(dirname(this.#filePath));
-      const temporaryPath = `${this.#filePath}.tmp`;
-      await this.#filesystem.writeFile(temporaryPath, JSON.stringify(validated, null, 2));
-      await this.#filesystem.rename(temporaryPath, this.#filePath);
-      return validated;
+      return this.#cached;
     });
-
-    // Keep later operations queued behind this clear.
-    this.#writeQueue = clearOperation;
-
-    // Propagate the first failure while keeping later operations possible.
-    try {
-      return await clearOperation;
-    } catch (error) {
-      this.#writeQueue = Promise.resolve();
-      throw error;
-    }
   }
 }

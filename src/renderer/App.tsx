@@ -91,8 +91,14 @@ export function App() {
   const [target, setTarget] = useState<ResolvedRoute>(() => parseRoute(window.location.hash));
 
   // Share one snapshot subscription and one preferences document across all routes.
-  const { snapshot, refresh, isRefreshing } = useOverviewSnapshot();
-  const { preferences, savePreferences, adoptPreferences } = usePreferences();
+  const { snapshot, refresh, isRefreshing, error: snapshotError } = useOverviewSnapshot();
+  const {
+    preferences,
+    savePreferences,
+    adoptPreferences,
+    error: preferenceError,
+    isSaving,
+  } = usePreferences();
 
   // Follow hash changes so keyboard and assistive navigation stay first-class.
   useEffect(() => {
@@ -203,6 +209,15 @@ export function App() {
 
       {/* The negative tab index lets the skip link move focus here without joining Tab order. */}
       <main className="overview" id="overview" tabIndex={-1}>
+        {snapshotError && (
+          <section role="alert">
+            {snapshotError}{' '}
+            <button type="button" onClick={() => void refresh()} disabled={isRefreshing}>
+              Try again
+            </button>
+          </section>
+        )}
+        {preferenceError && <section role="alert">{preferenceError}</section>}
         {snapshot.state === 'stale' && ['windows', 'usage', 'credits'].includes(target.route) && (
           <section className="stale-banner" role="alert">
             The latest refresh failed. Previously reported values remain visible and may be out of
@@ -241,6 +256,7 @@ export function App() {
             preferences={preferences}
             savePreferences={savePreferences}
             adoptPreferences={adoptPreferences}
+            isSaving={isSaving}
           />
         )}
       </main>

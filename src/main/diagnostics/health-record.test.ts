@@ -39,9 +39,9 @@ describe('DiagnosticsHealthRecorder', () => {
     const recorder = new DiagnosticsHealthRecorder();
 
     // One successful read, one replayed broadcast of the same attempt, then one failure.
-    recorder.observeSnapshot(createSnapshot('ready', '2026-08-14T07:00:01.000Z'));
-    recorder.observeSnapshot(createSnapshot('ready', '2026-08-14T07:00:01.000Z'));
-    recorder.observeSnapshot(createSnapshot('stale', '2026-08-14T07:00:02.000Z'));
+    recorder.observeCompletedRefresh(createSnapshot('ready', '2026-08-14T07:00:01.000Z'), 1);
+    recorder.observeCompletedRefresh(createSnapshot('ready', '2026-08-14T07:00:01.000Z'), 1);
+    recorder.observeCompletedRefresh(createSnapshot('stale', '2026-08-14T07:00:02.000Z'), 2);
 
     expect(recorder.toSection()).toMatchObject({
       refreshAttemptCount: 2,
@@ -54,8 +54,8 @@ describe('DiagnosticsHealthRecorder', () => {
 
   it('records signed-out and unsupported reads as no-data rather than failures', () => {
     const recorder = new DiagnosticsHealthRecorder();
-    recorder.observeSnapshot(createSnapshot('signed-out', '2026-08-14T07:00:01.000Z'));
-    recorder.observeSnapshot(createSnapshot('unsupported', '2026-08-14T07:00:02.000Z'));
+    recorder.observeCompletedRefresh(createSnapshot('signed-out', '2026-08-14T07:00:01.000Z'), 1);
+    recorder.observeCompletedRefresh(createSnapshot('unsupported', '2026-08-14T07:00:02.000Z'), 2);
 
     expect(recorder.toSection()).toMatchObject({
       refreshAttemptCount: 2,

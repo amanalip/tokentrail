@@ -16,6 +16,7 @@ export function SettingsDiagnosticsRoute({
   preferences,
   savePreferences,
   adoptPreferences,
+  isSaving = false,
 }: {
   snapshot: OverviewSnapshot;
   preferences: Preferences;
@@ -23,6 +24,7 @@ export function SettingsDiagnosticsRoute({
   savePreferences: (next: Preferences) => Promise<void>;
   // Apply already-validated defaults without persisting, used after the document was deleted.
   adoptPreferences: (next: Preferences) => void;
+  isSaving?: boolean;
 }) {
   // Track which tab is visible; both concern local application state.
   const [tab, setTab] = useState<'preferences' | 'diagnostics'>('preferences');
@@ -33,30 +35,52 @@ export function SettingsDiagnosticsRoute({
 
   // Track the two-step clear-data confirmation so a single click can never delete data.
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const [workflowError, setWorkflowError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   // Clear only Token Trail-owned data after explicit confirmation and adopt returned defaults so
   // the visible interface matches the promised reset without recreating a persisted document.
   const clearOwnedData = async (): Promise<void> => {
-    adoptPreferences(await window.tokenTrail.clearApplicationData());
-    setConfirmingClear(false);
+    if (busy) return;
+    setBusy(true);
+    setWorkflowError(null);
+    try {
+      adoptPreferences(await window.tokenTrail.clearApplicationData());
+      setConfirmingClear(false);
+    } catch {
+      setWorkflowError('Could not clear application data. Try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   // Build a fresh redacted preview before any save is possible.
   const buildPreview = async (): Promise<void> => {
     setExportMessage(null);
-    setPreview(await window.tokenTrail.previewDiagnostics());
+    setWorkflowError(null);
+    try {
+      setPreview(await window.tokenTrail.previewDiagnostics());
+    } catch {
+      setPreview(null);
+      setWorkflowError('Could not preview diagnostics. Try again.');
+    }
   };
 
   // Export exactly the retained previewed document through the native save dialog.
   const exportPreviewed = async (): Promise<void> => {
-    const result = await window.tokenTrail.exportDiagnostics();
-    setExportMessage(
-      result.saved
-        ? 'Diagnostics saved to the location you chose.'
-        : result.errorCategory === 'canceled'
-          ? 'Export canceled.'
-          : 'Export failed. Preview the diagnostics and try again.',
-    );
+    setWorkflowError(null);
+    try {
+      const result = await window.tokenTrail.exportDiagnostics();
+      setExportMessage(
+        result.saved
+          ? 'Diagnostics saved to the location you chose.'
+          : result.errorCategory === 'canceled'
+            ? 'Export canceled.'
+            : 'Export failed. Preview the diagnostics and try again.',
+      );
+    } catch {
+      setWorkflowError('Could not export diagnostics. Try again.');
+    }
   };
 
   // Render the two-tab local state route.
@@ -85,6 +109,7 @@ export function SettingsDiagnosticsRoute({
         </div>
       </header>
 
+      {workflowError && <p role="alert">{workflowError}</p>}
       {tab === 'preferences' ? (
         <>
           <section className="panel" aria-labelledby="appearance-title">
@@ -193,7 +218,11 @@ export function SettingsDiagnosticsRoute({
                   are not touched. This cannot be undone.
                 </p>
                 <div className="header-actions">
-                  <button type="button" onClick={() => void clearOwnedData()}>
+                  <button
+                    type="button"
+                    disabled={busy || isSaving}
+                    onClick={() => void clearOwnedData()}
+                  >
                     Clear data
                   </button>
                   <button type="button" onClick={() => setConfirmingClear(false)}>
@@ -202,7 +231,7 @@ export function SettingsDiagnosticsRoute({
                 </div>
               </div>
             ) : (
-              <button type="button" onClick={() => setConfirmingClear(true)}>
+              <button type="button" disabled={isSaving} onClick={() => setConfirmingClear(true)}>
                 Clear data
               </button>
             )}

@@ -85,20 +85,20 @@ export function installApplicationIpc(services: ApplicationIpcServices): () => v
       return result;
     }
 
-    // Ask the operating system for an explicit user-chosen destination.
-    const outcome = await dialog.showSaveDialog({
-      title: 'Export Token Trail diagnostics',
-      defaultPath: 'token-trail-diagnostics.json',
-      filters: [{ name: 'JSON', extensions: ['json'] }],
-    });
-
-    // Treat a canceled dialog as an explicit non-error outcome.
-    if (outcome.canceled || outcome.filePath === undefined) {
-      const result: DiagnosticsExportResult = { saved: false, errorCategory: 'canceled' };
-      return result;
-    }
-
     try {
+      // Ask the operating system for an explicit user-chosen destination.
+      const outcome = await dialog.showSaveDialog({
+        title: 'Export Token Trail diagnostics',
+        defaultPath: 'token-trail-diagnostics.json',
+        filters: [{ name: 'JSON', extensions: ['json'] }],
+      });
+
+      // Treat a canceled dialog as an explicit non-error outcome.
+      if (outcome.canceled || outcome.filePath === undefined) {
+        const result: DiagnosticsExportResult = { saved: false, errorCategory: 'canceled' };
+        return result;
+      }
+
       // Write only the validated previewed document with restrictive permissions where supported.
       await writeFile(outcome.filePath, JSON.stringify(document, null, 2), {
         encoding: 'utf8',

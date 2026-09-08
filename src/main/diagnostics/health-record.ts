@@ -3,15 +3,10 @@ import type { DiagnosticsHealthSection } from '../../shared/contracts/diagnostic
 // Import the snapshot type whose transitions are the only observed input.
 import type { OverviewSnapshot } from '../../shared/contracts/overview-snapshot';
 
-/**
- * Accumulate sanitized local health counters from snapshot transitions. The recorder observes only
- * already-normalized snapshots: it counts refresh attempts by comparing `refreshAttemptedAt` values and
- * classifies outcomes through the closed snapshot state machine. No timestamp, identifier, path, or raw
- * protocol value is retained, so the recorded document can never become an activity history.
- */
+/** Count only completed controller attempts, identified independently of wall-clock timestamps. */
 export class DiagnosticsHealthRecorder {
   // Retain the last seen attempt marker so repeated renders of one attempt count exactly once.
-  #lastSeenAttemptedAt: string | null = null;
+  #lastSeenAttemptId: number | null = null;
 
   // Keep bounded integer counters for each reviewed outcome family.
   #attemptCount = 0;
@@ -25,14 +20,10 @@ export class DiagnosticsHealthRecorder {
   // Coarsen measured refresh timing into reviewed magnitude buckets; unmeasured stays explicit.
   #lastDurationBucket: DiagnosticsHealthSection['lastRefreshDurationBucket'] = 'not-measured';
 
-  /**
-   * Observe one normalized snapshot. Attempts are recognized only when `refreshAttemptedAt` advances, so
-   * duplicate broadcasts of the same logical snapshot never inflate counters.
-   */
-  observeSnapshot(snapshot: OverviewSnapshot): void {
-    // Ignore replays of an already-counted attempt.
-    if (snapshot.refreshAttemptedAt === this.#lastSeenAttemptedAt) return;
-    this.#lastSeenAttemptedAt = snapshot.refreshAttemptedAt;
+  /** Observe a terminal result once; loading and preserved-data broadcasts are not outcomes. */
+  observeCompletedRefresh(snapshot: OverviewSnapshot, attemptId: number): void {
+    if (this.#lastSeenAttemptId !== null && attemptId <= this.#lastSeenAttemptId) return;
+    this.#lastSeenAttemptId = attemptId;
 
     // Count every newly observed attempt before classifying its outcome family.
     this.#attemptCount += 1;

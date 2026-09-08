@@ -1,3 +1,5 @@
+import { DiagnosticsHealthRecorder } from '../diagnostics/health-record';
+import { createDefaultPreferences } from '../../shared/contracts/preferences';
 // Import Vitest's deterministic assertions and mock helper.
 import { describe, expect, it, vi } from 'vitest';
 
@@ -307,4 +309,57 @@ describe('OverviewController', () => {
     expect(next.sessionObservation.quotaDeltas).toEqual([]);
     expect(next.sessionObservation.counterDeltas).toEqual([]);
   });
+});
+
+it('schedules automatic refresh and updates/disables the interval through shutdown', async () => {
+  vi.useFakeTimers();
+  const client = createFakeClient();
+  const controller = new OverviewController({ createClient: () => client });
+  try {
+    const preferences = { ...createDefaultPreferences(), automaticRefreshEnabled: true };
+    controller.configureAutomaticRefresh(preferences);
+    await vi.advanceTimersByTimeAsync(300_000);
+    expect(client.request).toHaveBeenCalledTimes(3);
+    controller.configureAutomaticRefresh({ ...preferences, refreshIntervalMinutes: 10 });
+    await vi.advanceTimersByTimeAsync(300_000);
+    expect(client.request).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(300_000);
+    expect(client.request).toHaveBeenCalledTimes(6);
+    controller.configureAutomaticRefresh(createDefaultPreferences());
+    await vi.advanceTimersByTimeAsync(600_000);
+    expect(client.request).toHaveBeenCalledTimes(6);
+    controller.configureAutomaticRefresh(preferences);
+    controller.stop();
+    await vi.advanceTimersByTimeAsync(600_000);
+    expect(client.request).toHaveBeenCalledTimes(6);
+    expect(vi.getTimerCount()).toBe(0);
+  } finally {
+    controller.stop();
+    vi.useRealTimers();
+  }
+});
+
+it('records terminal refresh outcomes exactly once even with identical clock times', async () => {
+  const client = createFakeClient();
+  const controller = new OverviewController({
+    createClient: () => client,
+    now: () => new Date('2026-09-07T12:00:00Z'),
+  });
+  const recorder = new DiagnosticsHealthRecorder();
+  controller.onRefreshCompleted((snapshot, id, duration) => {
+    recorder.observeCompletedRefresh(snapshot, id);
+    recorder.observeRefreshDuration(duration);
+  });
+  await controller.refresh();
+  await controller.refresh();
+  client.request.mockRejectedValueOnce(new CodexProcessError('request-timeout'));
+  await controller.refresh();
+  expect(recorder.toSection()).toMatchObject({
+    refreshAttemptCount: 3,
+    refreshSuccessCount: 2,
+    refreshFailureCount: 1,
+    refreshNoDataCount: 0,
+    lastRefreshOutcome: 'failed',
+  });
+  controller.stop();
 });

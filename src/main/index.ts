@@ -180,16 +180,33 @@ if (!hasSingleInstanceLock) {
     installWebContentsPolicy();
 
     // Install purpose-specific IPC before the renderer can request its initial snapshot.
-    removeOverviewIpc = installOverviewIpc(overviewController, (durationMilliseconds) => {
-      // Feed only a coarsened millisecond measurement into the sanitized health record.
-      healthRecorder.observeRefreshDuration(durationMilliseconds);
-    });
+    removeOverviewIpc = installOverviewIpc(overviewController);
+
+    void preferenceStore
+      .load()
+      .then((preferences) => {
+        overviewController.configureAutomaticRefresh(preferences);
+      })
+      .catch(() => {
+        /* The renderer's load path reports a sanitized preference error. */
+      });
 
     // Install preferences and diagnostics handlers backed by the privileged services.
     removeApplicationIpc = installApplicationIpc({
-      loadPreferences: () => preferenceStore.load(),
-      savePreferences: (preferences) => preferenceStore.save(preferences),
-      clearOwnedData: () => preferenceStore.clear(),
+      loadPreferences: async () => {
+        const preferences = await preferenceStore.load();
+        overviewController.configureAutomaticRefresh(preferences);
+        return preferences;
+      },
+      savePreferences: async (preferences) => {
+        await preferenceStore.save(preferences);
+        overviewController.configureAutomaticRefresh(preferences);
+      },
+      clearOwnedData: async () => {
+        const defaults = await preferenceStore.clear();
+        overviewController.configureAutomaticRefresh(defaults);
+        return defaults;
+      },
       buildDiagnosticsPreview: async () =>
         buildDiagnosticsDocument({
           environment: {
@@ -223,9 +240,10 @@ if (!hasSingleInstanceLock) {
         }),
     });
 
-    // Observe snapshot transitions into sanitized health counters before renderer forwarding.
-    overviewController.subscribe((snapshot) => {
-      healthRecorder.observeSnapshot(snapshot);
+    // Count completed reads, including notification and automatic refresh, exactly once.
+    overviewController.onRefreshCompleted((snapshot, attemptId, duration) => {
+      healthRecorder.observeCompletedRefresh(snapshot, attemptId);
+      healthRecorder.observeRefreshDuration(duration);
     });
 
     // Forward only validated normalized snapshot changes to the current approved renderer.
@@ -239,10 +257,7 @@ if (!hasSingleInstanceLock) {
     mainWindow = createMainWindow(developmentUrl);
 
     // Begin the first local read after the secure window and handlers exist, timing it for diagnostics.
-    const startupRefreshStartedAt = Date.now();
-    void overviewController
-      .refresh()
-      .finally(() => healthRecorder.observeRefreshDuration(Date.now() - startupRefreshStartedAt));
+    void overviewController.refresh();
 
     // Recreate the window on platforms that keep an application active after its last window closes.
     app.on('activate', () => {
