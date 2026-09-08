@@ -363,3 +363,51 @@ it('records terminal refresh outcomes exactly once even with identical clock tim
   });
   controller.stop();
 });
+
+it('reports observed capability outcomes and unknown discovery before startup', async () => {
+  const client = createFakeClient();
+  const original = client.request.getMockImplementation()!;
+  client.request.mockImplementation((method, params) =>
+    method === 'account/usage/read'
+      ? Promise.reject(new CodexProcessError('codex-incompatible'))
+      : original(method, params),
+  );
+  const controller = new OverviewController({ createClient: () => client });
+  expect(controller.getConnectionDiagnostics()).toMatchObject({
+    codexDiscovered: null,
+    supportedCapabilities: [],
+    unsupportedCapabilities: [],
+  });
+  await controller.refresh();
+  expect(controller.getConnectionDiagnostics()).toMatchObject({
+    codexDiscovered: true,
+    supportedCapabilities: ['account/read', 'account/rateLimits/read'],
+    unsupportedCapabilities: ['account/usage/read'],
+  });
+  controller.stop();
+
+  const missing = createFakeClient();
+  missing.start.mockRejectedValue(new CodexProcessError('codex-not-found'));
+  const unavailable = new OverviewController({ createClient: () => missing });
+  await unavailable.refresh();
+  expect(unavailable.getConnectionDiagnostics()).toMatchObject({
+    codexDiscovered: false,
+    supportedCapabilities: [],
+  });
+  unavailable.stop();
+});
+
+it('keeps successful discovery when the account reports no quota data', async () => {
+  const client = createFakeClient();
+  client.request.mockImplementation(async (method) =>
+    method === 'account/read'
+      ? createSuccessfulResponses()['account/read']
+      : method === 'account/rateLimits/read'
+        ? { rateLimits: null, rateLimitsByLimitId: null }
+        : { summary: null, dailyBuckets: null },
+  );
+  const controller = new OverviewController({ createClient: () => client });
+  expect((await controller.refresh()).state).toBe('unavailable');
+  expect(controller.getConnectionDiagnostics().codexDiscovered).toBe(true);
+  controller.stop();
+});

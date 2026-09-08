@@ -1,3 +1,4 @@
+import type { DiagnosticsConnectionInput } from '../diagnostics/build-diagnostics';
 import { preferencesSchema, type Preferences } from '../../shared/contracts/preferences';
 // Import the stable public error category used to classify sanitized failures.
 import type { ApplicationErrorCategory } from '../../shared/contracts/application-error';
@@ -45,6 +46,7 @@ import type { SessionObservation } from '../../shared/contracts/session-observat
 export interface OverviewProcessClient {
   // Initialize one connection before reads.
   start(): Promise<void>;
+  getExecutableDiscovered?(): boolean | null;
   // Request only a method from the existing central allowlist.
   request(method: ApprovedCodexRequestMethod, params: unknown): Promise<unknown>;
   // Subscribe only to an independently approved notification.
@@ -112,6 +114,9 @@ export class OverviewController {
   #refreshTimer: ReturnType<typeof setInterval> | null = null;
 
   #attemptId = 0;
+  #codexDiscovered: boolean | null = null;
+  readonly #supportedCapabilities = new Set<ApprovedCodexRequestMethod>();
+  readonly #unsupportedCapabilities = new Set<ApprovedCodexRequestMethod>();
   readonly #completionListeners = new Set<
     (snapshot: OverviewSnapshot, attemptId: number, durationMilliseconds: number) => void
   >();
@@ -120,6 +125,34 @@ export class OverviewController {
   public constructor(options: OverviewControllerOptions = {}) {
     this.#createClient = options.createClient ?? (() => new CodexProcessClient());
     this.#now = options.now ?? (() => new Date());
+  }
+
+  public getConnectionDiagnostics(): DiagnosticsConnectionInput {
+    return {
+      codexDiscovered: this.#client?.getExecutableDiscovered?.() ?? this.#codexDiscovered,
+      codexReportedVersion: null,
+      supportedCapabilities: [...this.#supportedCapabilities],
+      unsupportedCapabilities: [...this.#unsupportedCapabilities],
+    };
+  }
+
+  async #request(
+    client: OverviewProcessClient,
+    method: ApprovedCodexRequestMethod,
+    params: unknown,
+  ): Promise<unknown> {
+    try {
+      const result = await client.request(method, params);
+      this.#supportedCapabilities.add(method);
+      this.#unsupportedCapabilities.delete(method);
+      return result;
+    } catch (error) {
+      if (error instanceof CodexProcessError && error.category === 'codex-incompatible') {
+        this.#unsupportedCapabilities.add(method);
+        this.#supportedCapabilities.delete(method);
+      }
+      throw error;
+    }
   }
 
   // Return the immutable current normalized snapshot without triggering work.
@@ -250,7 +283,9 @@ export class OverviewController {
       const client = await this.#getOrStartClient();
 
       // Request account state without asking Codex to refresh credentials.
-      const accountResultUnknown = await client.request('account/read', { refreshToken: false });
+      const accountResultUnknown = await this.#request(client, 'account/read', {
+        refreshToken: false,
+      });
 
       // Validate and strip the account response before issuing the quota read.
       const accountResult = accountReadResultSchema.parse(accountResultUnknown);
@@ -271,7 +306,11 @@ export class OverviewController {
       }
 
       // Request only the approved current account rate-limit snapshot.
-      const rateLimitsResultUnknown = await client.request('account/rateLimits/read', undefined);
+      const rateLimitsResultUnknown = await this.#request(
+        client,
+        'account/rateLimits/read',
+        undefined,
+      );
 
       // Validate and strip the raw response before normalization.
       const rateLimitsResult = rateLimitsReadResultSchema.parse(rateLimitsResultUnknown);
@@ -280,7 +319,7 @@ export class OverviewController {
       let usageResult: AccountUsageReadResult | null = null;
       let usageReadFailed = false;
       try {
-        const usageResultUnknown = await client.request('account/usage/read', undefined);
+        const usageResultUnknown = await this.#request(client, 'account/usage/read', undefined);
         usageResult = accountUsageReadResultSchema.parse(usageResultUnknown);
       } catch {
         // Keep the usage section explicitly unavailable while retaining valid quota data.
@@ -375,7 +414,18 @@ export class OverviewController {
     // Create and retain one client before starting so shutdown can still own it during initialization.
     const client = this.#createClient();
     this.#client = client;
-    await client.start();
+    this.#supportedCapabilities.clear();
+    this.#unsupportedCapabilities.clear();
+    this.#codexDiscovered = null;
+    try {
+      await client.start();
+      this.#codexDiscovered = true;
+    } catch (error) {
+      this.#codexDiscovered =
+        client.getExecutableDiscovered?.() ??
+        (error instanceof CodexProcessError && error.category === 'codex-not-found' ? false : null);
+      throw error;
+    }
     if (this.#isStopped) throw new CodexProcessError('codex-unavailable');
 
     // Treat sparse update notifications as a trigger for a full approved read because merge completeness is

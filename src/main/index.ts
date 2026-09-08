@@ -223,16 +223,7 @@ if (!hasSingleInstanceLock) {
                   ? 'x11'
                   : 'unknown',
           },
-          connection: {
-            codexDiscovered: overviewController.getSnapshot().state !== 'unavailable',
-            codexReportedVersion: null,
-            supportedCapabilities: [
-              'account/read',
-              'account/rateLimits/read',
-              'account/usage/read',
-            ],
-            unsupportedCapabilities: [],
-          },
+          connection: overviewController.getConnectionDiagnostics(),
           snapshot: overviewController.getSnapshot(),
           preferences: await preferenceStore.load(),
           health: healthRecorder.toSection(),
