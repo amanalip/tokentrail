@@ -1,29 +1,17 @@
 /**
- * Packaged-output inspection gate (implementation plan section 9.2).
- *
- * Responsibility: verify that electron-builder output contains only reviewed files.
- * Trust level: local build tooling; it reads repository and `release/` content but
- * never modifies tracked files or launches processes.
- * Denied behavior: no network access, no writes outside this process's own stdout,
- * and no interpretation of packaged bytes beyond allowlist and secret-marker checks.
- *
- * Three checks run against one built package tree:
- *   1. The unpacked application directory contains exactly the expected Electron
- *      runtime entries plus the `tokentrail` executable — nothing else.
- *   2. The ASAR archive's parsed header lists no development-only paths
- *      (sources, tests, docs, scripts, VCS data) inside the shipped payload.
- *   3. The ASAR bytes and every release artifact are scanned for credential-shaped
- *      markers so an accidentally bundled secret fails loudly instead of shipping.
- *
- * Run after building: `npm run check:package-contents`
+ * Inspect unpacked and extracted Linux payloads recursively, including application resources.
+ * Uses bsdtar for deb/rpm/Pacman and unsquashfs for AppImage; packaged executables are never run.
+ * Extraction is confined to disposable temporary directories. Missing extractors fail the gate.
  */
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { readdir, readFile, lstat, readlink, mkdtemp, mkdir, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { promisify } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Resolve the repository root from this script's checked-in location, never from the launch directory.
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-
+const execute = promisify(execFile);
 /** Every entry currently expected directly under `release/linux-unpacked`. */
 const EXPECTED_UNPACKED_ENTRIES = new Set([
   'chrome_100_percent.pak',
@@ -78,106 +66,185 @@ const SECRET_MARKERS = [
   'AWS_ACCESS_KEY_ID=',
 ];
 
+const LOCALES = new Set(
+  'af am ar bg bn ca cs da de el en-GB en-US es-419 es et fa fi fil fr gu he hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr sv sw ta te th tr uk ur vi zh-CN zh-TW'
+    .split(' ')
+    .map((locale) => `${locale}.pak`),
+);
 const findings = [];
-let checkedAsar = false;
+let checkedAsars = 0;
 let checkedArtifacts = 0;
+let checkedFiles = 0;
 
-// --- Check 1: the unpacked directory holds exactly the reviewed runtime set. ---
-const unpackedDirectory = path.join(repositoryRoot, 'release', 'linux-unpacked');
-try {
-  await stat(unpackedDirectory);
-} catch {
-  console.error('release/linux-unpacked does not exist. Build first: npm run package:dir');
-  process.exit(1);
-}
-
-for (const entry of await readdir(unpackedDirectory)) {
-  if (!EXPECTED_UNPACKED_ENTRIES.has(entry)) {
-    findings.push(`unexpected unpacked entry: ${entry}`);
-  }
-
-  if (REQUIRED_UNPACKED_ENTRIES.has(entry)) {
-    REQUIRED_UNPACKED_ENTRIES.delete(entry);
-  }
-}
-
-for (const missing of REQUIRED_UNPACKED_ENTRIES) {
-  findings.push(`missing Electron license artifact: ${missing}`);
-}
-
-// --- Check 2: parse the ASAR header and reject development paths in the payload list. ---
-// Archive layout: a 16-byte size pickle precedes the JSON header that lists every file.
-const asarPath = path.join(unpackedDirectory, 'resources', 'app.asar');
-const asarBytes = await readFile(asarPath);
-try {
-  const jsonLength = asarBytes.readUInt32LE(12);
-  const headerJson = asarBytes.toString('utf8', 16, 16 + jsonLength);
-  const header = JSON.parse(headerJson);
-
-  // Walk the node tree, accumulating each file's full archive path for exact prefix checks.
-  function collectFilePaths(node, prefix, sink) {
-    for (const [name, child] of Object.entries(node.files ?? {})) {
-      const childPath = `${prefix}${name}`;
-      if (child.files !== undefined) {
-        collectFilePaths(child, `${childPath}/`, sink);
-      } else {
-        sink.push(childPath);
-      }
-    }
-  }
-
-  const archivedPaths = [];
-  collectFilePaths(header, '', archivedPaths);
-
-  for (const archivedPath of archivedPaths) {
-    if (FORBIDDEN_ASAR_PREFIXES.some((prefix) => archivedPath.startsWith(prefix))) {
-      findings.push(`development file packaged into ASAR: ${archivedPath}`);
-    }
-  }
-
-  checkedAsar = true;
-} catch (error) {
-  findings.push(`ASAR header could not be parsed as an archive listing: ${String(error)}`);
-}
-
-// --- Check 3: scan shipped byte streams for credential-shaped markers. ---
 function scanForSecretMarkers(label, bytes) {
-  // Latin1 keeps a byte-for-byte view so ASCII markers are found without decoding cost.
   const text = bytes.toString('latin1');
   for (const marker of SECRET_MARKERS) {
-    if (text.includes(marker)) {
-      findings.push(`secret marker "${marker}" found in ${label}`);
+    if (text.includes(marker)) findings.push(`secret marker "${marker}" found in ${label}`);
+  }
+}
+
+function inspectAsar(label, bytes) {
+  try {
+    const jsonLength = bytes.readUInt32LE(12);
+    if (jsonLength > bytes.length - 16) throw new Error('Truncated header');
+    const header = JSON.parse(bytes.toString('utf8', 16, 16 + jsonLength));
+    if (!header.files || typeof header.files !== 'object') throw new Error('Missing file tree');
+    function visit(node, prefix = '') {
+      for (const [name, child] of Object.entries(node.files ?? {})) {
+        const entry = `${prefix}${name}`;
+        if (FORBIDDEN_ASAR_PREFIXES.some((forbidden) => entry.startsWith(forbidden))) {
+          findings.push(`development file packaged into ASAR: ${label}:${entry}`);
+        }
+        if (child.unpacked) findings.push(`unreviewed unpacked ASAR entry: ${label}:${entry}`);
+        if (child.files) visit(child, `${entry}/`);
+      }
+    }
+    visit(header);
+    checkedAsars += 1;
+  } catch (error) {
+    findings.push(`ASAR header could not be parsed: ${label}: ${String(error)}`);
+  }
+}
+
+/** Never follow payload symlinks into the host filesystem. */
+async function walk(directory, visit, prefix = '') {
+  for (const entry of await readdir(directory)) {
+    const relative = `${prefix}${entry}`;
+    const absolute = path.join(directory, entry);
+    const info = await lstat(absolute);
+    await visit(relative, absolute, info);
+    if (info.isDirectory()) await walk(absolute, visit, `${relative}/`);
+  }
+}
+
+async function inspectRuntime(directory, appImage = false) {
+  const required = new Set([...REQUIRED_UNPACKED_ENTRIES, 'resources/app.asar']);
+  const appImageEntries = new Set(['AppRun', '.DirIcon', 'tokentrail.desktop', 'tokentrail.png']);
+  await walk(directory, async (relative, absolute, info) => {
+    const allowed = !relative.includes('/')
+      ? EXPECTED_UNPACKED_ENTRIES.has(relative) || (appImage && appImageEntries.has(relative))
+      : relative.startsWith('locales/')
+        ? LOCALES.has(relative.slice('locales/'.length))
+        : ['resources/app.asar', 'resources/app-update.yml'].includes(relative);
+    if (!allowed) findings.push(`unexpected runtime entry: ${relative}`);
+    if (['locales', 'resources'].includes(relative)) {
+      if (!info.isDirectory()) findings.push(`runtime directory required: ${relative}`);
+    } else if (
+      !info.isFile() &&
+      !(appImage && appImageEntries.has(relative) && info.isSymbolicLink())
+    ) {
+      findings.push(`runtime regular file required: ${relative}`);
+    }
+    if (info.isFile()) required.delete(relative);
+    void absolute;
+  });
+  for (const missing of required) findings.push(`missing required runtime file: ${missing}`);
+}
+
+async function inspectTree(directory, label, appImage = false) {
+  let asars = 0;
+  await walk(directory, async (relative, absolute, info) => {
+    if (info.isFile()) {
+      const bytes = await readFile(absolute);
+      scanForSecretMarkers(`${label}/${relative}`, bytes);
+      checkedFiles += 1;
+      if (relative === 'resources/app.asar' || relative.endsWith('/resources/app.asar')) {
+        inspectAsar(`${label}/${relative}`, bytes);
+        await inspectRuntime(path.dirname(path.dirname(absolute)), appImage);
+        asars += 1;
+      }
+    } else if (info.isSymbolicLink()) {
+      scanForSecretMarkers(`${label}/${relative} (link)`, Buffer.from(await readlink(absolute)));
+    } else if (!info.isDirectory()) {
+      findings.push(`unexpected special file: ${label}/${relative}`);
+    }
+  });
+  if (asars !== 1) findings.push(`expected one application ASAR in ${label}, found ${asars}`);
+}
+
+async function extractTar(archive, destination) {
+  await mkdir(destination, { recursive: true });
+  await execute('bsdtar', ['--no-same-owner', '-xf', archive, '-C', destination]);
+}
+
+async function extractArtifact(artifact, destination) {
+  if (artifact.endsWith('.AppImage')) {
+    // AppImage embeds SquashFS after its ELF runtime. Locate and validate the superblock
+    // with the extractor, rather than executing the packaged runtime to discover the offset.
+    const bytes = await readFile(artifact);
+    for (
+      let offset = bytes.indexOf('hsqs');
+      offset !== -1;
+      offset = bytes.indexOf('hsqs', offset + 4)
+    ) {
+      try {
+        await execute('unsquashfs', ['-s', '-o', String(offset), artifact]);
+      } catch {
+        continue;
+      }
+      await execute('unsquashfs', [
+        '-no-progress',
+        '-processors',
+        '1',
+        '-o',
+        String(offset),
+        '-d',
+        destination,
+        artifact,
+      ]);
+      return destination;
+    }
+    throw new Error('No readable SquashFS payload found in AppImage');
+  }
+  if (artifact.endsWith('.deb')) {
+    const envelope = `${destination}-deb`;
+    await extractTar(artifact, envelope);
+    const entries = await readdir(envelope);
+    const data = entries.filter((name) => /^data\.tar(?:\.(?:gz|xz|zst|bz2))?$/.test(name));
+    const control = entries.filter((name) => /^control\.tar(?:\.(?:gz|xz|zst|bz2))?$/.test(name));
+    if (data.length !== 1 || control.length !== 1) throw new Error('Invalid deb payload inventory');
+    await extractTar(path.join(envelope, data[0]), path.join(destination, 'data'));
+    await extractTar(path.join(envelope, control[0]), path.join(destination, 'control'));
+    return destination;
+  }
+  await extractTar(artifact, destination);
+  return destination;
+}
+
+const releaseDirectory = path.join(repositoryRoot, 'release');
+try {
+  const unpackedDirectory = path.join(releaseDirectory, 'linux-unpacked');
+  await inspectTree(unpackedDirectory, 'linux-unpacked');
+  for (const name of await readdir(releaseDirectory)) {
+    if (!/\.(AppImage|deb|rpm|pacman)$/.test(name)) continue;
+    const artifact = path.join(releaseDirectory, name);
+    if (!(await lstat(artifact)).isFile()) {
+      findings.push(`artifact must be a regular file: ${name}`);
+      continue;
+    }
+    const temporary = await mkdtemp(path.join(tmpdir(), 'tokentrail-inspect-'));
+    try {
+      const payload = await extractArtifact(artifact, path.join(temporary, 'payload'));
+      await inspectTree(payload, name, name.endsWith('.AppImage'));
+      checkedArtifacts += 1;
+    } catch (error) {
+      findings.push(`could not inspect extracted ${name}: ${String(error)}`);
+    } finally {
+      await rm(temporary, { recursive: true, force: true });
     }
   }
+} catch (error) {
+  findings.push(`package inspection could not complete: ${String(error)}`);
 }
-
-scanForSecretMarkers('app.asar', asarBytes);
-
-for (const artifactName of await readdir(path.join(repositoryRoot, 'release'))) {
-  const artifactPath = path.join(repositoryRoot, 'release', artifactName);
-  if ((await stat(artifactPath)).isDirectory()) {
-    continue;
-  }
-
-  if (/\.(AppImage|deb|rpm|pacman)$/.test(artifactName)) {
-    scanForSecretMarkers(artifactName, await readFile(artifactPath));
-    checkedArtifacts += 1;
-  }
-}
-
-// --- Report honestly: inventory first, then a hard gate on any finding. ---
 console.log(
-  `packaged-contents inspection: ASAR listing ${checkedAsar ? 'parsed' : 'unavailable'}, artifacts scanned: ${checkedArtifacts}`,
+  `packaged-contents inspection: ${checkedAsars} ASAR listings, ${checkedFiles} files, ${checkedArtifacts} extracted artifacts inspected`,
 );
-
 if (findings.length > 0) {
   console.error(`packaged-contents inspection failed with ${findings.length} finding(s):`);
-  for (const finding of findings) {
-    console.error(` - ${finding}`);
-  }
-  process.exit(1);
+  for (const finding of findings) console.error(` - ${finding}`);
+  process.exitCode = 1;
+} else {
+  console.log(
+    'packaged-contents inspection passed: runtime allowlists and recursive extracted-payload marker checks.',
+  );
 }
-
-console.log(
-  'packaged-contents inspection passed: only reviewed runtime files and no secret markers.',
-);
