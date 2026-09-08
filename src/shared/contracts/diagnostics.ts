@@ -30,7 +30,7 @@ export const diagnosticsPlatformSchema = z
 export const diagnosticsConnectionSchema = z
   .object({
     // State whether an executable was discovered without naming its path.
-    codexDiscovered: z.boolean(),
+    codexDiscovered: z.boolean().nullable(),
     // Carry the bounded reported CLI version when initialization supplied one.
     codexReportedVersion: z.string().max(64).nullable(),
     // List supported approved reads by stable capability name.

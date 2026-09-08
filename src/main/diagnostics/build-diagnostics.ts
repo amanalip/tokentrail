@@ -21,7 +21,7 @@ export interface DiagnosticsEnvironmentInput {
 
 // Describe the connection facts observed by the adapter and controller.
 export interface DiagnosticsConnectionInput {
-  readonly codexDiscovered: boolean;
+  readonly codexDiscovered: boolean | null;
   readonly codexReportedVersion: string | null;
   readonly supportedCapabilities: readonly string[];
   readonly unsupportedCapabilities: readonly string[];
