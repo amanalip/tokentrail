@@ -2,8 +2,8 @@
  * Structured draft-release notes generator for the tag-driven release pipeline.
  *
  * Responsibility: compose the user-facing Markdown body of a draft GitHub Release
- * from evidence that already exists — the tagged commit's CHANGELOG.md plus the
- * pipeline's own facts — so draft notes can never drift from, contradict, or
+ * from evidence that already exists: the tagged commit's CHANGELOG.md plus the
+ * pipeline's own facts: so draft notes can never drift from, contradict, or
  * embellish the recorded changelog while still carrying the full structure the
  * implementation plan requires: highlights, security posture, fixes, known
  * limitations, installation links, checksum guidance, and upgrade notes.
@@ -174,10 +174,10 @@ Every file you downloaded must print \`OK\` before you run anything.
 Format-specific steps, prerequisites, and removal instructions live in the user
 guides at this exact tag:
 
-- [Installing](${treeBase}/docs/user/installing.md) — AppImage, deb, rpm, and Pacman paths
-- [Upgrading](${treeBase}/docs/user/upgrading.md) — Token Trail never checks for updates; upgrades are manual downloads
-- [Troubleshooting](${treeBase}/docs/user/troubleshooting.md) — Codex detection, FUSE, desktop integration
-- [Privacy](${treeBase}/docs/user/privacy.md) — what Token Trail reads, holds, and never sends
+- [Installing](${treeBase}/docs/user/installing.md): AppImage, deb, rpm, and Pacman paths
+- [Upgrading](${treeBase}/docs/user/upgrading.md): Token Trail never checks for updates; upgrades are manual downloads
+- [Troubleshooting](${treeBase}/docs/user/troubleshooting.md): Codex detection, FUSE, desktop integration
+- [Privacy](${treeBase}/docs/user/privacy.md): what Token Trail reads, holds, and never sends
 
 ## Known limitations
 
