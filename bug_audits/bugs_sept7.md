@@ -495,11 +495,19 @@ The review above describes the original baseline. Fixes below are incremental so
 
 - BUG-033: Nine isolated package tests cover recursive canaries, clean and compressed payloads, Debian control files, AppImage extraction, and extraction failure; existing unpacked runtime passes. Real RPM and native installation remain untested. Fix committed as `df62971`.
 
-### Remaining work at the usage cutoff
+### Current remaining work
 
 Current status: 40 fixed, 0 open. Remaining bug findings: none. Other improvement opportunities remain outside this six-bug fixing scope. See the BUG-007 fix note for the account-identity limit.
 
-No version bump, tag, or release was created. Implementation stopped when the next available five-hour usage reading showed 91% used (9% remaining), after the previous check showed 83%. Final verification completed with 275 unit/component tests and 35 integration tests passing, along with formatting, lint, and all TypeScript checks. Production build/bundle budgets and documentation checks also passed. The interruption left BUG-030 and BUG-032 verified but uncommitted; delivery was resumed on September 8 in separate commits. Existing live desktop, packaging, installation, and assistive-technology verification limits from the original review remain; this fixing session does not claim to close those environment coverage gaps.
+Earlier fixing-session record: no version bump, tag, or release was created. Implementation stopped when the next available five-hour usage reading showed 91% used (9% remaining), after the previous check showed 83%. Final verification completed with 275 unit/component tests and 35 integration tests passing, along with formatting, lint, and all TypeScript checks. Production build/bundle budgets and documentation checks also passed. The interruption left BUG-030 and BUG-032 verified but uncommitted; delivery was resumed on September 8 in separate commits. Existing live desktop, packaging, installation, and assistive-technology verification limits from the original review remain; this fixing session does not claim to close those environment coverage gaps.
+
+### Final verification of the six remaining fixes
+
+September 8, 2026: BUG-031, BUG-033, BUG-034, BUG-036, BUG-037, and BUG-038 are fixed. No other bug or improvement work was added. `npm run verify` passed with 277 unit/component tests and 58 integration tests, plus formatting, lint, and all five TypeScript projects. The production build passed bundle budgets, and documentation links passed (57 files). Recursive inspection of the existing unpacked runtime passed (74 files); synthetic package tests exercise compressed Pacman, Debian data/control, and embedded AppImage payloads. Real RPM payloads and native installation cycles were not exercised.
+
+Both existing live development tests passed, covering real Vite/Electron startup, CSS hot updates, and the styled unavailable state. The first attempt inherited `ELECTRON_RUN_AS_NODE` and failed to launch Electron as a browser; rerunning with `env -u ELECTRON_RUN_AS_NODE npm run test:development` passed both tests. This was a test-environment adjustment, with no additional application change.
+
+Delivery uses separate source/regression and audit commits for each bug, plus the package-test extractor dependency commit. Website changes are limited to the two listed interaction bugs. Broader website updates and release 2.0.0 remain explicitly deferred at the user's request; no version bump, tag, or release was created.
 
 ### Release and website requirements
 
