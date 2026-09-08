@@ -158,3 +158,18 @@ it('extracts an embedded AppImage SquashFS without running its executable header
     await rm(root, { recursive: true, force: true });
   }
 });
+
+it('inspects the arm64 unpacked directory selected by the release job', async () => {
+  const { root, runtime } = await fixture();
+  try {
+    await cp(runtime, path.join(root, 'release/linux-arm64-unpacked'), { recursive: true });
+    await rm(runtime, { recursive: true });
+    const result = await execute(process.execPath, [
+      path.join(root, 'scripts/verify-package-contents.mjs'),
+      'arm64',
+    ]);
+    expect(result.stdout).toContain('inspection passed');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
