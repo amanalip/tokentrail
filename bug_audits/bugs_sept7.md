@@ -49,7 +49,7 @@ Update the affected row whenever a bug is worked on: use **Open**, **In progress
 | BUG-031 | P2 | Development readiness can accept old bundles and launch after shutdown | Fixed | `155e745` | Three isolated startup regressions cover stale bundles, compilation failure, and service exit during renderer readiness. |
 | BUG-032 | P2 | The release-notes parser includes subsequent version sections | Fixed | `9ade471` | Three isolated script integration cases verify section boundaries. |
 | BUG-033 | P2 | Package-content inspection misses files outside app.asar | Fixed | `df62971` | Nine isolated package tests cover recursive canaries, clean and compressed payloads, Debian control files, AppImage extraction, and extraction failure; existing unpacked runtime passes. Real RPM and native installation remain untested. |
-| BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Fixed | `abeaed7` | Six isolated script tests cover exact hashes, stale and wrong-architecture artifacts, unrelated files, missing formats, tag mismatch, and direct-node npm capture. |
+| BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Fixed | `abeaed7`, `89a80be` | Six isolated script tests cover exact hashes, stale and wrong-architecture artifacts, unrelated files, missing formats, tag mismatch, and direct-node npm capture. |
 | BUG-035 | P2 | Negative percentage changes are formatted as malformed decimal strings | Fixed | `10e979f` | Negative whole, fractional, halfway, and rounded-zero regressions. |
 | BUG-036 | P2 | Website copy buttons report success when copying fails or is unavailable | Fixed | `2d737d0` | Confirmed writes alone show success; four script tests cover success, rejection, missing API, and synchronous failure. |
 | BUG-037 | P3 | Website menu's accessible label stays “Close menu” after closing | Fixed | `5797011` | Script regression verifies toggle, link, and Escape closes, including Escape focus restoration. |
@@ -508,6 +508,10 @@ September 8, 2026: BUG-031, BUG-033, BUG-034, BUG-036, BUG-037, and BUG-038 are 
 Both existing live development tests passed, covering real Vite/Electron startup, CSS hot updates, and the styled unavailable state. The first attempt inherited `ELECTRON_RUN_AS_NODE` and failed to launch Electron as a browser; rerunning with `env -u ELECTRON_RUN_AS_NODE npm run test:development` passed both tests. This was a test-environment adjustment, with no additional application change.
 
 Delivery uses separate source/regression and audit commits for each bug, plus the package-test extractor dependency commit. Website changes are limited to the two listed interaction bugs. Broader website updates and release 2.0.0 remain explicitly deferred at the user's request; no version bump, tag, or release was created.
+
+### Release preparation follow-up
+
+September 8, 2026: release preparation found BUG-034's initial exact inventory used generic architecture suffixes. The corrected inventory matches electron-builder's native artifact filenames for both architectures; seven provenance regressions pass. The Debian canary test now constructs its ar envelope directly after the hosted runner timed out in the host `ar` tool; nine package regressions pass locally. This supersedes the earlier local-only verification limits for these test fixtures, without claiming the hosted rerun has already passed.
 
 ### Release and website requirements
 
