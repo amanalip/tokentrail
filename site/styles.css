@@ -1146,3 +1146,37 @@ details.faq summary:focus-visible {
     padding-top: 56px;
   }
 }
+
+/* Keep long release filenames and copy feedback usable on narrow screens. */
+p code,
+li code {
+  overflow-wrap: anywhere;
+}
+
+.format-card,
+.code-block,
+.code-block code {
+  min-width: 0;
+}
+
+.format-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 680px) {
+  .format-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .code-block {
+    flex-wrap: wrap;
+  }
+
+  .code-block code {
+    flex-basis: 100%;
+  }
+}
+
+.steps {
+  grid-template-columns: minmax(0, 1fr);
+}
