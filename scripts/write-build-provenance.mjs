@@ -12,8 +12,9 @@
  * Usage: node scripts/write-build-provenance.mjs --arch x64 --tag v0.5.0 \
  *          --commit <sha> --output release/provenance-x64.json
  */
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { readdir, readFile, lstat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -44,34 +45,37 @@ function parseArguments(argv) {
 
 const options = parseArguments(process.argv);
 
-// Hash every distributable produced by this build; a stray or missing artifact is visible here first.
+const manifest = JSON.parse(await readFile(path.join(repositoryRoot, 'package.json'), 'utf8'));
+if (!['x64', 'arm64'].includes(options.arch)) throw new Error('Unsupported architecture.');
+if (options.tag !== `v${manifest.version}`) throw new Error('Tag must match the package version.');
+const expectedNames = ['AppImage', 'deb', 'rpm', 'pacman']
+  .map((extension) => `tokentrail-${manifest.version}-linux-${options.arch}.${extension}`)
+  .sort();
+const actualNames = (await readdir(releaseDirectory))
+  .filter((name) => name.startsWith('tokentrail-') || /\.(AppImage|deb|rpm|pacman)$/.test(name))
+  .sort();
+if (JSON.stringify(actualNames) !== JSON.stringify(expectedNames)) {
+  throw new Error(
+    `Artifact inventory mismatch. Expected: ${expectedNames.join(', ')}; found: ${actualNames.join(', ')}`,
+  );
+}
 const artifacts = [];
-for (const name of (await readdir(releaseDirectory)).sort()) {
-  if (!name.startsWith('tokentrail-')) {
-    continue;
-  }
-
+for (const name of expectedNames) {
   const filePath = path.join(releaseDirectory, name);
-  const fileStat = await stat(filePath);
-  if (!fileStat.isFile()) {
-    continue;
+  const fileStat = await lstat(filePath);
+  if (!fileStat.isFile() || fileStat.size === 0) {
+    throw new Error(`Artifact must be a nonempty regular file: ${name}`);
   }
-
   const digest = createHash('sha256');
   digest.update(await readFile(filePath));
-  artifacts.push({
-    name,
-    bytes: fileStat.size,
-    sha256: digest.digest('hex'),
-  });
+  artifacts.push({ name, bytes: fileStat.size, sha256: digest.digest('hex') });
 }
 
-if (artifacts.length === 0) {
-  throw new Error('no tokentrail-* artifacts found; refusing to write empty provenance');
+// Direct node invocations in CI do not have npm's user-agent environment variable.
+const npmVersion = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim();
+if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(npmVersion)) {
+  throw new Error('Could not determine the installed npm version.');
 }
-
-// The npm user agent looks like "npm/12.0.2 node/v24.18.1 linux x64 workspaces/false".
-const npmUserAgent = process.env['npm_config_user_agent'] ?? '';
 
 /**
  * Assemble the provenance document. Runner identity comes only from GitHub's
@@ -89,7 +93,7 @@ const provenance = {
     runnerArch: process.env['RUNNER_ARCH'] ?? null,
     runnerImage: process.env['ImageOS'] ?? null,
     nodeVersion: process.version,
-    npmVersion: npmUserAgent.split(' ')[0] || null,
+    npmVersion: `npm/${npmVersion}`,
     platform: process.platform,
   },
   artifacts,
