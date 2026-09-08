@@ -6,6 +6,59 @@ This is a documentation-only review. No application fixes are included. Findings
 
 Priorities: **P1** = crash, serious lifecycle/data correctness issue; **P2** = functional/reliability defect; **P3** = smaller correctness or maintainability issue. Verification evidence and coverage are recorded at the end as the review progresses.
 
+## Bug fix status
+
+Last reconciled: September 8, 2026. **34 fixed, 6 open, 40 total.**
+
+This table tracks current implementation status. The original findings below describe the review baseline; their evidence/status bullets are historical. **Fixed** means a source fix was committed with the verification recorded below and in the fix-progress section, not that every environment or manual workflow has been tested. Existing desktop, packaging, installation, and assistive-technology validation limits still apply.
+
+Update the affected row whenever a bug is worked on: use **Open**, **In progress**, **Fixed**, or **Reopened**; record the fix commit and actual verification evidence before marking it Fixed. Keep the totals, reconciliation date, fix-progress notes, and remaining-work list consistent. A reopened bug must be included in the release-blocking open work.
+
+| Bug | Priority | Finding | Status | Fix commit(s) | Verification / remaining work |
+| --- | --- | --- | --- | --- | --- |
+| BUG-001 | P1 | Child stdin errors can escape as uncaught stream errors | Fixed | `fa28ecf` | Sanitized pipe-error rejection; transport regression. |
+| BUG-002 | P1 | Stop during executable discovery can still spawn an unowned child | Fixed | `fa28ecf` | Deferred discovery shutdown and concurrent-start regressions. |
+| BUG-003 | P2 | Shutdown gives up ownership before confirming child termination | Fixed | `fa28ecf` | Owned-child escalation and exit-cancellation regressions. |
+| BUG-004 | P2 | Valid framed messages can exceed the aggregate-buffer check | Fixed | `fa28ecf` | Per-line bounds tested across chunk partitions. |
+| BUG-005 | P2 | Notifications received during refresh do not schedule a follow-up read | Fixed | `e40db5d` | Coalesced follow-up notification-read regression. |
+| BUG-006 | P2 | Quota session deltas disappear permanently after a reset | Fixed | `e40db5d` | Post-reset deltas and repeated-reset regression. |
+| BUG-007 | P2 | Session observations survive an explicit sign-out boundary | Fixed | `e40db5d` | Sign-out resets observations. Same-kind switches without visible sign-out remain unidentifiable. |
+| BUG-008 | P3 | Protocol client advertises an obsolete application version | Fixed | `fa28ecf` | Handshake version checked against the manifest. |
+| BUG-009 | P1 | A tiny sparse usage response can allocate millions of dates | Fixed | `476dc4b` | Bounded sparse coverage and 366-cell heatmap regressions. |
+| BUG-010 | P2 | Positive safe timestamps can still crash date formatting | Fixed | `476dc4b` | Timestamp normalization and formatter boundary regressions. |
+| BUG-011 | P2 | Metadata accepted by protocol schemas can reject the whole public snapshot | Fixed | `476dc4b` | Oversized metadata preserves usable quota values. |
+| BUG-012 | P2 | A standalone spending-control reached flag is discarded | Fixed | `476dc4b` | Reached-state regressions with absent, null, and empty controls. |
+| BUG-013 | P2 | Empty credit fields in one bucket hide usable credits in later buckets | Fixed | `476dc4b` | Empty-first-bucket and independent credit-field regression. |
+| BUG-014 | P2 | Duplicate-date ambiguity does not disable affected comparisons | Fixed | `476dc4b` | Duplicates excluded; both comparison periods tested. |
+| BUG-015 | P2 | Missing days do not mark the usage section partial | Fixed | `476dc4b` | Gapped dates now classify usage as partial. |
+| BUG-016 | P2 | Automatic refresh preferences have no implementation | Fixed | `ec6e8d4` | Timer enable, interval change, disable, and shutdown regression. |
+| BUG-017 | P2 | Falling usage displays “Unavailable tokens” instead of its signed difference | Fixed | `10e979f` | Signed counter-formatting regression. |
+| BUG-018 | P2 | UTC-noon date formatting shifts bucket labels in UTC+12 and later zones | Fixed | `10e979f` | Calendar-label regressions across extreme timezones. |
+| BUG-019 | P2 | Stale-data warnings exist only on Overview | Fixed | `10e979f` | Shared stale warning added for the other data routes; core suite passed. |
+| BUG-020 | P2 | Initial snapshot reads can overwrite a newer pushed snapshot | Fixed | `ec6e8d4` | Deferred initial and refresh replies cannot overwrite pushed data. |
+| BUG-021 | P2 | Oversized chart values silently become the same false tooltip value | Fixed | `10e979f` | Exact oversized tooltip regression; capped geometry disclosed. |
+| BUG-022 | P2 | The daily chart does not resize with its container | Fixed | `10e979f` | Resize observer and chart-disposal regression. |
+| BUG-023 | P3 | Time-format preference is ignored on Credits and Diagnostics | Fixed | `10e979f` | Credits and Diagnostics receive the time preference; core suite passed. |
+| BUG-024 | P2 | Rapid edits to different preferences lose earlier changes | Fixed | `ec6e8d4` | Rapid edits persist in order; failed saves roll back. |
+| BUG-025 | P2 | Bridge failures are not converted into visible workflow errors | Fixed | `ec6e8d4` | Sanitized workflow errors and snapshot/save retry regressions; core suite passed. |
+| BUG-026 | P2 | Concurrent first preference loads can quarantine a valid replacement | Fixed | `ec6e8d4` | Concurrent initialization and queued-save regression. |
+| BUG-027 | P2 | Read failures are treated as corruption and may overwrite recoverable preferences | Fixed | `ec6e8d4` | Read and quarantine failure preservation/recovery regressions. |
+| BUG-028 | P3 | Clear-data copy promises deletion but the store recreates preferences | Fixed | `ec6e8d4` | Clear-data file-inventory and cached-defaults regression. |
+| BUG-029 | P2 | Diagnostics count snapshot phases as separate attempts and miss failures | Fixed | `ec6e8d4` | Actual controller completion counts tested with identical timestamps. |
+| BUG-030 | P2 | Diagnostic capability and discovery claims are fabricated from UI state | Fixed | `196113c`, `99e34cd`, `5b695a2`, `3fc4d3a` | Unknown, missing, unsupported, and empty-data cases tested; CLI version remains unknown. |
+| BUG-031 | P2 | Development readiness can accept old bundles and launch after shutdown | Open | Pending | Pending: current-run build readiness and shutdown/startup race checks. |
+| BUG-032 | P2 | The release-notes parser includes subsequent version sections | Fixed | `9ade471` | Three isolated script integration cases verify section boundaries. |
+| BUG-033 | P2 | Package-content inspection misses files outside app.asar | Open | Pending | Pending: recursive and extracted package-payload inspection. |
+| BUG-034 | P3 | Provenance records arbitrary matching files and loses the npm version in CI | Open | Pending | Pending: exact artifact inventory and explicit npm-version capture. |
+| BUG-035 | P2 | Negative percentage changes are formatted as malformed decimal strings | Fixed | `10e979f` | Negative whole, fractional, halfway, and rounded-zero regressions. |
+| BUG-036 | P2 | Website copy buttons report success when copying fails or is unavailable | Open | Pending | Pending: clipboard failure/unavailability feedback. |
+| BUG-037 | P3 | Website menu's accessible label stays “Close menu” after closing | Open | Pending | Pending: consistent menu label on every close path. |
+| BUG-038 | P2 | Advertised usage date-range controls are absent | Open | Pending | Pending: usage range controls or corrected scope claims. |
+| BUG-039 | P2 | Searching after a Learn deep link steals focus after each matching keystroke | Fixed | `10e979f` | Multi-character search retains focus after a deep link. |
+| BUG-040 | P3 | Learn navigation forces smooth scrolling despite reduced-motion preferences | Fixed | `10e979f` | Reduced-motion navigation regression; no compositor validation claimed. |
+
+Improvement opportunities (`IMP-*`) are tracked separately in the original findings and fix-progress notes; they are not included in the 40-bug totals.
+
 ## Process transport and controller
 
 ### BUG-001: P1: Child stdin errors can escape as uncaught stream errors
