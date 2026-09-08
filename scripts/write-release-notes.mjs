@@ -91,7 +91,7 @@ async function loadChangelogSection(changelogPath, version) {
   let match;
   while ((match = headingPattern.exec(changelog)) !== null) {
     const start = match.index + match[0].length;
-    const nextHeading = /^## /.exec(changelog.slice(start));
+    const nextHeading = /^## /m.exec(changelog.slice(start));
     const end = nextHeading ? start + nextHeading.index : changelog.length;
     sections.push({ title: match[1].trim(), body: changelog.slice(start, end).trim() });
   }
