@@ -26,7 +26,7 @@ it.each(['success', 'rejected', 'absent', 'throws'])(
     await Promise.resolve();
     expect(button.disabled).toBe(false);
     expect(button.textContent).toBe(
-      mode === 'success' ? 'Copied' : 'Copy failed — select and copy the command manually',
+      mode === 'success' ? 'Copied' : 'Copy failed: select and copy the command manually',
     );
     expect(button.classList.contains('copied')).toBe(mode === 'success');
     if (mode !== 'absent') expect(writeText).toHaveBeenCalledWith('install command');

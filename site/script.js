@@ -75,7 +75,7 @@
           button.classList.remove("copied");
         }, 1600);
       } catch {
-        button.textContent = "Copy failed — select and copy the command manually";
+        button.textContent = "Copy failed: select and copy the command manually";
       } finally {
         button.disabled = false;
       }
