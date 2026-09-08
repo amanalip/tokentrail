@@ -146,19 +146,20 @@ ${changelogSection.body}
 
 ## Downloads
 
-All four Linux package formats are provided for both supported architectures,
-named \`tokentrail-${options.version}-linux-<arch>.<ext>\`. Each format labels
-architectures in its own native vocabulary:
+All four Linux package formats are provided for both architectures. Choose the
+column matching your machine; these are the exact attached filenames:
 
-| Format | x64 label | arm64 label |
+| Format | x64 download | arm64 download |
 | --- | --- | --- |
-| AppImage | \`x86_64\` | \`arm64\` |
-| deb | \`amd64\` | \`arm64\` |
-| rpm | \`x86_64\` | \`aarch64\` |
-| Pacman | \`x86_64\` | \`aarch64\` |
+| AppImage | [x86_64.AppImage](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-x86_64.AppImage) | [arm64.AppImage](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-arm64.AppImage) |
+| deb | [amd64.deb](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-amd64.deb) | [arm64.deb](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-arm64.deb) |
+| rpm | [x86_64.rpm](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-x86_64.rpm) | [aarch64.rpm](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-aarch64.rpm) |
+| Pacman | [x64.pacman](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-x64.pacman) | [aarch64.pacman](https://github.com/${options.repo}/releases/download/${options.tag}/tokentrail-${options.version}-linux-aarch64.pacman) |
 
-\`SHA256SUMS.txt\` covers every attached artifact. The release page's automatic
-"Source code (zip / tar.gz)" links are repository snapshots, not runnable builds.
+The eight runnable packages are covered by \`SHA256SUMS.txt\`. Two provenance
+records identify their source, toolchain, sizes, and SHA-256 hashes. The CycloneDX
+SBOM describes locked dependencies. Automatic "Source code (zip / tar.gz)" links
+are repository snapshots, not runnable builds or checksum-manifest entries.
 
 ## Verify your download
 
@@ -174,7 +175,7 @@ Format-specific steps, prerequisites, and removal instructions live in the user
 guides at this exact tag:
 
 - [Installing](${treeBase}/docs/user/installing.md) — AppImage, deb, rpm, and Pacman paths
-- [Upgrading](${treeBase}/docs/user/upgrading.md) — v1 never checks for updates; upgrades are manual downloads
+- [Upgrading](${treeBase}/docs/user/upgrading.md) — Token Trail never checks for updates; upgrades are manual downloads
 - [Troubleshooting](${treeBase}/docs/user/troubleshooting.md) — Codex detection, FUSE, desktop integration
 - [Privacy](${treeBase}/docs/user/privacy.md) — what Token Trail reads, holds, and never sends
 
