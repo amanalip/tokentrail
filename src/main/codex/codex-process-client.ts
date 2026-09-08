@@ -161,11 +161,17 @@ export class CodexProcessClient {
 
   #isStarting = false;
 
+  #executableDiscovered: boolean | null = null;
+
   #terminationTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Construct a client without starting external work until `start` is called.
   public constructor(options: CodexProcessClientOptions = {}) {
     this.#options = Object.freeze({ ...options });
+  }
+
+  public getExecutableDiscovered(): boolean | null {
+    return this.#executableDiscovered;
   }
 
   // Start and initialize the one owned app-server process.
@@ -185,6 +191,8 @@ export class CodexProcessClient {
     if (this.#isStopped) {
       throw new CodexProcessError('codex-unavailable');
     }
+
+    this.#executableDiscovered = executablePath !== null;
 
     // Convert discovery failure into a stable user-actionable category.
     if (executablePath === null) {
