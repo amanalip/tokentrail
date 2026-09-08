@@ -48,8 +48,15 @@ const options = parseArguments(process.argv);
 const manifest = JSON.parse(await readFile(path.join(repositoryRoot, 'package.json'), 'utf8'));
 if (!['x64', 'arm64'].includes(options.arch)) throw new Error('Unsupported architecture.');
 if (options.tag !== `v${manifest.version}`) throw new Error('Tag must match the package version.');
+const artifactArchitectures =
+  options.arch === 'x64'
+    ? { AppImage: 'x86_64', deb: 'amd64', rpm: 'x86_64', pacman: 'x64' }
+    : { AppImage: 'arm64', deb: 'arm64', rpm: 'aarch64', pacman: 'aarch64' };
 const expectedNames = ['AppImage', 'deb', 'rpm', 'pacman']
-  .map((extension) => `tokentrail-${manifest.version}-linux-${options.arch}.${extension}`)
+  .map(
+    (extension) =>
+      `tokentrail-${manifest.version}-linux-${artifactArchitectures[extension]}.${extension}`,
+  )
   .sort();
 const actualNames = (await readdir(releaseDirectory))
   .filter((name) => name.startsWith('tokentrail-') || /\.(AppImage|deb|rpm|pacman)$/.test(name))

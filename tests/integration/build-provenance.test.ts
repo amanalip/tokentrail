@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 import { expect, it } from 'vitest';
 
-it.each(['valid', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
+it.each(['valid', 'arm64', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
   'validates %s provenance inventory',
   async (mode) => {
     const root = await mkdtemp(path.join(tmpdir(), 'tokentrail-provenance-'));
@@ -18,10 +18,15 @@ it.each(['valid', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
         path.join(root, 'scripts/write-build-provenance.mjs'),
       );
       await writeFile(path.join(root, 'package.json'), JSON.stringify({ version: '1.0.0' }));
+      const arch = mode === 'arm64' ? 'arm64' : 'x64';
+      const suffixes: Record<string, string> =
+        arch === 'x64'
+          ? { AppImage: 'x86_64', deb: 'amd64', rpm: 'x86_64', pacman: 'x64' }
+          : { AppImage: 'arm64', deb: 'arm64', rpm: 'aarch64', pacman: 'aarch64' };
       for (const extension of ['AppImage', 'deb', 'rpm', 'pacman']) {
         if (mode === 'missing' && extension === 'rpm') continue;
         await writeFile(
-          path.join(root, `release/tokentrail-1.0.0-linux-x64.${extension}`),
+          path.join(root, `release/tokentrail-1.0.0-linux-${suffixes[extension]}.${extension}`),
           extension,
         );
       }
@@ -39,7 +44,7 @@ it.each(['valid', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
         [
           path.join(root, 'scripts/write-build-provenance.mjs'),
           '--arch',
-          'x64',
+          arch,
           '--tag',
           mode === 'wrong-tag' ? 'v2.0.0' : 'v1.0.0',
           '--commit',
@@ -49,7 +54,7 @@ it.each(['valid', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
         ],
         { env },
       );
-      if (mode !== 'valid') {
+      if (mode !== 'valid' && mode !== 'arm64') {
         await expect(run).rejects.toThrow();
         await expect(readFile(output)).rejects.toThrow();
       } else {
@@ -58,8 +63,12 @@ it.each(['valid', 'stale', 'other-arch', 'unrelated', 'missing', 'wrong-tag'])(
         const npm = await promisify(execFile)('npm', ['--version']);
         expect(result.environment.npmVersion).toBe(`npm/${npm.stdout.trim()}`);
         expect(result.artifacts).toHaveLength(4);
-        expect(result.artifacts[0]).toEqual({
-          name: 'tokentrail-1.0.0-linux-x64.AppImage',
+        expect(
+          result.artifacts.find((artifact: { name: string }) =>
+            artifact.name.endsWith('.AppImage'),
+          ),
+        ).toEqual({
+          name: `tokentrail-1.0.0-linux-${suffixes['AppImage']}.AppImage`,
           bytes: 8,
           sha256: createHash('sha256').update('AppImage').digest('hex'),
         });
