@@ -1,6 +1,3 @@
-// Import filesystem access only in the development orchestrator so it can wait for Vite's first bundles.
-import { access } from 'node:fs/promises';
-
 // Import process spawning to run the three Vite processes and Electron without adding orchestration packages.
 import { spawn } from 'node:child_process';
 
@@ -18,12 +15,15 @@ const children = new Set();
 
 // Track shutdown once so simultaneous child exits cannot perform conflicting cleanup.
 let isShuttingDown = false;
+const shutdownController = new AbortController();
 
 /**
  * Spawn one inherited-output child process from the repository root.
  * The explicit shell-free argument array avoids accidental command interpolation.
  */
 function startChild(command, argumentsList, extraEnvironment = {}) {
+  if (isShuttingDown) throw new Error('Development startup was cancelled.');
+
   // Start the child with inherited terminal streams so failures remain immediately visible.
   const child = spawn(command, argumentsList, {
     cwd: repositoryRoot,
@@ -33,6 +33,10 @@ function startChild(command, argumentsList, extraEnvironment = {}) {
 
   // Remember the child before asynchronous events can fire.
   children.add(child);
+  child.once('error', (error) => {
+    console.error(error);
+    shutdown(1);
+  });
 
   // Remove completed children so shutdown only signals live processes.
   child.once('exit', () => {
@@ -54,6 +58,7 @@ function shutdown(exitCode) {
 
   // Lock cleanup before signaling children.
   isShuttingDown = true;
+  shutdownController.abort();
 
   // Ask each process created by this script to terminate gracefully.
   for (const child of children) {
@@ -64,27 +69,24 @@ function shutdown(exitCode) {
   process.exitCode = exitCode;
 }
 
-/**
- * Wait for a local file with a fixed timeout so Electron never starts against half-built process bundles.
- */
-async function waitForFile(filePath, timeoutMilliseconds) {
-  // Calculate one monotonic deadline for all retry attempts.
-  const deadline = Date.now() + timeoutMilliseconds;
-
-  // Retry until Vite writes the file or the bounded wait expires.
-  while (Date.now() < deadline) {
-    try {
-      // Resolve when the file becomes accessible.
-      await access(filePath);
-      return;
-    } catch {
-      // Wait briefly without blocking the Node event loop before checking again.
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-  }
-
-  // Fail clearly instead of launching Electron with a missing entry point.
-  throw new Error(`Timed out waiting for development bundle: ${filePath}`);
+/** Require a successful build from this invocation, regardless of existing output files. */
+function buildOnce(config) {
+  const child = startChild(viteBinary, ['build', '--config', config]);
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(
+      () => reject(new Error(`Development build timed out: ${config}`)),
+      30_000,
+    );
+    child.once('error', (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
+    child.once('exit', (code) => {
+      clearTimeout(timeout);
+      if (code === 0 && !isShuttingDown) resolve();
+      else reject(new Error(`Development build failed: ${config}`));
+    });
+  });
 }
 
 /**
@@ -95,10 +97,13 @@ async function waitForRenderer(rendererUrl, timeoutMilliseconds) {
   const deadline = Date.now() + timeoutMilliseconds;
 
   // Poll only the exact loopback URL that Electron will load.
-  while (Date.now() < deadline) {
+  while (Date.now() < deadline && !isShuttingDown) {
     try {
       // Request the local entry page without following an unexpected redirect.
-      const response = await fetch(rendererUrl, { redirect: 'error' });
+      const response = await fetch(rendererUrl, {
+        redirect: 'error',
+        signal: AbortSignal.any([shutdownController.signal, AbortSignal.timeout(1_000)]),
+      });
 
       // Resolve only after Vite reports a successful response.
       if (response.ok) {
@@ -141,25 +146,13 @@ if (debuggingPort !== null && (debuggingPort < 1_024 || debuggingPort > 65_535))
   throw new Error('TOKENTRAIL_TEST_DEBUG_PORT must be an unprivileged TCP port.');
 }
 
-// Start independent watched builds for privileged main and preload code.
-const mainBuilder = startChild(viteBinary, ['build', '--watch', '--config', 'vite.main.config.ts']);
-const preloadBuilder = startChild(viteBinary, [
-  'build',
-  '--watch',
-  '--config',
-  'vite.preload.config.ts',
-]);
-
-// Start the renderer development server on the fixed loopback origin.
-const rendererServer = startChild(viteBinary, ['--config', 'vite.renderer.config.ts']);
-
-// Treat an unexpected build or server exit as a failed development session.
-for (const service of [mainBuilder, preloadBuilder, rendererServer]) {
-  service.once('exit', (code) => {
-    if (!isShuttingDown) {
-      shutdown(code ?? 1);
-    }
+// A service exiting successfully is still unexpected while the development session is active.
+function startService(argumentsList) {
+  const child = startChild(viteBinary, argumentsList);
+  child.once('exit', (code) => {
+    if (!isShuttingDown) shutdown(code || 1);
   });
+  return child;
 }
 
 // Register interactive shutdown before awaiting service readiness.
@@ -167,12 +160,13 @@ process.once('SIGINT', () => shutdown(130));
 process.once('SIGTERM', () => shutdown(143));
 
 try {
-  // Wait until the privileged bundles and local renderer are all ready.
+  startService(['--config', 'vite.renderer.config.ts']);
   await Promise.all([
-    waitForFile(path.join(repositoryRoot, 'dist', 'main', 'index.cjs'), 30_000),
-    waitForFile(path.join(repositoryRoot, 'dist', 'preload', 'index.cjs'), 30_000),
+    buildOnce('vite.main.config.ts'),
+    buildOnce('vite.preload.config.ts'),
     waitForRenderer(rendererUrl, 30_000),
   ]);
+  if (isShuttingDown) throw new Error('Development startup was cancelled.');
 
   // Launch Electron with the one validated development origin and no renderer-visible environment bridge.
   const electronArguments =
@@ -184,6 +178,11 @@ try {
   const electronProcess = startChild(electronBinary, electronArguments, {
     TOKENTRAIL_RENDERER_URL: rendererUrl,
   });
+
+  // Watch after the completed initial builds; preserve their output during watcher startup.
+  for (const config of ['vite.main.config.ts', 'vite.preload.config.ts']) {
+    startService(['build', '--watch', '--emptyOutDir', 'false', '--config', config]);
+  }
 
   // End the complete development session when the user closes Electron.
   electronProcess.once('exit', (code) => shutdown(code ?? 0));
