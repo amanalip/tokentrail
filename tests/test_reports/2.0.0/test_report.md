@@ -16,7 +16,15 @@ The release incorporates all 40 September audit fixes and IMP-008. [The changelo
 
 ## Validation
 
-Full local and hosted validation is running. Individual start and finish times not yet captured are recorded as not captured rather than reconstructed. No pending check is claimed as passed.
+The local core verification passed: formatting, lint, all five TypeScript projects, 277 unit/component tests, and initially 59 integration tests. The final package regressions add arm64-directory and clean AppImage coverage, bringing the integration inventory to 61 tests; the tagged workflow will execute that complete inventory. Production build and bundle budgets passed. Documentation links passed across 58 files.
+
+The complete existing desktop matrix passed 46 tests: end-to-end, accessibility, security, packaged identity/launch, and performance. Automated axe scans reported zero violations. Both development tests then passed with `ELECTRON_RUN_AS_NODE` removed from the inherited environment. This covers real Vite startup, hot CSS updates, and the unavailable state.
+
+Hosted CI run [34234576046](https://github.com/amanalip/tokentrail/actions/runs/34234576046) passed source quality and built security on the preparation checkpoint. Tagged verification remains required for subsequent release-tooling changes.
+
+The existing 2.0.0 unpacked runtime passed inspection of 74 files. Preflight against all four published 1.0.0 x64 formats found expected native metadata and AppImage support libraries absent from the new allowlist. After adding only those reviewed paths, all four extracted formats passed: five ASAR listings and 402 files including the unpacked runtime. This is packaging-tool validation, not a claim about 2.0.0 distributable bytes.
+
+Individual local suite start and finish times: not captured in the required fully timezone-qualified format. Hosted times remain available in the linked workflow. Evidence checkpoint: September 08, 2026 at 9:56:54 AM EDT (America/Toronto, UTC-0400).
 
 ## Remaining limitations
 
