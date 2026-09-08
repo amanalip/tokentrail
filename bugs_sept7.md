@@ -435,3 +435,8 @@ The review above describes the original baseline. Fixes below are incremental so
 Addressed: BUG-001 through BUG-030, BUG-032, BUG-035, BUG-039, BUG-040 (34 findings), plus IMP-008. Remaining bug findings: BUG-031 (development readiness), BUG-033 (package inspection), BUG-034 (provenance inventory), BUG-036 (website clipboard feedback), BUG-037 (website menu label), BUG-038 (usage range controls). The other improvement opportunities remain open. See the BUG-007 fix note for the account-identity limit.
 
 No version bump, tag, or release was created. Implementation stopped when the next available five-hour usage reading showed 91% used (9% remaining), after the previous check showed 83%. Final verification completed with 275 unit/component tests and 35 integration tests passing, along with formatting, lint, and all TypeScript checks. Production build/bundle budgets and documentation checks also passed. The interruption left BUG-030 and BUG-032 verified but uncommitted; delivery was resumed on September 8 in separate commits. Existing live desktop, packaging, installation, and assistive-technology verification limits from the original review remain; this fixing session does not claim to close those environment coverage gaps.
+
+### Release and website requirements
+
+- Create a new release only after all bugs are fixed and the completed fixes have been verified. Do not create a release while any bug remains open.
+- Before that release, check the website and update it to match the implemented application behavior, resolved bugs, feature availability, and release information. Verify affected website interactions and ensure its claims are accurate.
