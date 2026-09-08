@@ -34,21 +34,22 @@
   var navToggle = document.getElementById("nav-toggle");
   var nav = document.getElementById("site-nav");
   if (navToggle && nav) {
-    navToggle.addEventListener("click", function () {
-      var open = nav.classList.toggle("open");
+    function setMenuOpen(open) {
+      nav.classList.toggle("open", open);
       navToggle.setAttribute("aria-expanded", open ? "true" : "false");
       navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    }
+    navToggle.addEventListener("click", function () {
+      setMenuOpen(!nav.classList.contains("open"));
     });
     nav.addEventListener("click", function (event) {
       if (event.target.closest("a")) {
-        nav.classList.remove("open");
-        navToggle.setAttribute("aria-expanded", "false");
+        setMenuOpen(false);
       }
     });
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && nav.classList.contains("open")) {
-        nav.classList.remove("open");
-        navToggle.setAttribute("aria-expanded", "false");
+        setMenuOpen(false);
         navToggle.focus();
       }
     });
