@@ -1,5 +1,7 @@
 # Release Checklist
 
+For the current release, see [the 2.0.0 checklist and artifact inventory](2.0.0-release.md). The record below preserves the 1.0.0 publication evidence.
+
 **Status:** Executable checklist for the v1.0.0 candidate and every later release; items are checked only from recorded evidence
 **Last updated:** August 22, 2026
 
