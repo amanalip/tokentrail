@@ -13,6 +13,7 @@ echarts.use([BarChart, GridComponent, TooltipComponent, SVGRenderer]);
 // Import shared usage calculations so the route derives everything from one normalized source.
 import {
   computePeriodComparison,
+  computeUsageCoverage,
   computeUsageStatistics,
 } from '../../shared/domain/usage-calculations';
 
@@ -144,7 +145,24 @@ export function UsageRoute({
   const [view, setView] = useState<'chart' | 'table'>('chart');
 
   // Derive statistics and both complete-period comparisons once per snapshot change.
-  const days = snapshot.usage.days;
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const invalidRange =
+    (startDate !== '' && parseCalendarDateKey(startDate) === null) ||
+    (endDate !== '' && parseCalendarDateKey(endDate) === null) ||
+    (startDate !== '' && endDate !== '' && startDate > endDate);
+  const days = useMemo(
+    () =>
+      invalidRange
+        ? []
+        : snapshot.usage.days.filter(
+            (day) =>
+              (startDate === '' || day.date >= startDate) &&
+              (endDate === '' || day.date <= endDate),
+          ),
+    [snapshot.usage.days, startDate, endDate, invalidRange],
+  );
+  const coverage = useMemo(() => computeUsageCoverage(days, 0), [days]);
   const statistics = useMemo(() => computeUsageStatistics(days), [days]);
   const sevenDay = useMemo(() => computePeriodComparison(days, 7), [days]);
   const thirtyDay = useMemo(() => computePeriodComparison(days, 30), [days]);
@@ -192,6 +210,53 @@ export function UsageRoute({
           records.
         </section>
       ) : null}
+
+      <section className="panel" aria-label="Usage date range">
+        <div className="section-heading">
+          <label>
+            Start date
+            <input
+              type="date"
+              min="1000-01-01"
+              max="9999-12-31"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              aria-invalid={invalidRange}
+              aria-describedby="usage-range-note"
+            />
+          </label>
+          <label>
+            End date
+            <input
+              type="date"
+              min="1000-01-01"
+              max="9999-12-31"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
+              aria-invalid={invalidRange}
+              aria-describedby="usage-range-note"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setStartDate('');
+              setEndDate('');
+            }}
+          >
+            All supplied dates
+          </button>
+        </div>
+        {invalidRange && (
+          <p role="alert">Choose valid dates with the start on or before the end.</p>
+        )}
+        <p id="usage-range-note" className="panel-note">
+          Dates are inclusive; a blank boundary is unrestricted. Daily views, statistics,
+          comparisons, and coverage use only supplied buckets in this range. Missing dates are
+          identified only between supplied bounds; dates outside them have unknown coverage.
+          Codex-reported summary values below describe the full source response.
+        </p>
+      </section>
 
       <div className="summary-cards" role="group" aria-label="Usage summary cards">
         <SummaryCard
@@ -241,7 +306,7 @@ export function UsageRoute({
         </div>
 
         {days.length === 0 ? (
-          <p className="empty-detail">No dated buckets were supplied in this response.</p>
+          <p className="empty-detail">No dated buckets were supplied in the selected range.</p>
         ) : view === 'chart' ? (
           <DailyChart days={days} theme={preferences.theme} />
         ) : (
@@ -352,7 +417,7 @@ export function UsageRoute({
       <section className="panel" aria-labelledby="coverage-title">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">What the source actually supplied</p>
+            <p className="eyebrow">What the source supplied in the selected range</p>
             <h2 id="coverage-title">Data coverage</h2>
           </div>
         </div>
@@ -360,48 +425,47 @@ export function UsageRoute({
           <div className="metric-line">
             <dt>Valid dated buckets</dt>
             <dd>
-              <span>{snapshot.usage.coverage.validDateCount}</span>
+              <span>{coverage.validDateCount}</span>
               <small>Accepted records</small>
             </dd>
           </div>
           <div className="metric-line">
             <dt>Reported zero days</dt>
             <dd>
-              <span>{snapshot.usage.coverage.reportedZeroCount}</span>
+              <span>{coverage.reportedZeroCount}</span>
               <small>Distinct from missing</small>
             </dd>
           </div>
           <div className="metric-line">
-            <dt>Rejected invalid records</dt>
+            <dt>Rejected invalid records (full response)</dt>
             <dd>
               <span>{snapshot.usage.coverage.rejectedRecordCount}</span>
-              <small>Never used in calculations</small>
+              <small>Cannot be assigned reliably to the selected range</small>
             </dd>
           </div>
           <div className="metric-line">
             <dt>Supplied span</dt>
             <dd>
               <span>
-                {snapshot.usage.coverage.firstValidDate === null
+                {coverage.firstValidDate === null
                   ? 'No dates supplied'
-                  : `${formatDateKey(snapshot.usage.coverage.firstValidDate)} to ${formatDateKey(
-                      snapshot.usage.coverage.lastValidDate ?? '',
+                  : `${formatDateKey(coverage.firstValidDate)} to ${formatDateKey(
+                      coverage.lastValidDate ?? '',
                     )}`}
               </span>
               <small>Codex-reported bounds</small>
             </dd>
           </div>
         </dl>
-        {snapshot.usage.coverage.missingDates.length > 0 ? (
+        {coverage.missingDates.length > 0 ? (
           <p className="panel-note">
-            Missing dates inside the supplied span:{' '}
-            {snapshot.usage.coverage.missingDates.join(', ')}
-            {snapshot.usage.coverage.missingDatesTruncated ? ' … (list truncated)' : ''}{' '}
+            Missing dates inside the supplied span: {coverage.missingDates.join(', ')}
+            {coverage.missingDatesTruncated ? ' … (list truncated)' : ''}{' '}
             <a href="#learn/missing-days-statistics">How missing days are handled</a>.
           </p>
         ) : null}
         <p className="panel-note">
-          Coverage describes the data Token Trail received. It does not inspect tasks.
+          Coverage describes supplied bounds within the selected range. It does not inspect tasks.
         </p>
       </section>
     </>
