@@ -1,6 +1,8 @@
 /* Token Trail companion site. Self-contained: system fonts, no remote assets. */
 
 :root {
+  color-scheme: dark;
+  --scrollbar-thumb: #717caa;
   --bg: #02081b;
   --bg-raised: #060d26;
   --bg-card: #0a1230;
@@ -21,6 +23,8 @@
 }
 
 [data-theme="light"] {
+  color-scheme: light;
+  --scrollbar-thumb: #777e9e;
   --bg: #f6f7fd;
   --bg-raised: #ffffff;
   --bg-card: #ffffff;
@@ -1217,4 +1221,20 @@ li code {
   margin: 0 auto 24px;
   text-align: center;
   font-size: 0.85rem;
+}
+
+/* Native page and nested code scrollbars follow the selected site theme. */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-raised);
+  scrollbar-width: auto;
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: var(--bg-raised); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 3px solid var(--bg-raised); border-radius: 12px; }
+}
+
+@media (forced-colors: active) {
+  * { scrollbar-color: auto; }
 }
