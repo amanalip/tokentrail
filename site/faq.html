@@ -62,6 +62,8 @@
     <section class="section faq-section">
       <div class="container faq-container">
 
+        <p class="faq-reviewed">Reviewed against Token Trail 2.0.0 on September 9, 2026. <a href="https://github.com/amanalip/tokentrail/tree/v2.0.0/src">Released source</a> · <a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Validation limits</a></p>
+
         <nav class="faq-jump" aria-label="Jump to a section">
           <a href="#general">General</a>
           <a href="#privacy-security">Privacy and security</a>
@@ -137,7 +139,7 @@
         <details class="faq">
           <summary>Does it show my OpenAI API usage or billing?</summary>
           <div class="faq-body">
-            <p>No, deliberately. Codex plan usage and OpenAI API billing are separate systems. Token Trail reads only local Codex app-server account data and never represents API billing state. Likewise, included plan usage flows through quota windows while credits are reported separately with their own units, and the two are displayed side by side without ever being added together.</p>
+            <p>No. Token Trail does not query API billing endpoints or provide an invoice view. It displays what its approved Codex reads supply. Quotas, aggregate tokens, and credits are separate measurements and are not added into a single billing total.</p>
           </div>
         </details>
 
@@ -196,7 +198,7 @@
         <details class="faq">
           <summary>How is the application hardened against attacks?</summary>
           <div class="faq-body">
-            <p>The Electron shell applies defense in depth: a sandboxed renderer with context isolation and no Node integration, a strict self-hosted Content Security Policy in production, deny-by-default handlers for navigation, redirects, popups, webviews, permission requests, and downloads, single-instance enforcement so a second launch focuses the running window instead, and Electron fuses that disable risky runtime behaviors. Renderer isolation is verified in development, built, and packaged modes on both display-server backends by automated tests.</p>
+            <p>The Electron shell applies defense in depth: a sandboxed renderer with context isolation and no Node integration, a strict self-hosted Content Security Policy in production, deny-by-default handlers for navigation, redirects, popups, webviews, permission requests, and downloads, single-instance enforcement so a second launch focuses the running window instead, and Electron fuses that disable risky runtime behaviors. Automated tests exercise renderer isolation and packaged identity, including native Wayland and XWayland on the reference desktop. These tests do not establish security or compatibility on every environment.</p>
             <p><a href="https://github.com/amanalip/tokentrail/blob/main/docs/architecture/security-boundaries.md">Security boundaries guide</a></p>
           </div>
         </details>
@@ -235,7 +237,7 @@
         <details class="faq">
           <summary>Are the "Source code" links on release pages installable?</summary>
           <div class="faq-body">
-            <p>No. The automatic zip and tar.gz snapshots contain repository text only, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-2.0.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm uses x86_64/aarch64; Pacman filenames use x64/aarch64.</p>
+            <p>No. The automatic zip and tar.gz snapshots contain source files and assets, not a runnable build, and they are absent from SHA256SUMS.txt. Install only the <code>tokentrail-*</code> artifacts matching your architecture, named like <code>tokentrail-2.0.0-linux-amd64.deb</code>. Architecture suffixes map as: deb uses amd64/arm64, rpm uses x86_64/aarch64; Pacman filenames use x64/aarch64.</p>
           </div>
         </details>
 
@@ -249,7 +251,7 @@
         <details class="faq">
           <summary>Does it install services, autostart entries, or tray icons?</summary>
           <div class="faq-body">
-            <p>No. Token Trail installs no tray icon, no autostart entry, no background service, and no daemon. When the window closes, the process exits and everything in memory is gone. Nothing runs between sessions because there is nothing to run.</p>
+            <p>No. Token Trail installs no tray icon, no autostart entry, no background service, and no daemon. Closing the window quits Token Trail and initiates cleanup of its owned Codex child. This does not close other Codex processes you started separately.</p>
           </div>
         </details>
 
@@ -257,7 +259,9 @@
           <summary>How do I check which version I have?</summary>
           <div class="faq-body">
             <p>Open Settings &amp; Diagnostics and expand the diagnostics preview: the application version appears alongside the Electron and Chromium versions it runs on. For package installs you can also ask your package manager directly:</p>
-            <div class="code-block"><code>dpkg -s tokentrail | grep Version   # deb<br />rpm -q tokentrail                   # rpm<br />pacman -Qi tokentrail | grep Version # Pacman</code><button class="copy-btn" data-copy="dpkg -s tokentrail | grep Version" type="button" aria-label="Copy command">Copy</button></div>
+            <div class="code-block"><code>dpkg -s tokentrail | grep Version</code><button class="copy-btn" data-copy="dpkg -s tokentrail | grep Version" type="button" aria-label="Copy deb version command">Copy</button></div>
+            <div class="code-block"><code>rpm -q tokentrail</code><button class="copy-btn" data-copy="rpm -q tokentrail" type="button" aria-label="Copy rpm version command">Copy</button></div>
+            <div class="code-block"><code>pacman -Qi tokentrail | grep Version</code><button class="copy-btn" data-copy="pacman -Qi tokentrail | grep Version" type="button" aria-label="Copy Pacman version command">Copy</button></div>
           </div>
         </details>
 
@@ -271,7 +275,7 @@
         <details class="faq">
           <summary>Can I roll back to an older version?</summary>
           <div class="faq-body">
-            <p>Downgrading is not a supported path. Preferences written by a newer version may carry fields an older build does not understand; the older build quarantines and resets them safely but visibly, so expect settings to return to defaults. Published releases are immutable: files never change under the same name, and corrections ship as new versions.</p>
+            <p>Downgrading is not a supported path. Preferences written by a newer version may carry fields an older build does not understand; an older build may reject or reset them, so back up settings you need before trying a downgrade. Published releases are immutable: files never change under the same name, and corrections ship as new versions.</p>
           </div>
         </details>
 
@@ -376,6 +380,41 @@
           </div>
         </details>
 
+        <details class="faq">
+          <summary>How do I choose a Usage date range?</summary>
+          <div class="faq-body"><p>Use Start date and End date on Usage. Both boundaries are inclusive; a blank boundary is unrestricted. All supplied dates clears the filter. The daily chart, table, heatmap, statistics, comparisons, and coverage use the same selection, which stays selected through refreshes. Lifetime and other Codex-reported summary values still describe the full source response, not just your selection.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>Why does the heatmap stop after 366 dates?</summary>
+          <div class="faq-body"><p>To keep very long or sparse ranges responsive, the heatmap displays at most the latest 366 calendar dates within the supplied span. A note explains when it is truncated. The selected-range table and statistics still use the supplied records for that range. Missing dates are not treated as zero.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>Why do very large chart bars have the same height?</summary>
+          <div class="faq-body"><p>Chart geometry is capped at the largest safely representable JavaScript integer. When a value exceeds that bound, a note explains the cap. Tooltips and the table retain exact token totals, so use those values rather than comparing capped bar heights.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>What should I do when the dashboard says data is stale?</summary>
+          <div class="faq-body"><p>Stale values are the last successfully read snapshot after a newer refresh failed. Check the last successful refresh time, try Refresh, and review Diagnostics if the failure continues. A countdown or a visible chart does not prove the data was just refreshed.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>Does Clear data delete my Codex usage or sign me out?</summary>
+          <div class="faq-body"><p>No. It removes Token Trail's owned preference files and resets display choices to defaults. It does not delete Codex usage, clear your Codex login, or remove diagnostic exports saved elsewhere. A running dashboard may continue to show its in-memory snapshot, and a later refresh can read data from Codex again.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>Why is the Codex version unknown in Diagnostics?</summary>
+          <div class="faq-body"><p>Token Trail 2.0.0 does not have a validated CLI-version field in its handshake, so it reports the version as unknown instead of guessing. Run codex --version in your terminal if you need that detail. Executable discovery and endpoint capabilities are separate observations and can still be reported.</p></div>
+        </details>
+
+        <details class="faq">
+          <summary>What if a website Copy button fails?</summary>
+          <div class="faq-body"><p>Clipboard permission can be denied, or the browser may not expose the clipboard API. The button then shows manual-copy guidance. Select the full command and copy it yourself, or retry after adjusting browser permissions. Check the architecture in installation commands before using them.</p></div>
+        </details>
+
         <!-- ==================== Troubleshooting ==================== -->
         <h2 class="faq-category" id="troubleshooting">Troubleshooting</h2>
 
@@ -419,7 +458,7 @@
         <details class="faq">
           <summary>Where do I get help?</summary>
           <div class="faq-body">
-            <p>Export the redacted diagnostics document from Settings &amp; Diagnostics (it previews everything before saving and is designed to be safe to share), then open an issue at github.com/amanalip/tokentrail/issues with the file attached. The troubleshooting guide covers most other cases, and the known-limitations page lists honestly what currently lacks evidence, such as unsigned artifacts and environments awaiting their first verified session.</p>
+            <p>Export the redacted diagnostics document from Settings &amp; Diagnostics (it previews everything before saving and is designed to exclude sensitive content), review it, then open an issue at github.com/amanalip/tokentrail/issues with the file attached. The troubleshooting guide covers most other cases, and the known-limitations page lists honestly what currently lacks evidence, such as unsigned artifacts and environments awaiting their first verified session.</p>
             <p><a href="https://github.com/amanalip/tokentrail/issues">Issue tracker</a> · <a href="https://github.com/amanalip/tokentrail/blob/main/docs/support/known-limitations.md">Known limitations</a></p>
           </div>
         </details>
