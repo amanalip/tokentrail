@@ -1,6 +1,6 @@
 # Token Trail
 
-> **Project status:** 2.0.0 release preparation: all 40 September audit findings resolved; detailed changes in [CHANGELOG.md](CHANGELOG.md)
+> **Project status:** [2.0.0 released](https://github.com/amanalip/tokentrail/releases/tag/v2.0.0): all 40 September audit findings resolved; detailed changes in [CHANGELOG.md](CHANGELOG.md)
 
 ## Contents
 
