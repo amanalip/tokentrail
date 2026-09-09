@@ -175,35 +175,37 @@
           These are enforced boundaries in code, not policies a setting could loosen.
         </p>
 
-        <figure class="flow-figure" aria-label="Diagram of how usage data moves through Token Trail">
-          <svg viewBox="0 0 860 250" role="img">
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M0 0L10 5L0 10z" fill="#55f5de"/>
-              </marker>
-            </defs>
-            <!-- node 1 -->
-            <rect x="20" y="70" width="230" height="96" rx="14" fill="var(--bg-card)" stroke="rgba(144,135,254,0.35)" stroke-width="1.5"/>
-            <text x="135" y="112" text-anchor="middle" fill="var(--text)" font-size="17" font-weight="700">Your Codex CLI</text>
-            <text x="135" y="136" text-anchor="middle" fill="var(--text-muted)" font-size="12.5">owned local app-server</text>
-            <!-- node 2 -->
-            <rect x="315" y="70" width="230" height="96" rx="14" fill="var(--bg-card)" stroke="rgba(85,245,222,0.4)" stroke-width="1.5"/>
-            <text x="430" y="103" text-anchor="middle" fill="var(--teal)" font-size="14.5" font-weight="700">Allowlist gate</text>
-            <text x="430" y="126" text-anchor="middle" fill="var(--text-muted)" font-size="12.5">3 approved reads,</text>
-            <text x="430" y="144" text-anchor="middle" fill="var(--text-muted)" font-size="12.5">unknown fields stripped</text>
-            <!-- node 3 -->
-            <rect x="610" y="70" width="230" height="96" rx="14" fill="var(--bg-card)" stroke="rgba(144,135,254,0.35)" stroke-width="1.5"/>
-            <text x="725" y="112" text-anchor="middle" fill="var(--text)" font-size="17" font-weight="700">Dashboard</text>
-            <text x="725" y="136" text-anchor="middle" fill="var(--text-muted)" font-size="12.5">held in memory only</text>
-            <!-- forward arrows -->
-            <line x1="250" y1="118" x2="309" y2="118" stroke="#55f5de" stroke-width="2" marker-end="url(#arrow)"/>
-            <line x1="545" y1="118" x2="604" y2="118" stroke="#55f5de" stroke-width="2" marker-end="url(#arrow)"/>
-            <!-- return arrow: rate-limit push -->
-            <path d="M430 166 C430 216, 135 216, 135 170" fill="none" stroke="#9087fe" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
-            <text x="283" y="236" text-anchor="middle" fill="#9087fe" font-size="12.5">rate-limit updates trigger a fresh approved read</text>
-            <!-- top annotation -->
-            <text x="430" y="40" text-anchor="middle" fill="var(--text-muted)" font-size="13">nothing leaves this loop: no telemetry, no sync, no storage beyond one preferences file</text>
-          </svg>
+        <figure class="flow-figure" aria-labelledby="flow-title">
+          <div class="flow-heading">
+            <p class="eyebrow">Local data flow</p>
+            <h3 id="flow-title">From Codex to your dashboard</h3>
+            <p>Read requests go to Codex. Validated results come back to Token Trail.</p>
+          </div>
+          <div class="flow-layout">
+            <div class="flow-node">
+              <span class="flow-tag">Local process</span>
+              <h4>Your Codex CLI</h4>
+              <p>An app-server started and stopped by Token Trail. Codex handles authentication and its own network traffic.</p>
+            </div>
+            <div class="flow-connection" aria-hidden="true">
+              <div class="flow-lane flow-lane--request"><span>Approved reads</span><span class="flow-arrow flow-arrow--back"></span></div>
+              <div class="flow-lane"><span class="flow-arrow"></span><span>Results + updates</span></div>
+            </div>
+            <div class="flow-node flow-node--gate">
+              <span class="flow-tag">Token Trail</span>
+              <h4>Read &amp; validate</h4>
+              <p>Allowlist outgoing data requests. Validate responses and keep approved display fields.</p>
+            </div>
+            <div class="flow-connection" aria-hidden="true">
+              <div class="flow-lane"><span class="flow-arrow"></span><span>Validated snapshot</span></div>
+            </div>
+            <div class="flow-node">
+              <span class="flow-tag">Interface</span>
+              <h4>Your dashboard</h4>
+              <p>Quota windows, aggregate usage, and credits. Usage snapshots stay in memory while the app runs.</p>
+            </div>
+          </div>
+          <figcaption>Token Trail requests account information, rate limits, and aggregate usage after the startup handshake. Refresh actions, enabled timers, and rate-limit notifications trigger approved reads. Preferences and optional diagnostics exports are separate from this usage-data path.</figcaption>
         </figure>
 
         <div class="privacy-grid">

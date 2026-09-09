@@ -617,18 +617,49 @@ figcaption {
 
 /* ---------- Privacy ---------- */
 
+/* A responsive diagram keeps request and response directions distinct. */
 .flow-figure {
-  margin: 0 auto 48px;
+  margin: 36px 0;
+  padding: clamp(20px, 3vw, 32px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--bg-card), var(--bg-raised));
-  padding: 18px;
+  background: var(--bg-raised);
 }
 
-.flow-figure svg {
-  display: block;
-  width: 100%;
-  height: auto;
+.flow-heading { margin-bottom: 28px; }
+.flow-heading h3 { font-size: 1.5rem; }
+.flow-heading p:last-child { margin-bottom: 0; font-size: 0.95rem; }
+.flow-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr) 112px minmax(0, 1fr);
+  align-items: stretch;
+}
+.flow-node {
+  min-width: 0;
+  padding: 24px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+}
+.flow-node--gate { border-color: var(--teal); }
+.flow-tag { display: block; color: var(--purple); font-size: 0.75rem; font-weight: 700; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+.flow-node h4 { font-size: 1.15rem; }
+.flow-node p { font-size: 0.88rem; line-height: 1.6; margin: 12px 0 0; }
+.flow-connection { align-self: center; display: grid; gap: 24px; padding: 0 10px; }
+.flow-lane { display: grid; gap: 10px; color: var(--teal); font-size: 0.7rem; text-align: center; line-height: 1.4; }
+.flow-lane--request { color: var(--purple); }
+.flow-arrow { position: relative; display: block; height: 2px; background: currentColor; margin-right: 5px; }
+.flow-arrow::after { content: ''; position: absolute; right: -5px; top: -4px; border-left: 7px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.flow-arrow--back { transform: rotate(180deg); }
+.flow-figure figcaption { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
+
+@media (max-width: 850px) {
+  .flow-layout { grid-template-columns: minmax(0, 1fr); }
+  .flow-connection { display: flex; justify-content: center; gap: 40px; padding: 20px 0; }
+  .flow-lane { display: flex; align-items: center; gap: 16px; text-align: left; font-size: 0.8rem; }
+  .flow-arrow { width: 2px; height: 32px; flex-shrink: 0; margin: 0 0 5px; }
+  .flow-arrow::after { right: -4px; top: auto; bottom: -5px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid currentColor; border-bottom: 0; }
+  .flow-node { padding: 20px; }
 }
 
 .privacy-grid {
