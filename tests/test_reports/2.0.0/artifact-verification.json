@@ -1,0 +1,77 @@
+{
+  "tag": "v2.0.0",
+  "commit": "87c793cf8bf38ea35faab0ea48af899c3c19bc13",
+  "release": {
+    "isDraft": false,
+    "isPrerelease": false,
+    "publishedAt": "2026-09-09T04:25:04Z",
+    "url": "https://github.com/amanalip/tokentrail/releases/tag/v2.0.0"
+  },
+  "verifiedAt": "September 09, 2026 at 12:25:31 AM EDT (America/Toronto, UTC-0400)",
+  "artifacts": [
+    {
+      "name": "tokentrail-2.0.0-linux-aarch64.pacman",
+      "bytes": 83810700,
+      "sha256": "9a115227ce8cc78fef843ec2d529be39271f008cabcd2ee161be4ba92314c6e7"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-aarch64.rpm",
+      "bytes": 81959229,
+      "sha256": "028ed4bba9ae06238230b9fc4347406e22f169a3ae07fd283808f5b5e25a53ae"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-amd64.deb",
+      "bytes": 99978300,
+      "sha256": "18580dfca361bc637fcdb7e7144566ab3f879ffec837fd30365de2fd504cb86b"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-arm64.AppImage",
+      "bytes": 126525004,
+      "sha256": "a9ac83b5e3d87aac208c8f82681a13339566c07221fd042db419d325db473beb"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-arm64.deb",
+      "bytes": 93166092,
+      "sha256": "bbf528239a0f1dba759dfafcde5a4fd69c4d4272c0f9bc72e044d4056b06979c"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-x64.pacman",
+      "bytes": 90415368,
+      "sha256": "33d70e97b3d2e77304e5ccb3fa4520c72798f3fc192337c345ccd7a6f6408caf"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-x86_64.AppImage",
+      "bytes": 128073424,
+      "sha256": "ec9240210a5944e3f98c1b6ace2f4522c8df99f0927e62cb63197d720a03f034"
+    },
+    {
+      "name": "tokentrail-2.0.0-linux-x86_64.rpm",
+      "bytes": 88275693,
+      "sha256": "d04638de01d64763c061eebeabfa0748bfe2e24ec2fab06afb6528d9d08d4abc"
+    }
+  ],
+  "checks": "All eight draft and public downloads match checksums and provenance; SBOM version is 2.0.0.",
+  "metadata": [
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 812,
+      "sha256": "ae086a0176f02b815151fe005f4c9adb6f1bfd4da7f3aaefb04d9e15ac7e0ff3"
+    },
+    {
+      "name": "provenance-x64.json",
+      "bytes": 1090,
+      "sha256": "e13499d4c22326e97018ee384d9ac2c485158e1c75ab6b53259a2aedcafb6e07"
+    },
+    {
+      "name": "provenance-arm64.json",
+      "bytes": 1096,
+      "sha256": "3f6029812bdebed2b8ceb2fa8ebd35c6c9a5105d912348f1cfa613585321957c"
+    },
+    {
+      "name": "tokentrail-sbom.cdx.json",
+      "bytes": 626127,
+      "sha256": "33750ec1a6c95d781fbcbcb0772eefc32545715eb6d93b9bff9daacfbf856020"
+    }
+  ],
+  "immutable": true
+}
