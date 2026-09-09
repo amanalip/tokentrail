@@ -96,29 +96,36 @@ test('rejects inline styles in the production renderer policy', async () => {
     // Resolve the secure custom-protocol page.
     const page = await electronApplication.firstWindow();
 
-    // Read the current body background before attempting inline style injection.
-    const originalBackground = await page.evaluate(
-      () => getComputedStyle(document.body).backgroundColor,
-    );
-
-    // Attempt both a style element and a style attribute inside the untrusted renderer world.
+    // Isolate the probes from body theme changes during renderer startup. Keeping
+    // creation, baseline reads, and injection in one evaluation avoids a load race.
     const result = await page.evaluate(() => {
-      // Create an inline style element that production CSP must reject.
+      const elementProbe = document.createElement('div');
+      elementProbe.id = 'csp-style-element-probe';
+      const attributeProbe = document.createElement('div');
+      attributeProbe.id = 'csp-style-attribute-probe';
+      document.body.append(elementProbe, attributeProbe);
+      const originalElementBackground = getComputedStyle(elementProbe).backgroundColor;
+      const originalAttributeBackground = getComputedStyle(attributeProbe).backgroundColor;
       const styleElement = document.createElement('style');
-      styleElement.textContent = 'body { background-color: rgb(255, 0, 255) !important; }';
+      styleElement.textContent =
+        '#csp-style-element-probe { background-color: rgb(255, 0, 255) !important; }';
       document.head.append(styleElement);
+      attributeProbe.setAttribute('style', 'background-color: rgb(255, 0, 255) !important');
 
-      // Attempt a direct style attribute that the same policy must reject.
-      document.body.setAttribute('style', 'background-color: rgb(255, 0, 255) !important');
-
-      // Return only policy and computed-style evidence.
-      return {
+      const evidence = {
         metaPolicy:
           document
             .querySelector('meta[http-equiv="Content-Security-Policy"]')
             ?.getAttribute('content') ?? '',
-        computedBackground: getComputedStyle(document.body).backgroundColor,
+        originalElementBackground,
+        originalAttributeBackground,
+        elementBackground: getComputedStyle(elementProbe).backgroundColor,
+        attributeBackground: getComputedStyle(attributeProbe).backgroundColor,
       };
+      elementProbe.remove();
+      attributeProbe.remove();
+      styleElement.remove();
+      return evidence;
     });
 
     // Confirm the built HTML itself contains no development inline-style exception.
@@ -127,7 +134,10 @@ test('rejects inline styles in the production renderer policy', async () => {
     expect(result.metaPolicy).not.toContain('ws://127.0.0.1:5173');
 
     // Confirm neither inline injection changed the rendered background.
-    expect(result.computedBackground).toBe(originalBackground);
+    expect(result.elementBackground).toBe(result.originalElementBackground);
+    expect(result.attributeBackground).toBe(result.originalAttributeBackground);
+    expect(result.elementBackground).not.toBe('rgb(255, 0, 255)');
+    expect(result.attributeBackground).not.toBe('rgb(255, 0, 255)');
   } finally {
     // Close the exact security-test application.
     await electronApplication.close();
