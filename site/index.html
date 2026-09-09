@@ -98,8 +98,8 @@
         </article>
         <article class="pillar">
           <span class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span>
-          <h3>Zero network</h3>
-          <p>No telemetry, no crash reporting, no analytics, no update checks, no remote assets. The packaged build's CSP blocks remote code outright.</p>
+          <h3>No telemetry</h3>
+          <p>Token Trail has no telemetry, analytics, or automatic update checks. Its packaged interface uses local assets. Codex manages its own connections.</p>
         </article>
       </div>
     </section>
@@ -110,11 +110,12 @@
         <ul class="stats">
           <li><span class="stat-num">6</span><span class="stat-label">dashboard routes</span></li>
           <li><span class="stat-num">3</span><span class="stat-label">approved data reads</span></li>
-          <li><span class="stat-num">1</span><span class="stat-label">file written to disk</span></li>
-          <li><span class="stat-num">0</span><span class="stat-label">network connections</span></li>
+          <li><span class="stat-num">1</span><span class="stat-label">preferences document</span></li>
+          <li><span class="stat-num">0</span><span class="stat-label">telemetry endpoints</span></li>
           <li><span class="stat-num">4</span><span class="stat-label">package formats</span></li>
           <li><span class="stat-num">2</span><span class="stat-label">CPU architectures</span></li>
         </ul>
+        <p class="stats-note">These counts describe Token Trail. Codex manages its own authentication and network traffic; temporary preference files, exports, and runtime files are outside the preferences count.</p>
       </div>
     </section>
 
@@ -208,19 +209,19 @@
         <div class="privacy-grid">
           <div class="privacy-item">
             <h4>Reads exactly three things</h4>
-            <p>Account information, rate-limit windows, and aggregate usage. Nothing else is requested, and responses are stripped of every field outside the approved set.</p>
+            <p>Account information, rate-limit windows, and aggregate usage. The startup handshake establishes the connection; data requests are allowlisted and responses are validated before display.</p>
           </div>
           <div class="privacy-item">
-            <h4>One file on disk</h4>
-            <p>The only thing ever written is your preferences document: display choices like theme and refresh settings. No usage value can appear in it.</p>
+            <h4>Preferences, not usage history</h4>
+            <p>Display choices live in a preferences document with no usage values. Saves may use temporary or recovery files; diagnostics are written only when you choose to export them.</p>
           </div>
           <div class="privacy-item">
             <h4>No credential access</h4>
-            <p>Authentication belongs entirely to Codex. Token Trail never sees, copies, stores, or refreshes your credentials.</p>
+            <p>Authentication belongs entirely to Codex. Token Trail does not ask for login credentials or read Codex credential files. Codex handles authentication.</p>
           </div>
           <div class="privacy-item">
             <h4>Prompts stay yours</h4>
-            <p>Token Trail cannot read or store prompts, responses, tasks, repositories, files, tool calls, transcripts, or browser sessions.</p>
+            <p>The approved data reads do not request prompt text, responses, tasks, repository contents, tool calls, transcripts, or browser sessions.</p>
           </div>
           <div class="privacy-item">
             <h4>Sanitized diagnostics</h4>
