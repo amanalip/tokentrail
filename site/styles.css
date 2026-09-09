@@ -1032,6 +1032,7 @@ details.faq summary:focus-visible {
 
 .faq-body {
   padding: 0 20px 18px;
+  overflow-wrap: anywhere;
 }
 
 .faq-body p:last-child {
