@@ -4,7 +4,7 @@ All notable changes to Token Trail are documented here. Versions appear newest-f
 
 ## 2.0.0
 
-September 8, 2026. A reliability and correctness release resolving all **40 findings** in the [September 7 audit](bug_audits/bugs_sept7.md), plus the related credit-row improvement IMP-008. This release includes the fixes delivered after 1.0.0; it does not claim that every possible defect or untested environment has been covered.
+Published September 9, 2026; the release tag and candidate were prepared September 8. A reliability and correctness release resolving all **40 findings** in the [September 7 audit](bug_audits/bugs_sept7.md), plus the related credit-row improvement IMP-008. This release includes the fixes delivered after 1.0.0; it does not claim that every possible defect or untested environment has been covered.
 
 ### Highlights and improvements
 
