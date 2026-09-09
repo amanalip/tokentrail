@@ -1,6 +1,6 @@
 # Token Trail 2.0.0 verification report
 
-Status: release preparation in progress. Evidence checkpoint: September 08, 2026 at 9:51:28 AM EDT (America/Toronto, UTC-0400).
+Status: published with all eight draft and public package downloads verified. Evidence checkpoint: September 08, 2026 at 9:51:28 AM EDT (America/Toronto, UTC-0400).
 
 ## Scope and authorization
 
@@ -34,4 +34,6 @@ Unsigned packages, unexecuted arm64 binaries, native package install/upgrade/uni
 
 ## Artifact and publication evidence
 
-Pending tagged pipeline execution, draft download/checksum validation, publication, and public re-download verification.
+Release [v2.0.0](https://github.com/amanalip/tokentrail/releases/tag/v2.0.0) was published at September 09, 2026 at 12:25:04 AM EDT (America/Toronto, UTC-04:00). Verification completed at September 09, 2026 at 12:25:31 AM EDT (America/Toronto, UTC-0400). All eight draft downloads and all eight public re-downloads match the checksum manifest and both provenance records, with the expected commit and a CycloneDX SBOM declaring 2.0.0. Exact sizes and SHA-256 values are preserved in [artifact-verification.json](artifact-verification.json). No artifact was replaced during publication.
+
+GitHub confirms this release is immutable. All four public metadata files also match their downloaded draft bytes exactly.
